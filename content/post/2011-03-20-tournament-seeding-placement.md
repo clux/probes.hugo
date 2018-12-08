@@ -3,7 +3,7 @@ title: Tournament Seeding Placement
 subtitle: Building elimination flows
 date: 2011-03-20
 tags: ["math"]
-
+categories: ["software"]
 ---
 
 A particularly hard problem with tournament scheduling that made it into [tournament/duel](https://github.com/clux/duel).

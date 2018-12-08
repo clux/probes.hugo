@@ -2,8 +2,8 @@
 title: Colemak Switchover
 subtitle: Making useless optimizations since 2013
 date: 2013-03-20
-tags: ["offtopic"]
-
+tags: []
+categories: ["misc"]
 ---
 
 ![colemak finger layout](/imgs/colemak.png)

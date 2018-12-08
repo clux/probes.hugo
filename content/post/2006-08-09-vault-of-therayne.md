@@ -2,7 +2,8 @@
 title: Vault of Therayne
 subtitle: How to not brute force a dungeon
 date: 2006-08-09
-tags: ["gaming", "math"]
+tags: ["math"]
+categories: ["gaming"]
 ---
 
 An easter egg for the Dungeon Siege 2 Broken World expansion.

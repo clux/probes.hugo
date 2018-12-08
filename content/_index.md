@@ -15,33 +15,39 @@
   width: 30%
 }
 .intro > a:hover {
-    background: #114;
-    text-decoration: none;
+  background: #114;
+  color: #ddd;
+  text-decoration: none;
+}
+.intro > a.blah:hover {
+  background: #ff69b4;
+  color: #000;
 }
 </style>
 
 <section class="intro">
-  </a href="/tags/cloud/">
-    <a><h3>cloud</h3>
-    <p>Cloud resources, shipcat, operators, kubernetes</p>
+  <a href="/categories/software/">
+    <h3>software</h3>
+    <p>Rust, open source, cloud tech, kubernetes</p>
   </a>
-  <a href="/tags/rust/">
-    <h3>rust</h3>
-    <p>contributions and thoughts on the rust ecosystem</p>
+  <a href="/categories/roleplaying/">
+    <h3>roleplaying</h3>
+    <p>dungeon mastering, universe, ideas, homebrew</p>
   </a>
-  <a href="/tags/dnd/">
-    <h3>dnd</h3>
-    <p>dungeon mastering, verse, ideas, homebrew</p>
-  </a>
-  <a href="/tags/gaming/">
+  <a href="/categories/gaming/">
     <h3>gaming</h3>
     <p>solutions, theorycrafting, minmaxing, speedrunning</p>
   </a>
-  <a href="/tags/music/">
+  <a href="/categories/music/">
     <h3>music</h3>
     <p>classical, piano, violin</p>
-  <a href="/tags/offtopic/">
-    <h3>offtopic</h3>
-    <p>life, photography, miscellaneous</p>
+  </a>
+  <a class="blah">
+    <h3>life</h3>
+    <p>tab accidentally left blank</p>
+  </a>
+  <a href="/categories/misc/">
+    <h3>misc</h3>
+    <p>photography, harware, cooking, offtopic</p>
   </a>
 </section>
