@@ -7,10 +7,10 @@ canonifyURLs= true
 
 [Params]
   useHLJS = true
-  commit = "https://github.com/clux/probes/tree/"
+  #commit = "https://github.com/clux/probes/"
   showRelatedPosts = true
   #readingTime = true
-  #subtitle = "creative experiments"
+  subtitle = "into the brain of eirik"
 
 [Author]
   name = "clux"

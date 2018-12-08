@@ -6,42 +6,53 @@ comments: false
 
 My name is Eirik and this is an attempt to collect my thoughts.
 
+Why **you** are here is a mystery. Perhaps you are lost, or perhaps you're my first stalker (welcome). At any rate, please remember that facebook or reddit isn't going to recheck itself.
+
 
 ## History
-Below contains a brief summary and current status of various creative and dexterous endeavours.
+Below contains a brief summary and current status of various creative and dexterous endeavours that I am generally happy to have spent time on.
+
+The alternate category of endeavours that were a complete waste of time, or things I am remarkably bad at for my age is a much larger and more depressing list, and is left as an exercise to the reader.
+
 
 ### Software
-Work involves a lot of unsolved integration work around cloud computing, and a lot of what I do is effectively uncharted experimentation territory. It's a situation that you feel both lucky and cursed to be in at the same time: shiny tech, few stackoverflow answers.
+I integrate cloud technologies for work, which is a fancy way to say that I combine documents in `yaml` format, and people consider this expertise.
+
+Regardless, a lot of it is effectively uncharted experimentation territory, and you can't help but feel both lucky and cursed to be in at the same time: shiny tech, few stackoverflow answers.
 
 Projects I've been the main architect of include:
 
 - [cisco/lal](https://github.com/cisco/lal-build-manager) - a strict, language agnostic build system (the [old buid team](https://github.com/orgs/lalbuild/people) have a [fork](https://github.com/lalbuild/lal))
 - [babylon/shipcat](https://github.com/Babylonpartners/shipcat) - a microservice lifecycle manager for kubernetes
 
-There are also numerous smaller projects under my [github account](https://github.com/clux?tab=repositories) that solve real problems. In particular:
+There are also numerous smaller projects under my [github account](https://github.com/clux?tab=repositories) that solve some problems. In particular:
 
 - [muslrust](https://github.com/clux/muslrust) - a canonical `x86_64-unknown-linux-musl` rust build image for the cloud
 - [tournament](https://github.com/clux/tournament) - a suite of modules for managing state and lifecycles of competitions
 
+A recent trend is heavy usage of [rust](https://www.rust-lang.org/) due to its safety guarantees and slow compile times, but [I like to dabble](https://github.com/clux/magic-forest).
+
 ### Mathematics
-I have a dusty piece of paper that says my name and `Master of Mathematics` on it. See [vitae](http://clux.github.io/vitae/) for details.
+There is a dusty piece of paper somewhere that says my name and `Master of Mathematics` on it. See [vitae](http://clux.github.io/vitae/) for details.
 
 This esoteric knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of 4 years.
 
 Almost got on the PhD train, but then people were shouting `4 more years` so much in America that the whole concept of time was scaring me.
 
 ### Dungeon Mastering
-A newish venture. The main focal point is my forgotten realms style campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) and it's a real blast to get together and cooperate creatively whilest having fun. Posts probably to come here. [Private link to dndbeyond campaign](https://www.dndbeyond.com/campaigns/156017).
+I run a forgotten realms style campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) wherein a bunch of humans remarkably continue to tolerate my antics and bad improv. My dungeon design and mechanics aren't too bad anymore though!
+
+Underlings; here is the [private link to the dndbeyond campaign](https://www.dndbeyond.com/campaigns/156017).
 
 ### Music
-Played `violin` from age `~7-18` as my grandfather was a luthier. Played tons of classical chamber music and orchestral pieces with a youth orchestra and took lessons for solo pieces for years.
+Played `violin` from age `~7-17`, seeded by my luthier grandfather. Enjoyed the indoctrination of baroque + romantic music in a youth orchestra and took lessons for solo pieces for years. If anything, it makes you appreciate it when music actually contains a melody that cannot be hummed in a minute.
 
-Have had a few on-years where this has been resurrected, but the muscle memory the instrument demands is too high maintenance to be compatible with work and any other spare time.
+Have had a few on-years where this skill has been resurrected, but the muscle memory the instrument demands feels too high maintenance to be compatible with work and any other spare time activities atm.
 
 Started playing `piano` in the summer of 2017 loosely thaught by my brother and the internet.
 
 ### Gaming
-Games that feature some type of dexterous mastery with intuitive understanding have always interested me. Below are some games that drew my attention and caused a couple of googleable events tied to my name.
+Games that feature some type of dexterous mastery with intuitive understanding have always interested me. Below are some games that drew my attention and caused a couple of historical links tied to my name.
 
 #### Quake 3
 Played this for years online. Joined `VSE`, played for `Team Norway` in ClanBase tournaments, and later started `GULL` and a quake 3 division of [X-Pec](http://www.chicksdigx-pec.com).
@@ -58,8 +69,7 @@ Kept sparring in [promode](https://playmorepromode.com/) after q3 mostly died. L
 - Found a mathematical solution to a ridiculous dungeon in `Dungeon Siege 2`
 - Held stunt/platform mode WRs in `TrackMania United` - [tmx](https://united.tm-exchange.com/main.aspx?action=tracksearch&mode=7&id=1273332)
 - Completed all iron man runs in `Super Meat Boy`: [Cotton](https://www.youtube.com/watch?v=8ZeFFwkCLN8) / [Dark Cotton](https://www.youtube.com/watch?v=jgptqlVQGSM)
-- Made numerous [clips using weird weapons in `TF2`](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB)
 - Completed [all char runs](https://crypt.toofz.com/p/76561198007590148/classic) in [Necrodancer](https://store.steampowered.com/app/247080/Crypt_of_the_NecroDancer/), and have [bolt low% clears](https://www.youtube.com/watch?v=y1d6hoN9DoM)
 
 #### Current
-These days it's much more casual and can probably be found playing borderlands or an old Obsidian classic with friends on [steam](https://steamcommunity.com/id/sszynrae)
+These days it's mostly casual **cooprative** gaming. [Have had a lot of fun in `TF2` with weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB), but also have `OP8` kitted characters in `Borderlands 2`. Limited to [Steam on Linux](https://steamcommunity.com/id/sszynrae) atm, but maybe trying [Proton](https://github.com/ValveSoftware/Proton) in the future.
