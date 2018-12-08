@@ -40,7 +40,7 @@ Every block must be inverted an odd number of times, and since inverting twice i
 Each row j in matrix V represents which lights are inverted by f(j).
 For instance: f(A) inverts A, L, M, O, and P (as shown in the diagram), which is the first row in V.
 
-```Mathematica
+```cpp
 V={{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1},
   {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
   {0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -61,7 +61,7 @@ V={{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1},
 
 Solving the equation `Vx={1,1,....1}` mod 2 reveals how many times one must utilize f(j) to invert every light source.
 
-```Mathematica
+```cpp
 i={1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
 LinearSolve[V,i, Modulus -> 2]
