@@ -1,3 +1,38 @@
 baseURL = "http://clux.github.io/probes"
-languageCode = "en-us"
 title = "probes"
+languageCode = "en-us"
+DefaultContentLanguage = "en"
+theme = "beautifulhugo"
+canonifyURLs= true
+
+[Params]
+  useHLJS = true
+  commit = "https://github.com/clux/probes/tree/"
+  showRelatedPosts = true
+  #readingTime = true
+  #subtitle = "creative experiments"
+
+[Author]
+  name = "clux"
+  github = "clux"
+  twitter = "sszynrae"
+  reddit = "clux"
+  email = "sszynrae@gmail.com"
+  linkedin = "eirik-albrigtsen-b279863a"
+  youtube = "channel/UCLpykMxkxuPUR9CciheipZg"
+  steam = "sszynrae"
+
+[[menu.main]]
+    name = "Blog"
+    url = ""
+    weight = 1
+
+[[menu.main]]
+    name = "About"
+    url = "page/about/"
+    weight = 3
+
+[[menu.main]]
+    name = "Tags"
+    url = "tags"
+    weight = 3
