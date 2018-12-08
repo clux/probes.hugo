@@ -8,7 +8,7 @@ My name is Eirik and this is an attempt to collect my thoughts.
 
 
 ## History
-Below contains a brief summary and current status of variour creative and dexterous endeavours.
+Below contains a brief summary and current status of various creative and dexterous endeavours.
 
 ### Software
 Work involves a lot of unsolved integration work around cloud computing, and a lot of what I do is effectively uncharted experimentation territory. It's a situation that you feel both lucky and cursed to be in at the same time: shiny tech, few stackoverflow answers.
@@ -22,6 +22,13 @@ There are also numerous smaller projects under my [github account](https://githu
 
 - [muslrust](https://github.com/clux/muslrust) - a canonical `x86_64-unknown-linux-musl` rust build image for the cloud
 - [tournament](https://github.com/clux/tournament) - a suite of modules for managing state and lifecycles of competitions
+
+### Mathematics
+I have a dusty piece of paper that says my name and `Master of Mathematics` on it. See [vitae](http://clux.github.io/vitae/) for details.
+
+This esoteric knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of 4 years.
+
+Almost got on the PhD train, but then people were shouting `4 more years` so much in America that the whole concept of time was scaring me.
 
 ### Dungeon Mastering
 A newish venture. The main focal point is my forgotten realms style campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) and it's a real blast to get together and cooperate creatively whilest having fun. Posts probably to come here. [Private link to dndbeyond campaign](https://www.dndbeyond.com/campaigns/156017).

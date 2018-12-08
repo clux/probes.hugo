@@ -1,6 +1,6 @@
 ---
 title: Colemak Switchover
-subtitle: Making useless optimizations
+subtitle: Making useless optimizations since 2013
 date: 2013-03-20
 tags: ["offtopic"]
 
@@ -10,7 +10,7 @@ tags: ["offtopic"]
 
 <!--more-->
 
-QWERTY sucks. You always learn it wrong, and it's optimized for not jamming your typewriters whilst typing English. Oh, I'm sorry, is that *not* how you type?
+QWERTY sucks. You always learn it wrong, it's optimized for not jamming your typewriters, and it's got a bunch of history with shortcut keys.
 
 My brother started using [DVORAK](http://en.wikipedia.org/wiki/Dvorak_Simplified_Keyboard#Comparison_of_the_QWERTY_and_Dvorak_layouts), (a similarly crazy layout) which aimed to reduce the number of awkward finger movements using analysis of language and layout experimentations. My problem with DVORAK is that they moved important shortcut keys like X, C, W, Q, S and T so far away from left CTRL that the benefit disappeared. That was a deal-breaker.
 
@@ -30,3 +30,5 @@ Colemak Progress:
 - ~2 years: 100 wpm
 
 Records: 102wpm on the hi-games 2 minute typing test, 120wpm on typeracer.
+
+Should you do this? Probably not. Is it cool? Yeah.
