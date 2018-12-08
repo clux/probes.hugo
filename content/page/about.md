@@ -12,7 +12,7 @@ Why **you** are here is a mystery. Perhaps you are lost, or perhaps you're my fi
 ## History
 Below contains a brief summary and current status of various creative and dexterous endeavours that I am generally happy to have spent time on.
 
-The alternate category of endeavours that were a complete waste of time, or things I am remarkably bad at for my age is a much larger and more depressing list, and is left as an exercise to the reader.
+The alternate category of endeavours that were a complete waste of time, or things I am remarkably bad at for my age is a much larger and more depressing list, and is left as an exercise to the reader to imagine.
 
 
 ### Software
@@ -60,13 +60,13 @@ Played this for years online. Joined `VSE`, played for `Team Norway` in ClanBase
 - Made [Smooth Frags](https://www.youtube.com/watch?v=GD3aTJ_jzL8), [numbar 2](https://www.youtube.com/watch?v=OXCJpkv0GuI), and [numbar 3](https://www.youtube.com/watch?v=BHfSKhvzogM) - Quake 3 highlight clips
 - Won The Gathering Quake 3 1v1 Competition in 2005
 
-Kept sparring in [promode](https://playmorepromode.com/) after q3 mostly died. Later back and compiled [discord](https://www.youtube.com/watch?v=liSxP2j5b60) from 2008 matches.
+Kept sparring in [promode](https://playmorepromode.com/) after q3 mostly died. Much later returned to compile [discord](https://www.youtube.com/watch?v=liSxP2j5b60) from 2008 matches.
 
 #### Random
-- Held numerous WRs in [N](http://www.metanetsoftware.com/games/n) - `70-0` was voted [run of the year](http://n.wikia.com/wiki/The_Dronies) by the community - and took [8 years to beat](http://ploudseeker.com:5000/all_scores?level=70-0&place=0) - [N wiki entry](http://n.wikia.com/wiki/Clux)
+- Held numerous WRs in [N](http://www.metanetsoftware.com/games/n) - `70-0` was voted [run of the year](http://n.wikia.com/wiki/The_Dronies) by the community - and took [nearly 8 years to beat](http://ploudseeker.com:5000/all_scores?level=70-0&place=0) - [N wiki entry](http://n.wikia.com/wiki/Clux)
 - Gained the `Minesweeper` [#2 rank in Norway](http://www.minesweeper.info/countryranking.html?country=132) with a [`53s` on expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) (top 200 world)
-- Hold the speedrun record in `Trine` for [fastest segmented NG+](http://speeddemosarchive.com/Trine.html) of `Trine` ([playlist](https://www.youtube.com/watch?v=45T7-Avb5vQ&list=PLDCA837F2416D427B))
-- Found a mathematical solution to a ridiculous dungeon in `Dungeon Siege 2`
+- Hold the speedrun record WR in `Trine` for [fastest segmented NG+](http://speeddemosarchive.com/Trine.html) of `Trine` ([playlist](https://www.youtube.com/watch?v=45T7-Avb5vQ&list=PLDCA837F2416D427B))
+- Found a [mathematical solution to a ridiculous dungeon](https://clux.github.io/probes/post/2006-08-09-vault-of-therayne/) in `Dungeon Siege 2`
 - Held stunt/platform mode WRs in `TrackMania United` - [tmx](https://united.tm-exchange.com/main.aspx?action=tracksearch&mode=7&id=1273332)
 - Completed all iron man runs in `Super Meat Boy`: [Cotton](https://www.youtube.com/watch?v=8ZeFFwkCLN8) / [Dark Cotton](https://www.youtube.com/watch?v=jgptqlVQGSM)
 - Completed [all char runs](https://crypt.toofz.com/p/76561198007590148/classic) in [Necrodancer](https://store.steampowered.com/app/247080/Crypt_of_the_NecroDancer/), and have [bolt low% clears](https://www.youtube.com/watch?v=y1d6hoN9DoM)

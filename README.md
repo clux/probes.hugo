@@ -1,4 +1,5 @@
 # probes
+[![build status](https://secure.travis-ci.org/clux/probes.svg)](http://travis-ci.org/clux/probes)
 
 An infrequently updated blog wherein I try to clarify my opinions and thoughts.
 
