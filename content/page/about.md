@@ -17,7 +17,7 @@ The alternate category of endeavours that were a complete waste of time, or thin
 ### Software
 I integrate cloud technologies for work, which is a fancy way to say that I combine documents in `yaml` format, and people consider this expertise.
 
-Regardless, a lot of it is effectively uncharted experimentation territory, and you can't help but feel both lucky and cursed to be in at the same time: shiny tech, few stackoverflow answers.
+Regardless, a lot of it is effectively uncharted experimentation territory, and you can't help but feel both lucky and cursed to be in it at the same time: shiny tech, few stackoverflow answers.
 
 Projects I've been the main architect of include:
 
