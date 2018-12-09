@@ -6,8 +6,7 @@ comments: false
 
 My name is Eirik and this is an attempt to collect my thoughts.
 
-Why **you** are here is a mystery. Perhaps you are lost, or perhaps you're my first stalker (welcome). At any rate, please remember that facebook or reddit isn't going to recheck itself.
-
+Why **you** are here is a mystery. Perhaps you are lost, or perhaps I shameless posted an article to reddit. At any rate, please remember that facebook or reddit isn't going to continue to check itself.
 
 ## History
 Below contains a brief summary and current status of various creative and dexterous endeavours that I am generally happy to have spent time on.
@@ -72,4 +71,4 @@ Kept sparring in [promode](https://playmorepromode.com/) after q3 mostly died. M
 - Completed [all char runs](https://crypt.toofz.com/p/76561198007590148/classic) in [Necrodancer](https://store.steampowered.com/app/247080/Crypt_of_the_NecroDancer/), and have [bolt low% clears](https://www.youtube.com/watch?v=y1d6hoN9DoM)
 
 #### Current
-These days it's mostly casual **cooprative** gaming. [Have had a lot of fun in `TF2` with weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB), but also have `OP8` kitted characters in `Borderlands 2`. Limited to [Steam on Linux](https://steamcommunity.com/id/sszynrae) atm, but maybe trying [Proton](https://github.com/ValveSoftware/Proton) in the future.
+These days it's mostly casual **cooperative** gaming. [Have had a lot of fun in `TF2` with weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB), but also have `OP8` kitted characters in `Borderlands 2`. Limited to [Steam on Linux](https://steamcommunity.com/id/sszynrae) atm, but maybe trying [Proton](https://github.com/ValveSoftware/Proton) in the future.
