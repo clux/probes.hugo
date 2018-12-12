@@ -16,13 +16,11 @@ So for our own sanity, we built [`shipcat`](https://github.com/Babylonpartners/s
 
 ## Kubernetes API
 
-Deploying services to kubernetes is no easy task. The abstraction might be _nice_ to an ops person, but it's a significant mental overhead for hundreds of engineers to have to understand. Try telling every engineer that they all need to hand craft their `yaml` for whatever they need of:
+Deploying services to kubernetes is no easy task. The abstraction might be _nice_ once you've wrapped your head around it, but it's a significant mental overhead for hundreds of engineers to have to understand. Try telling every engineer that they all need to hand craft their `yaml` for whatever they need of:
 
 - `ConfigMap`
 - `Secrets`
-- `Deployment`
-- `ReplicaSet`
-- `Pod`
+- `Deployment` / `ReplicaSet` / `Pod`
 - `Service`
 - `HorizontalPodAutoscaler`
 - `ServiceAccount`
@@ -32,10 +30,10 @@ Deploying services to kubernetes is no easy task. The abstraction might be _nice
 
 and you'll quickly realize that this does not scale. Not because your engineers can't handle it, but because if your engineers need to understand everything; you've not abstracted anything.
 
-Not to mention that your platform would have no internal if everyone wrote these.
+Not to mention that your platform would have no internal consistency if everyone handcrafted these.
 
 ## Helm
-One of the main attempts kubernetes has seen in this space is `helm`. A (primarily) client side templating system that lets you abstract away much of the above into `charts` (a collection of `yaml` go-templates) ready to be filled in with `helm values`; the more concise `yaml` that developers write directly.
+One of the main attempts kubernetes has seen in this space is `helm`. A (primarily) client side templating system that lets you abstract away much of the above into `charts` (a collection of `yaml` go templates) ready to be filled in with `helm values`; the more concise `yaml` that developers write directly.
 
 Simplistic usage of `helm` would involve having a `chart` in a folder:
 
@@ -65,27 +63,18 @@ helm template charts/base myapp -f myvalues.yaml | kubectl apply -lapp=myapp --p
 which will garbage collect older kube resources with the `myapp` label, and start any necessary rolling upgrades in kubernetes.
 
 ### Drawbacks
-Helm offers very little sanity what a `values.yaml` can contain. Here are things you can put in a helm values file that `helm` will be okay with:
+Even though you can avoid a lot of the common errors by re-using charts across apps, there's still very little sanity on what helm values can contain. Here are some values you can pass to a helm chart that will be accepted:
 
-- `Deployment` ports not matching `Service` ports (unreachable service)
+- misspelled optional values (silently ignored)
 - resource requests exceeding largest node (cannot schedule nor vertically auto scale)
 - resource requests > resource limits (illogical)
 - out of date secrets (generally causing crashes)
 - missing health checks / `readinessProbe` (broken services can rollout)
 - images and versions that does not exist (fails to install/upgrade)
-- unmounted configmaps / badly mounted configmaps (annoying to debug until deployment works)
 
-And that's just the low hanging fruit.
+And that's once you've gotten over how frurstrating it can be to write helm templates in the first place.
 
-You'll need a bunch of security for ServiceAccounts, and some awkward lifecycle hacks into your templates like checksums of other pre-templated parts of the charts into other templates to make sure deployments trigger when secrets change:
-
-```yaml
-annotations:
-  checksum/config: {{ include (print $.Template.BasePath "/cm.yaml") . | sha256sum }}
-  checksum/secrets: {{ include (print $.Template.BasePath "/sec.yaml") . | sha256sum }}
-```
-
-Long story short, you have to be **really careful with helm**.
+But missing validation is only one annoyance. The other is that this is a really _accidental abstraction_: these files now effectively describe your service, but you have no useful logic around it (nor validation on how it should be), and you do not have a process to evolve these manifests along with your charts easily once they are in the wild.
 
 ## Main idea: `shipcat`
 What if if we could take the general idea that developers just write simplified _yaml manifests_ for their app and we just provide a bunch of security checking and validation on top of that? That's not hard to do, and by actually defining the structs in a tool, we can do tons of cross-referencing validation, as well as versioning our platform.
