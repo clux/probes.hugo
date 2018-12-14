@@ -7,6 +7,7 @@ canonifyURLs= true
 
 [Params]
   useHLJS = true
+  useKatex = false # custom loading it
   #commit = "https://github.com/clux/probes/tree"
   showRelatedPosts = true
   #readingTime = true
