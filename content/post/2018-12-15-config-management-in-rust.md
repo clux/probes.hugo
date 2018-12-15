@@ -28,7 +28,7 @@ Deploying services to kubernetes is no easy task. The abstraction might be _nice
 - `RoleBinding`
 - `Ingress`
 
-and you'll quickly realize that this does not scale. Your engineers maybe be able to handle it, but they shouldn't all have to deal with this excessively verbose API that lacks in crucial validation. Additionally; if you let everyone handcraft this yaml, your platform would have no internal consistency and be a nightmare to upgrade.
+and you'll quickly realize that this does not scale. Your engineers maybe be able to handle it, but they shouldn't all have to deal with this excessively verbose API which lacks in crucial validation. Instead, creating a standard gives your platform internal consistency and makes it easier to upgrade manage.
 
 ## Helm
 One of the main abstraction attempts kubernetes has seen in this space is `helm`. A client side templating system (ignoring the bad server side part) that lets you abstract away much of the above into `charts` (a collection of `yaml` go templates) ready to be filled in with `helm values`; the more concise `yaml` that developers write directly.
@@ -53,7 +53,8 @@ charts
 and calling it with your substitute `myvalues.yaml`:
 
 ```sh
-helm template charts/base myapp -f myvalues.yaml | kubectl apply -lapp=myapp --prune -f -
+helm template charts/base myapp -f myvalues.yaml | \
+    kubectl apply -lapp=myapp --prune -f -
 ```
 
 which will garbage collect older kube resources with the `myapp` label, and start any necessary rolling upgrades in kubernetes.
@@ -73,7 +74,7 @@ And that's once you've gotten over how frurstrating it can be to write helm temp
 ## Limitations
 While validation is a fixable annoyance, a bigger observation is that these helm values files become a really interesting, but entirely **accidental abstraction**. These files become the canonical representation of your services, but you have no useful logic around it. You have very little validation, almost no definition of what's allowed in there (`helm lint` is lackluster), you have no process of standardisation, it's hard to test sprawling automation scripts around the values files, and you do not have any sane way of evolving these charts.
 
-## Main idea: `shipcat`
+## Main idea: [`shipcat`](https://github.com/Babylonpartners/shipcat)
 What if if we could take the general idea that developers just write simplified _yaml manifests_ for their app, but we actually define that API instead? By actually defining the structs we can provide a bunch of security checking and validation on top of it, and we will have a well-defined boundary for automation / ci / dev tools.
 
 By defining all our syntax in a library we can have cli tools for automation and executables running as kube operators using the same definitions. It effectively provides a way for us to versioning our platform.
@@ -169,10 +170,6 @@ pub enum AllowedResources {
     ShipcatConfigs,
 }
 
-/// Allowed verbs
-///
-/// Does not include `Delete` or other operations for security reasons.
-/// More operations can be added when required but due diligence would be sane.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum AllowedVerbs {
