@@ -1,7 +1,7 @@
 ---
 title: Config management in rust
 subtitle: Building a secure yaml api for kubernetes
-date: 2018-12-14
+date: 2018-12-15
 tags: ["shipcat", "rust", "kubernetes"]
 categories: ["software"]
 ---
