@@ -4,9 +4,12 @@ languageCode = "en-us"
 DefaultContentLanguage = "en"
 theme = "beautifulhugo"
 canonifyURLs= true
+pygmentsCodeFences = true
+pygmentsUseClasses = false
+pygmentsStyle = "dracula"
 
 [Params]
-  useHLJS = true
+  useHLJS = false
   useKatex = false # custom loading it
   #commit = "https://github.com/clux/probes/tree"
   showRelatedPosts = true

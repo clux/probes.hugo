@@ -1,6 +1,6 @@
 ---
-title: Yaml APIs in rust for k8s
-subtitle: How to build secure config management
+title: Config management in rust
+subtitle: Building a secure yaml api for kubernetes
 date: 2018-12-14
 tags: ["shipcat", "rust", "kubernetes"]
 categories: ["software"]
@@ -28,14 +28,14 @@ Deploying services to kubernetes is no easy task. The abstraction might be _nice
 - `RoleBinding`
 - `Ingress`
 
-and you'll quickly realize that this does not scale. Your engineers maybe be able to handle it, but it's a huge cognitive overhead, and the API excessively verbose and lacking in crucial validation. If you let everyone handcraft this yaml, your platform would have no internal consistency and be a nightmare to upgrade.
+and you'll quickly realize that this does not scale. Your engineers maybe be able to handle it, but they shouldn't all have to deal with this excessively verbose API that lacks in crucial validation. Additionally; if you let everyone handcraft this yaml, your platform would have no internal consistency and be a nightmare to upgrade.
 
 ## Helm
 One of the main abstraction attempts kubernetes has seen in this space is `helm`. A client side templating system (ignoring the bad server side part) that lets you abstract away much of the above into `charts` (a collection of `yaml` go templates) ready to be filled in with `helm values`; the more concise `yaml` that developers write directly.
 
 Simplistic usage of `helm` would involve having a `charts` folder:
 
-```aconf
+```sh
 charts
 └── base
     ├── Chart.yaml
@@ -71,12 +71,14 @@ Even though you can avoid a lot of the common errors by re-using charts across a
 And that's once you've gotten over how frurstrating it can be to write helm templates in the first place.
 
 ## Limitations
-Missing validation is one annoyance, but because these helm values files turn out to be very interesting, they cause this entirely **accidental abstraction**. These files become the canonical representation of your services, but you have no useful logic around it. You have very little validation, almost no definition of what's allowed in there (`helm lint` is lackluster), you have no process of standardisation, it's hard to test sprawling automation scripts around the values files, and you do not have any sane way of evolving these charts.
+While validation is a fixable annoyance, a bigger observation is that these helm values files become a really interesting, but entirely **accidental abstraction**. These files become the canonical representation of your services, but you have no useful logic around it. You have very little validation, almost no definition of what's allowed in there (`helm lint` is lackluster), you have no process of standardisation, it's hard to test sprawling automation scripts around the values files, and you do not have any sane way of evolving these charts.
 
 ## Main idea: `shipcat`
-What if if we could take the general idea that developers just write simplified _yaml manifests_ for their app and we just provide a bunch of security checking and validation on top of that? That's not hard to do, and by actually defining the structs in a tool, we can do tons of cross-referencing validation, standardising, having an entry point for automation, as well as versioning our platform.
+What if if we could take the general idea that developers just write simplified _yaml manifests_ for their app, but we actually define that API instead? By actually defining the structs we can provide a bunch of security checking and validation on top of it, and we will have a well-defined boundary for automation / ci / dev tools.
 
-It also allows us to solve the secret problem. We can extend the manifests with syntax that allows generating/fetching/synchronsing secrets from [vault](https://www.hashicorp.com/products/vault/) at deploy and at validation time.
+By defining all our syntax in a library we can have cli tools for automation and executables running as kube operators using the same definitions. It effectively provides a way for us to versioning our platform.
+
+It also allows us to solve the secret problem. We can extend the manifests with syntax that allows synchronsing secrets from [Vault](https://www.hashicorp.com/products/vault/) at both deploy and validation time.
 
 ## Disclaimer
 This style of tool is not a revolutionary idea. Last kubecon pretty much everyone had their own wrappers around `yaml` to help with these problems. Some common examples these days are: `kubecfg`, `ksonnet`, `flux`, `helmfile`, which all try to help out in this space, but they were all missing most of the sanity we required when we started experimenting at the start of 2018.
@@ -114,7 +116,7 @@ metadata:
 This encapsulates the most important kube apis that developers should configure themselves, who's responsible for it, what regions it's deployed in, what secrets are needed (notice the `IN_VAULT` marker), and how resource intensive it is.
 
 ## Strict Syntax
-Because these manifests were going to be the entry point for CI pipelines and handle platform specific validation for medical software, we wanted maximum strictness everywhere and that includes the ability to catch errors before manifests are committed to `master`.
+Because these manifests were going to be the entry point for CI pipelines and handle platform specific validation (for medical software), we wanted maximum strictness everywhere and that includes the ability to catch errors before manifests are committed to `master`.
 
 We lean heavily on [serde's customisable codegeneration](https://serde.rs/attributes.html) to easily encapsulate even the most awkward kube apis - that we want our developers to take advantage of -  and to auto-generate the boilerplate validation around types and spelling errors.
 
@@ -167,8 +169,10 @@ pub enum AllowedResources {
     ShipcatConfigs,
 }
 
-/// We don't allow eg Delete or other operations for security reasons (least privilege).
-/// More operations can be added if required but due diligence would be sane.
+/// Allowed verbs
+///
+/// Does not include `Delete` or other operations for security reasons.
+/// More operations can be added when required but due diligence would be sane.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum AllowedVerbs {
@@ -178,11 +182,9 @@ pub enum AllowedVerbs {
 }
 ```
 
-These structs only define read-only access because that's all we currently allow apps in our kube clusters to do.
+Notice the awkward empty string having explicit meanings in the kube api, which `serde` elegantly normalises with a `rename` field level attribute, but obeying the `rename_all` container level attribute as an overrideable default.
 
-Notice the awkward empty string having explicit meanings in the kube api, which `serde` elegantly sidesteps with a `rename` field level attribute, but obeying the `rename_all` container level attribute as an overrideable default.
-
-At this point, `serde` takes care of most of our validation, spelling-errors of fields are caught, and extraneous types/keys are considered errors due to the `#[serde(deny_unknown_fields)]` instruction.
+In other words, `serde` takes care of most of our validation. It even catches spelling-errors and extraneous types/keys due to the `#[serde(deny_unknown_fields)]` instruction.
 
 While this goes way beyond what you normally can do with a yaml validator: we can still do better. Every struct can implement a `verify` function that encapsulates common mistakes that are clearly errors and should be caught before they are sent out to our kube clusters:
 
@@ -203,7 +205,9 @@ impl Rbac {
 }
 ```
 
-This `Rbac` struct is attached to our core [Manifest](https://babylonpartners.github.io/shipcat/shipcat_definitions/manifest/struct.Manifest.html) so developers can take advantage of it by adding:
+We don't trait these functions because we sometimes pass around some context from other structures to have cross-referencing validation.
+
+Finally, this `Rbac` struct is attached to our core [Manifest](https://babylonpartners.github.io/shipcat/shipcat_definitions/manifest/struct.Manifest.html) so developers can take advantage of it by simply adding:
 
 ```yaml
 rbac:
@@ -212,9 +216,9 @@ rbac:
   verbs: ["get", "watch", "list"]
 ```
 
-to their service manifest, and that's it. They now have a service that is allowed can watch kube `Deployment` objects via a generated in-cluster service account token.
+to their service manifest. That's it. They now have a service that is allowed can watch kube `Deployment` objects via a generated in-cluster service account token.
 
-In this case, this syntax is a straight translation of thu kubernetes API (but leaving out the boilerplate static yaml), and this is often what we do in `shipcat`.
+In this case, this syntax is a straight translation of the kubernetes API (but leaving out the boilerplate static yaml), and this is often what we do in `shipcat`.
 
 In some cases, however, we do provide our own simplifying abstractions, but this tends to be for other integrations.
 
@@ -260,7 +264,7 @@ shipcat cluster helm reconcile
 
 which will wait for the helm release(s) (working around various tiller bugs to do so correctly).
 
-This is an abstraction that is due for a change, however. The [tiller dependency is being removed on our end](https://github.com/Babylonpartners/shipcat/issues/11), and [helm 3 will follow suit](https://github.com/helm/community/blob/master/helm-v3/000-helm-v3.md).
+This is an abstraction that is due for a change, however. The [tiller dependency is being removed on our end](https://github.com/Babylonpartners/shipcat/issues/11), and meanwhile, [helm 3 is rearchitecting away tiller entirely](https://github.com/helm/community/blob/master/helm-v3/000-helm-v3.md).
 
 ## Conclusion
 
