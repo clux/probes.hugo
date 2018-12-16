@@ -84,6 +84,8 @@ It also allows us to solve the secret problem. We can extend the manifests with 
 ## Disclaimer
 This style of tool is not a revolutionary idea. Last kubecon pretty much everyone had their own wrappers around `yaml` to help with these problems. Some common examples these days are: `kubecfg`, `ksonnet`, `flux`, `helmfile`, which all try to help out in this space, but they were all missing most of the sanity we required when we started experimenting at the start of 2018.
 
+Note that this was our first take on adding some validation around kube in a world that had a lot of external config management that didn't plug nicely into kube. It's heavily evolving and not general purpose as it stands. Extra parts of our validation will probably still move to a more declarative format (like [OPAs](https://www.openpolicyagent.org/)) than the raw logic described herein.
+
 ## Manifests
 When migrating to kubernetes, the abstraction we settled on was service-level manifests:
 
