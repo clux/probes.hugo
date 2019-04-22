@@ -35,33 +35,37 @@ There exists a dusty piece with my name and  `Master of Mathematics` on it. Whil
 This esoteric knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of __\*\*chanting\*\*__ `4 more years`.
 
 ### Dungeon Mastering
-I run a forgotten realms style D&D campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) wherein a bunch of humans continue to tolerate my antics and bad improv. [Campaign links for underlings](https://www.dndbeyond.com/campaigns/156017).
+I run a forgotten realms style `D&D` campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) wherein a bunch of humans continue to tolerate my antics and bad improv. [Campaign links for underlings](https://www.dndbeyond.com/campaigns/156017).
 
 ### Music
-Played the bastard instrument the `violin` from age `~7-17`, so there'll be some opinions on non-linear interfaces and muscle memory here and there. Oh, and I can neighbour worse than you can.
+Played `violin` from age `~7-17`, and as such can tell you about instrument UX. If you are considering starting/hooking up your kid; buy an `otamatone` first to see if you think you can [handle](https://www.stoppingpoints.com/devils-dictionary/fiddle.html) listening to someone wrangling with a fretless, non-linear interface for years.
 
-These days, badly playing `piano` satisfies my habit of committing useless chunks of knowledge to muscle memory.
+Been playing `piano` for a few years after accepting my defeat with the stringed devil. Sounds better already, and it satisfies my habit of committing useless chunks of knowledge to muscle memory.
 
 ### Gaming
-Games that feature some type of dexterous mastery with intuitive understanding have always interested me. Below are some games that drew my attention and caused a couple of historical links tied to my name.
+Well designed game mechanics that require some type of dexterous mastery have often drawn me in. Here's some stuff I spent time on over the years..
 
-#### Quake 3
-Played this for years online. Joined `VSE`, played for `Team Norway` in ClanBase tournaments, and later started `GULL` and a quake 3 division of [X-Pec](http://www.chicksdigx-pec.com).
+#### No death runs
+- [`Celeste`](https://store.steampowered.com/app/504230/Celeste/) 200: [Core B](https://www.youtube.com/watch?v=I8nM80nDYuc) / [Summit B](https://www.youtube.com/watch?v=6NgrGqRG_8g) (2019)
+- [`Necrodancer`](https://store.steampowered.com/app/247080/Crypt_of_the_NecroDancer/): [bolt low%](https://www.youtube.com/watch?v=y1d6hoN9DoM) / [classic stats](https://crypt.toofz.com/p/76561198007590148/classic/classic) (mostly bolt, but did all chars)
+- [`Super Meat Boy`](https://store.steampowered.com/app/40800/Super_Meat_Boy/) iron man: [Cotton](https://www.youtube.com/watch?v=8ZeFFwkCLN8) / [Dark Cotton](https://www.youtube.com/watch?v=jgptqlVQGSM) (2014)
 
-- Made [Smooth Frags](https://www.youtube.com/watch?v=GD3aTJ_jzL8), [numbar 2](https://www.youtube.com/watch?v=OXCJpkv0GuI), and [numbar 3](https://www.youtube.com/watch?v=BHfSKhvzogM) - Quake 3 highlight clips
-- Won The Gathering Quake 3 1v1 Competition in 2005
+#### FPS
 
-Kept sparring in [promode](https://playmorepromode.com/) after q3 mostly died. Much later returned to compile [discord](https://www.youtube.com/watch?v=liSxP2j5b60) from 2008 matches.
+- [`Borderlands 2`](https://store.steampowered.com/app/49520/Borderlands_2/): digistruct peak `OP8` raids
+- [`Team Fortress 2`](https://store.steampowered.com/app/440/Team_Fortress_2/): stress testing [weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB) like the [bison](https://www.reddit.com/r/bisonmasterrace/) in ~2016
+- [`Quake 3`](http://www.orangesmoothie.org/tourneyQ3A/) / [`promode`](https://playmorepromode.com/) with `VSE` + `X-Pec` + `Team Norway`; made [highlights](https://www.youtube.com/watch?v=GD3aTJ_jzL8&list=PL4gj5XjL6RRRavXh2KGXQZnRuD-zhE4-k) ~2002
 
-#### Random
+#### Theorycraft
 
-- Held numerous WRs in [N](http://www.metanetsoftware.com/games/n) - `70-0` was voted [run of the year](http://n.wikia.com/wiki/The_Dronies) by the community - and took [nearly 8 years to beat](http://ploudseeker.com:5000/all_scores?level=70-0&place=0) - [N wiki entry](http://n.wikia.com/wiki/Clux)
-- Gained the `Minesweeper` [#2 rank in Norway](http://www.minesweeper.info/countryranking.html?country=132) with a [`53s` on expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) (top 200 world)
-- Found a [mathematical solution to a ridiculous dungeon](https://clux.github.io/probes/post/2006-08-09-vault-of-therayne/) in `Dungeon Siege 2`
-- Held stunt/platform mode WRs in `TrackMania United` - [tmx](https://united.tm-exchange.com/main.aspx?action=tracksearch&mode=7&id=1273332)
-- Hold the speedrun record WR in `Trine` for [fastest segmented NG+](http://speeddemosarchive.com/Trine.html) of `Trine` ([playlist](https://www.youtube.com/watch?v=45T7-Avb5vQ&list=PLDCA837F2416D427B))
-- Completed all iron man runs in `Super Meat Boy`: [Cotton](https://www.youtube.com/watch?v=8ZeFFwkCLN8) / [Dark Cotton](https://www.youtube.com/watch?v=jgptqlVQGSM)
-- Completed [all char runs](https://crypt.toofz.com/p/76561198007590148/classic) in [Necrodancer](https://store.steampowered.com/app/247080/Crypt_of_the_NecroDancer/), and have [bolt low% clears](https://www.youtube.com/watch?v=y1d6hoN9DoM)
+- [`Dungeon Siege 2`](https://store.steampowered.com/app/39200/Dungeon_Siege_II/): found a [mathematical solution to a dungeon](https://clux.github.io/probes/post/2006-08-09-vault-of-therayne/) in 2006
+
+#### Speedruns
+
+- [`Trine`](https://store.steampowered.com/app/35700/Trine_Enchanted_Edition/) [segmented NG+ speedrun](http://speeddemosarchive.com/Trine.html) ([playlist](https://www.youtube.com/watch?v=45T7-Avb5vQ&list=PLDCA837F2416D427B)) in 2010
+- [`N`](http://www.metanetsoftware.com/games/n) tons of WRs; `70-0` won [run of the year](http://n.wikia.com/wiki/The_Dronies) in 2007 ([n.wikia/clux](http://n.wikia.com/wiki/Clux))
+- [`TrackMania United`](https://store.steampowered.com/app/7200/Trackmania_United_Forever_Star_Edition/) handful of former stunt/platform mode WRs in [tmx replays](https://united.tm-exchange.com/main.aspx?action=tracksearch&mode=7&id=1273332)
+- [`Minesweeper`](http://www.minesweeper.info/downloads/MinesweeperClone.html) [rank #2 Norway](http://www.minesweeper.info/countryranking.html?country=132): [`53s` expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) in 2007
 
 #### Current
-These days it's mostly casual **cooperative** gaming. [Have had a lot of fun in `TF2` with weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB), but also have `OP8` kitted characters in `Borderlands 2`. Limited to [Steam on Linux](https://steamcommunity.com/id/sszynrae) atm, but maybe trying [Proton](https://github.com/ValveSoftware/Proton) in the future.
+These days it's generally tabletop, but some **cooperative** gaming and platformers remain fun. [Steam profile](https://steamcommunity.com/id/sszynrae). [Linux only](https://store.steampowered.com/linux), but with [Proton](https://github.com/ValveSoftware/Proton).
