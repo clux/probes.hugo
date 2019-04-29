@@ -108,6 +108,6 @@ impersonate() {
 impersonate $@
 ```
 
-Make it an executable `impersonate.sh` file and run `./impersonate account namespace`.
+Make it an executable `impersonate.sh` file and run `./impersonate account namespace`. Note that this implementation requires that your context has a namespace.
 
 For a budget solution to 3; take the `token` + `secret`, store it in a secured `vault` that you probably already use policies for correctly. People can now elevate themselves from `vault` to `kubectl` while you bang your head against the oidc providers.
