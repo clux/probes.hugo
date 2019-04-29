@@ -47,11 +47,11 @@ The details of `Cache<T>` is a little more involved, but the state you ultimatel
 
 By calling the provided `.poll()` methods as frequently as you'd like, you'll be able to read the up-to-date result Map from `.read()` and use the `Reflector<T>` as a cache.
 
-Once this stuff was added to our the fork, we decided to release it and see how useable it would be directly. This is the [new kube crate](https://github.com/clux/kube-rs) available at version `0.1.0` at the moment:
+Once this stuff was added to our the fork, we decided to release it and see how useable it would be directly. This is the [new kube crate](https://github.com/clux/kube-rs) available at version `0.2.0` at the moment:
 
 ```toml
 [dependencies]
-kube = "0.1.0"
+kube = "0.2.0"
 ```
 
 ### How would you actually use this?
@@ -108,7 +108,7 @@ impl State {
         self.foos.refresh()
     }
     /// Exposed getter for read access to state for app
-    pub fn foos(&self) -> Result<Cache<FooResource>> {
+    pub fn foos(&self) -> Result<ResourceMap<FooResource>> {
         self.foos.read()
     }
 }
@@ -163,7 +163,7 @@ and from there, it's more or less following [actix examples](https://github.com/
 
 ```rust
 fn get_foos(state: Data<State>, req: HttpRequest) -> HttpResponse {
-    let foos = state.foos().unwrap().data;
+    let foos = state.foos().unwrap();
     HttpResponse::Ok().json(foos)
 }
 ```
