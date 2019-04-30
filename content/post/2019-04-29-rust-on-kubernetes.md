@@ -1,6 +1,6 @@
 ---
 title: Kubernetes operators in rust
-subtitle: Writing light weight kube cloud services without go
+subtitle: Writing light weight cloud services without go
 date: 2019-04-29
 tags: ["rust", "kubernetes"]
 categories: ["software"]
@@ -16,19 +16,19 @@ While these are good, non-controversial choices, the advancement of client libra
 
 Yes, but you'd have to set up all the watch machinery yourself and decide on a strategy for tracking the state.
 
-The most painstaking part of this is dealing with watch events and `resourceVersion` properties directly (metadata returned by kube so you can keep calling `watch` without getting duplicate events). The events themselves are also newline delimited json, each a wrapped struct of what you want or an error type.
+The most painstaking part of this is dealing with watch events and its `resourceVersion` properties directly (metadata returned by kube so you can keep calling `watch` without getting duplicate events). The events themselves are also returned as newline delimited json, each a wrapped struct of either what you want, or a wrapped error type.
 
-In `client-go`, a lot of this behaviour is wrapped up in something they call a [reflector](https://github.com/kubernetes/client-go/blob/master/tools/cache/reflector.go); a local cache responsible for updating itself and making sure its internal state reflects the state of `etcd` for the resource it's watching.
+In `client-go`, a lot of this logic is wrapped up in something they call a [reflector](https://github.com/kubernetes/client-go/blob/master/tools/cache/reflector.go); a local cache responsible for updating itself and making sure its internal state reflects the state of `etcd` for the resource it's watching.
 
 ## The land of kube clients
-First off, there are several good crates availble for kubernetes usage already. There's [k8s-openapi](https://github.com/Arnavion/k8s-openapi); the [increasingly clever](https://github.com/Arnavion/k8s-openapi/releases) set of rust bindings from the openapi spec, and [kubernetes](https://github.com/ynqa/kubernetes-rust), a is a very sensible convenience wrapper around `reqwest` + `k8s-openapi`, but it lacks quite a bit of error handling.
+First off, there are several good crates availble for kubernetes usage already. We have [k8s-openapi](https://github.com/Arnavion/k8s-openapi); the [increasingly clever](https://github.com/Arnavion/k8s-openapi/releases) set of rust bindings from the openapi spec. There's [kubernetes](https://github.com/ynqa/kubernetes-rust); a is a very sensible convenience wrapper around `reqwest` + `k8s-openapi`, but it lacks quite a bit of error handling.
 
-In a perfect world, we should all use `k8s-openapi` because it operates on the [sans-io principle](https://sans-io.readthedocs.io/) where you can just plug in any client. However, it [awkward when dealing with multiple values](https://github.com/Arnavion/k8s-openapi/blob/22d6a71d39104ec6147b7df94e4a0810ef898fbe/k8s-openapi-tests/src/lib.rs#L251-L306), and it [doesn't really support CRDs well yet](https://github.com/Arnavion/k8s-openapi/issues/39) and this is the main thing we wanted to use a kube client for.
+In a perfect world, we should all use `k8s-openapi` because it operates on the [sans-io principle](https://sans-io.readthedocs.io/) where you can just plug in any client. However, it's [awkward when dealing with multiple values](https://github.com/Arnavion/k8s-openapi/blob/22d6a71d39104ec6147b7df94e4a0810ef898fbe/k8s-openapi-tests/src/lib.rs#L251-L306), and it [doesn't really support CRDs well yet](https://github.com/Arnavion/k8s-openapi/issues/39) and this is the main thing we wanted to use a kube client for.
 
 So to tackle the CRD use case, we started out with an older version of the [kubernetes crate](https://github.com/ynqa/kubernetes-rust), before `k8s-openapi` was added as a dependency, and added error handling.
 
 ### Stealing Reflectors
-Up until this point, there's been nothing special of this unnecessary fork of a kube client. But this is where reflectors come in. A `Reflector<T>` is a `Sync` + `Send` cache of some `T` with everything it needs to keep itself up to date:
+So we've got an unnecessary fork of a kube client. Let's do something interesting with it. A `Reflector<T>` is a `Sync` + `Send` cache of some `T` with everything it needs to keep itself up to date:
 
 ```rust
 #[derive(Clone)]
@@ -41,11 +41,11 @@ pub struct Reflector<T> where
 }
 ```
 
-Here, `T` is meant to be the deserializable struct you own that represents the `.spec` portion of a CRD. This is wrapped up in several containers, first `Arc` + `RwLock` for thread safety (this data needs to be readable across workers in `actix` at the very least). The Reflector implements methods for the `write()` part of `RwLock` while consumers can `read()` to their heart's content.
+Here, `T` is meant to be the deserializable struct you own that represents the `.spec` portion of a CRD. This is wrapped up in several containers, first `Arc` + `RwLock` for thread safety (this data needs to be readable across workers in `actix` at the very least). The Reflector implements methods for the `write()` part of `RwLock` while consumers can `read()` continuously.
 
-The details of `Cache<T>` is a little more involved, but the state you ultimately get out of it is a `BTreeMap<String, T>` (aliased to `ResourceMap<T>`), where the key is `Named` how you like (probably using the `.name` key of the CRD).
+`Cache<T>` is the state + bookkeeping markers. Ultimately, you are able to extract a `BTreeMap<String, T>` out of it (aliased to `ResourceMap<T>`). The key is `Named` how you like (probably using the `.name` key of the CRD).
 
-By calling the provided `.poll()` methods as frequently as you'd like, you'll be able to read the up-to-date result Map from `.read()` and use the `Reflector<T>` as a cache.
+By calling the provided `.poll()` methods as frequently as you'd like, you'll be able to read the up-to-date `ResourceMap` from `.read()` and use the `Reflector<T>` as a cache.
 
 ### New crate: [`kube`](https://github.com/clux/kube-rs)
 Once the `Reflector` was added and working in our fork, we decided to release it and see how useable it would be directly. The [kube](https://github.com/clux/kube-rs) crate is available at version `0.2.0` at the moment:
@@ -56,6 +56,8 @@ kube = "0.2.0"
 ```
 
 It should behave like the [kubernetes crate](https://github.com/ynqa/kubernetes-rust), but with more error handling, and various generic structs including reflectors.
+
+Whether this fork will stick around depends. We were hoping this would serve as, if not a source of inspiration, then a source of ridicule.
 
 ## How would you actually use this?
 Easy. You'll have a struct that defines your CRD:
@@ -212,7 +214,13 @@ This type of watch events seem to come out of many watch calls, but it's equally
 
 The same can be said about our `Metadata`, `Resource<T>`, and `ResourceList<T>`. These are defined in [resource.rs](https://github.com/clux/kube-rs/blob/be4ec4848a795556158602e9a6b7a996b6eed86e/src/api/resource.rs#L90-L133), and are currently unexported implementation details of `kube`. If they are useful, it's possible that these will be exposed in future versions of `kube`.
 
+There's an interesting discussion about similar generic design in [k8s-openapi#20](https://github.com/Arnavion/k8s-openapi/issues/20).
+
 The plan is to test it out a bit further on data types beyond CRDs and see how well it generalizes, because it'd be a nice api to just use the resource names and groups we already know how to use from kube rbac rules.
+
+### A thread for polling? Why not actors?
+Why not indeed. It might be better to expose [actors](https://actix.rs/book/actix/sec-2-actor.html)? We have not tried yet.
+It might be a better fit long term, especially if we try to go down this route futher with `Informer<T>`. It's a more complicated lifecycle model for the type of complexity we're showcasing here though.
 
 ### Library Divergence?
 What about the fact that there's now like 3 kube clients in rust land, all of which have the same config parsing and `x509` gunk?
@@ -226,7 +234,7 @@ It might also be good if we could factor this subjective view of what a reflecto
 ### But I was too tired to go on
 That's the state of things as of 30/04/19. There's likely dragons around the corner, as well as missing features not ported from existing clients. Suggestions and ideas are [welcome](https://github.com/clux/kube-rs/issues).
 
-We are relying heavily on generic structs and [serde](https://serde.rs/) for generating [generic serialization/deserialization code](https://serde.rs/attr-bound.html) on top of that. While it's comforting to be able to have a clean, rust-native api for kube, it was a bit of a learning curve to implement some of this the first time around. Thankfully, the most complicated stuff that ended up being in `kube` was this `#[serde(bound)]`:
+Obligatory shout-out to one of the best libraries of rust: [serde](https://serde.rs/) for generating [generic serialization/deserialization code](https://serde.rs/attr-bound.html) on top of generic structs. There was a bit of a learning curve to implement bounds, but thankfully, the most complicated stuff that ended up being in `kube` was this one-line annotation:
 
 ```rust
 #[derive(Deserialize)]
@@ -242,4 +250,4 @@ pub struct ResourceList<T> where
 ```
 
 ### Next steps
-Would be to port [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) (a small operator in babylon's cloud) to use this client. Hopefully, after some battle testing in a slightly more advanced setting, this stuff can be less.. <img alt="kubernetes alpha client" style="display:inline" src="https://img.shields.io/badge/kubernetes%20client-alpha-green.svg?style=plastic&colorA=306CE8"/>
+Would be to port [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) (a small operator in babylon's cloud) to use this client. Hopefully, after some battle testing in a slightly more advanced setting, this stuff can be less <img alt="kubernetes alpha client" style="display:inline" src="https://img.shields.io/badge/kubernetes%20client-alpha-green.svg?style=plastic&colorA=306CE8"/> mode.
