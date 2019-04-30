@@ -176,10 +176,10 @@ fn get_foos(state: Data<State>, req: HttpRequest) -> HttpResponse {
 To see how it's all put together, you can browse the source for [operator-rs](https://github.com/clux/operator-rs); a full example that you can deploy directly onto kube with its [7MB docker image](https://github.com/clux/operator-rs/blob/master/Dockerfile) using only the [necessary access](https://github.com/clux/operator-rs/blob/master/yaml/deployment.yaml)
 
 ## Unresolved problems
-This is a **very early stage happy path**. It works for custom resources very well, but any other resources can benefit from `k8s-openapi`.
+This is an **early stage happy path**. It works for custom resources very well, but any other resources can benefit from `k8s-openapi` as a side-dependency at the moment.
 
-### Overly generic abstractions?
-The chosen abstraction in the `kube` client is one targetting an `ApiResource`, which maps cleanly onto a url of the form `/apis/{group}/v1/namespaces/{namespace}/{resource}`. A lot of the kube apis has that format, but this struct is probably too simplistic to be reuseable between all native structs:
+### When can we use this for Pods/Deployments/X?
+The chosen abstraction in the `kube` client is one targetting an `ApiResource`, which maps onto a url of the form `/apis/{group}/v1/namespaces/{namespace}/{resource}`. A lot of the kube apis use that format (pods has `/api/v1/namespaces/{namespace}/pods/`), so it might be somewhat be reuseable between all native structs once we get some optionals in this:
 
 ```rust
 pub struct ApiResource {
@@ -192,7 +192,9 @@ pub struct ApiResource {
 }
 ```
 
-The `WatchEvent` enum might be more reuseable though:
+While this is arguably an optimistic use of kube's rest api, it might be the simpler approach than having a bunch of massive function wrappers doing more or less the same thing.
+
+Similarly, our `WatchEvent` enum might also be reuseable:
 
 ```rust
 #[serde(tag = "type", content = "object", rename_all = "UPPERCASE")]
@@ -206,9 +208,11 @@ pub enum WatchEvent<T> where
 }
 ```
 
-This type of watch events seem to come out of many watch calls, but it's unclear how much this would be discarding of useful data in a more generic setting.
+This type of watch events seem to come out of many watch calls, but it's equally unclear if it can be used correctly in a generic setting.
 
-The same can be said about our simplistic `Metadata`, `Resource<T>`, and `ResourceList<T>`. These are defined in [resource.rs](https://github.com/clux/kube-rs/blob/be4ec4848a795556158602e9a6b7a996b6eed86e/src/api/resource.rs#L90-L133), and are currently unexported implementation details of `kube`. If they are useful, it's possible that these will be exposed in future versions of `kube`.
+The same can be said about our `Metadata`, `Resource<T>`, and `ResourceList<T>`. These are defined in [resource.rs](https://github.com/clux/kube-rs/blob/be4ec4848a795556158602e9a6b7a996b6eed86e/src/api/resource.rs#L90-L133), and are currently unexported implementation details of `kube`. If they are useful, it's possible that these will be exposed in future versions of `kube`.
+
+The plan is to test it out a bit further on data types beyond CRDs and see how well it generalizes, because it'd be a nice api to just use the resource names and groups we already know how to use from kube rbac rules.
 
 ### Library Divergence?
 What about the fact that there's now like 3 kube clients in rust land, all of which have the same config parsing and `x509` gunk?
@@ -219,9 +223,23 @@ Maybe there's a need for an actual crate that deals with `Configuration` alone s
 
 It might also be good if we could factor this subjective view of what a reflector should do out of a `kube` library, but that style of `sans-io` based setup would require some restructuring.
 
-### Yep. But it's midnight now
-This is fresh. There's likely dragons just over the corner, as well as missing features not ported from existing clients. Suggestions and ideas are [welcome](https://github.com/clux/kube-rs/issues).
+### But I was too tired to go on
+That's the state of things as of 30/04/19. There's likely dragons around the corner, as well as missing features not ported from existing clients. Suggestions and ideas are [welcome](https://github.com/clux/kube-rs/issues).
 
-It's very comforting at laest, to be able to follow a rust-native setup for kube; relying on generics + serde to populate most of the Api and have something clean.
+We are relying heavily on generic structs and [serde](https://serde.rs/) for generating [generic serialization/deserialization code](https://serde.rs/attr-bound.html) on top of that. While it's comforting to be able to have a clean, rust-native api for kube, it was a bit of a learning curve to implement some of this the first time around. Thankfully, the most complicated stuff that ended up being in `kube` was this `#[serde(bound)]`:
 
-Next steps is for me is to to port [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) (a simple operator in babylon's cloud) to use this client. Hopefully, after some battle testing, this stuff can be less <img alt="kubernetes alpha client" style="display:inline" src="https://img.shields.io/badge/kubernetes%20client-alpha-green.svg?style=plastic&colorA=306CE8"/>
+```rust
+#[derive(Deserialize)]
+pub struct ResourceList<T> where
+  T: Debug + Clone
+{
+    pub apiVersion: String,
+    pub kind: String,
+    pub metadata: Metadata,
+    #[serde(bound(deserialize = "Vec<T>: Deserialize<'de>"))]
+    pub items: Vec<T>,
+}
+```
+
+### Next steps
+Would be to port [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) (a small operator in babylon's cloud) to use this client. Hopefully, after some battle testing in a slightly more advanced setting, this stuff can be less.. <img alt="kubernetes alpha client" style="display:inline" src="https://img.shields.io/badge/kubernetes%20client-alpha-green.svg?style=plastic&colorA=306CE8"/>
