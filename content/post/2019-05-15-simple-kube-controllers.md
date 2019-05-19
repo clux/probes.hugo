@@ -24,6 +24,14 @@ unresolved:
 - reflectors on top of informers
 - new terminology?
 
+resources:
+- https://engineering.bitnami.com/articles/kubewatch-an-example-of-kubernetes-custom-controller.html
+- https://www.firehydrant.io/blog/stay-informed-with-kubernetes-informers/
+- fosdem clusterfuck: https://fosdem.org/2019/schedule/event/kubernetesclusterfuck/
+- https://kubernetes.io/docs/reference/using-api/api-concepts/
+- https://book.kubebuilder.io/
+- https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/
+
 ## Informers
 An informer in is just something that informs you of events. In go, you attach event handlers to it. In rust, we grab the event directly and you can pattern match the type of it directly for the same effect:
 
