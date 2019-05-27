@@ -88,8 +88,7 @@ pub struct ApiResource {
 }
 ```
 
-This struct basically implements `Into<Url> for ApiResource` internally.
-You don't have to remember all these values yourself, we have an enum of native types: `ResourceType` which implements `Into<ApiResource> for Resource`:
+This struct is responsible for creating the base url for the api resource internally. You don't have to remember all these values yourself, we have an enum of native types: `ResourceType` which implements `Into<ApiResource> for Resource`:
 
 ```rust
 let manual_deploys = ApiResource {
@@ -106,7 +105,7 @@ assert_eq!(ResourceType::v1Deploys(Some(ns)).into(), manual_deploys);
 
 ```rust
 #[derive(Default, Clone)]
-pub struct QueryParams {
+pub struct GetParams {
     pub field_selector: Option<String>,
     pub include_uninitialized: bool,
     pub label_selector: Option<String>,
@@ -114,8 +113,13 @@ pub struct QueryParams {
 }
 ```
 
+You can think of `ApiResource` and `GetParams` together implement `Into<Url>`, with a little hand-waving depending on whether you are listing, getting a single resource, a full list of resources etc.
+
+TODO: patch is weird. Put is simple. No special args except na
+TODO: individual verbs.
+
 ## Higher level abstractions
-You can use `ApiResource` and `QueryParams` to talk to the kube api directly, but for the common controller use-cases, you'd be better of using one of the higher level interfaces.
+You can use `ApiResource` and `GetParams` to talk to the kube api directly, but for the common controller use-cases, you'd be better of using one of the higher level interfaces.
 
 ### Informers
 An informer in is just something that informs you of events. In go, you attach event handler functions to it. In rust, we just pattern match the `WatchEvent` enum directly for a similar effect:
