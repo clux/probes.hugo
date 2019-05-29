@@ -63,38 +63,38 @@ Similarly, the query parameters optionals structs:
 
 These are a mouthful. And again, almost all of them have the same fields. Not going to go through the whole setup here, because the TL;DR is that once you build everything with the `types.go` assumptions in mind, a lot just falls into place.
 
-In fact, you can write a generic machinery that works entirely with `Object<P, U>`. Check out a subest of the current typed API looks li#ke:
+In fact, you can write a generic machinery that works entirely with `Object<P, U>`. Check out a subest of the current typed API looks like:
 
 ```rust
 impl<P, U> OpenApi<P, U> where
     P: Clone + DeserializeOwned,
     U: Clone + DeserializeOwned + Default,
 {
-    fn get(&self, name: &str) -> Result<(Object<P, U>, StatusCode)> {
+    fn get(&self, name: &str) -> Result<Object<P, U>> {
         let req = self.api.get(name)?;
         self.client.request::<Object<P, U>>(req)
     }
-    fn create(&self, pp: &PostParams, data: Vec<u8>) -> Result<(Object<P, U>, StatusCode)> {
+    fn create(&self, pp: &PostParams, data: Vec<u8>) -> Result<Object<P, U>> {
         let req = self.api.create(&pp, data)?;
         self.client.request::<Object<P, U>>(req)
     }
-    fn delete(&self, name: &str, dp: &DeleteParams) -> Result<(Object<P, U>, StatusCode)> {
+    fn delete(&self, name: &str, dp: &DeleteParams) -> Result<Object<P, U>> {
         let req = self.api.delete(name, &dp)?;
         self.client.request::<Object<P, U>>(req)
     }
-    fn list(&self, lp: &ListParams) -> Result<(ObjectList<Object<P, U>>, StatusCode)> {
+    fn list(&self, lp: &ListParams) -> Result<ObjectList<Object<P, U>>> {
         let req = self.api.list(&lp)?;
         self.client.request::<ObjectList<Object<P, U>>>(req)
     }
-    fn delete_collection(&self, lp: &ListParams) -> Result<(ObjectList<Object<P, U>>, StatusCode)> {
+    fn delete_collection(&self, lp: &ListParams) -> Result<ObjectList<Object<P, U>>> {
         let req = self.api.delete_collection(&lp)?;
         self.client.request::<ObjectList<Object<P, U>>>(req)
     }
-    fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>) -> Result<(Object<P, U>, StatusCode)> {
+    fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>) -> Result<Object<P, U>> {
         let req = self.api.patch(name, &pp, patch)?;
         self.client.request::<Object<P, U>>(req)
     }
-    fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<(Object<P, U>, StatusCode)> {
+    fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<Object<P, U>> {
         let req = self.api.replace(name, &pp, data)?;
         self.client.request::<Object<P, U>>(req)
     }
@@ -111,7 +111,7 @@ For `Pod` objects, you can get such an object with:
 
 ```rust
 let pods = OpenApi::v1Pod(client).within("kube-system");
-let (pl, _) = pods.list(&ListParams::default())?;
+let pl = pods.list(&ListParams::default())?;
 ```
 
 Which would return `pl` as an `ObjectList` of `Object<PodSpec, PodStatus>`, leveraging `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source for these large types.
@@ -127,7 +127,7 @@ pub struct FooSpec {
 
 #[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct FooStatus {
-    is_bad: bool,
+    isBad: bool,
 }
 ```
 
@@ -152,9 +152,8 @@ let f = json!({
     "metadata": { "name": "baz" },
     "spec": { "name": "baz", "info": "baz info" },
 });
-let (o, c) = foos.create(&pp, serde_json::to_vec(&f)?)?;
+let o = foos.create(&pp, serde_json::to_vec(&f)?)?;
 assert_eq!(f["metadata"]["name"], o.metadata.name)
-assert_eq!(c, StatusCode::CREATED);
 ```
 
 Easy enough. What about a [patch](https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#alternate-forms-of-the-kubectl-patch-command)?
@@ -169,8 +168,6 @@ assert_eq!(o.spec.name, "baz");
 ```
 
 Works fine. Although it's `patch --type=merge` which is the [only supported format atm](https://github.com/clux/kube-rs/issues/24).
-
-Note that we are always returning the `StatusCode`, even though this is generally only useful for when you need to distinguish `CREATED` from `OK` and `ACCEPTED`. The request would've been a success if you got an `Ok` anyway.
 
 ## Higher level abstractions
 With the core api abstractions in place. We can build Reflectors (structs that contain the logic to watch and cache state for a single resource type), and more. Since we talked about Reflector's earlier; Let's cover Informers.
