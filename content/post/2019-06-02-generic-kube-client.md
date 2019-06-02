@@ -112,7 +112,7 @@ While it might not seem like it with all this talk about generics, we are actual
 
 Just have a look at [how client-go presents Pod objects](https://github.com/kubernetes/client-go/blob/7b18d6600f6b0022e31c46b46875beffd85cc71a/kubernetes/typed/core/v1/pod.go#L39-L50). There's already a pretty clear overlap with the above signatures.
 
-Amusingly, Bryan Liles said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. Clearly, we have no idea what's actually going on deep inside of that library either (proof of mortality?), but we would like to add that it's still an amazing client library.
+Amusingly, Bryan Liles said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. Without sounding too much like undead sympathizers, we would like to add that it's still an amazing client library.
 
 At any rate, the terminology in this library should already by a lot more representative of what people expect after following the [canonical sources](https://kubernetes.io/docs/reference/using-api/api-concepts/) and taking inspiration from stuff like [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kube isn't as generic as we inadvertently promised it to be.
 
