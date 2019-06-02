@@ -1,41 +1,43 @@
 ---
-title: Kubernetes API in rust
-subtitle: A generic interface for the new rust client library
+title: A generic kubernetes client
+subtitle: Shaving a yak for a client-rust
 date: 2019-05-15
 tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
 
-It's been about a months since we released [`kube`](https://github.com/clux/kube-rs), a client library for kubernetes in rust and there is a [blog post at the time explaining the initial setup](./2019-04-29-rust-on-kubernetes.md). While we did explore some high level concepts at the time, everything was experimental: would the generic setup work with native objects? How far would it extend? Would it be a primarily deserializing type client? What about custom queries? Event handling? Surely, it'd be a fools errand to write an entire client library?
+It's been about a months since we released [`kube`](https://github.com/clux/kube-rs), an experimental client library for kubernetes in rust, and we even wrote a [blog post at the time explaining the initial setup](/post/2019-04-29-rust-on-kubernetes). While we did explore some high level concepts at the time, everything was uncertain: would the generic setup work with native objects? How far would it extend? Would it be a primarily deserializing type client? What about custom queries? Event handling? Surely, it'd be a fools errand to write an entire client library?
 
-With the last `0.7.0` release, it's becoming clear that the generic setup extends quite far and is quite useable. The terminology in the library is also a lot more representative of the Go world.
+With the last `0.9.0` release, it's now clear that the generic setup extends quite far. Unfortunately, this yak is hairy, even by yak standards.
 
 <!--more-->
 
-## Stepping back
+## Overview
 The reason this library even works at all, is the amount of homebrew generics present in the kubernetes API.
 
-Thanks to the hard work of many kubernetes engineers, pretty much any non-error object retrieved from the API of kubernetes can in fact be deserialized into this struct:
+Thanks to the hard work of many kubernetes engineers, most API returns can be serialized into some wrapper around this struct:
 
 ```rust
 #[derive(Deserialize, Serialize, Clone)]
 pub struct Object<T, U> where T: Clone, U: Clone
 {
-    #[serde(default, flatten, skip_serializing_if = "Option::is_none")]
-    pub typemeta: Option<TypeMeta>,
-    pub metadata: Metadata,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apiVersion: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<String>,
+    pub metadata: ObjectMeta,
     pub spec: T,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status: Option<U>,
 }
 ```
 
-You can infer a lot of the inner api workings by looking at [kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go). Kris Nova's 2019 FOSDEM talk on [the internal clusterfuck of kubernetes]
-(https://fosdem.org/2019/schedule/event/kubernetesclusterfuck/) also provides additional context.
+You can infer a lot of the inner api workings by looking at [apimachinery/meta/types.go](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go). Kris Nova's 2019 FOSDEM talk on [the internal clusterfuck of kubernetes]
+(https://fosdem.org/2019/schedule/event/kubernetesclusterfuck/) also provides a much welcome, rant-flavoured context.
 
-By making these similar generic mappings we can provide a much simpler interface to what the generated openapi bindings can provide (albeit with a few holes at the moment).
+By taking advantage of this construct, and similar generic api concepts we can provide a much simpler interface to what the generated openapi bindings can provide, but with some caveats that we'll cover later.
 
-## Parsing + Querying
+## More object patterns
 Let's compare some openapi generated structs:
 
 - [PodList](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodList.html)
@@ -49,7 +51,7 @@ All with identical contents. You could just define this generic struct:
 pub struct ObjectList<T> where
   T: Clone
 {
-    pub metadata: Metadata,
+    pub metadata: ListMeta,
     #[serde(bound(deserialize = "Vec<T>: Deserialize<'de>"))]
     pub items: Vec<T>,
 }
@@ -61,62 +63,74 @@ Similarly, the query parameters optionals structs:
 - [ListPodForAllNamespacesOptional](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.ListPodForAllNamespacesOptional.html)
 - [ListDeploymentForAllNamespacesOptional](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/apps/v1/struct.ListDeploymentForAllNamespacesOptional.html)
 
-These are a mouthful. And again, almost all of them have the same fields. Not going to go through the whole setup here, because the TL;DR is that once you build everything with the `types.go` assumptions in mind, a lot just falls into place.
+These are a mouthful. And again, almost all of them have the same fields. Not going to go through the whole setup here, because the TL;DR is that once you build everything with the `types.go` assumptions in mind, a lot just falls into place and we can write our own generic api machinery.
 
-In fact, you can write a generic machinery that works entirely with `Object<P, U>`. Check out a subest of the current typed API looks like:
+## Api machinery
+If you follow this rabbit hole, you're likely to end up with something like the following type signatures:
 
 ```rust
-impl<P, U> OpenApi<P, U> where
+impl<P, U> Api<P, U> where
     P: Clone + DeserializeOwned,
     U: Clone + DeserializeOwned + Default,
 {
-    fn get(&self, name: &str) -> Result<Object<P, U>> {
-        let req = self.api.get(name)?;
-        self.client.request::<Object<P, U>>(req)
-    }
-    fn create(&self, pp: &PostParams, data: Vec<u8>) -> Result<Object<P, U>> {
-        let req = self.api.create(&pp, data)?;
-        self.client.request::<Object<P, U>>(req)
-    }
-    fn delete(&self, name: &str, dp: &DeleteParams) -> Result<Object<P, U>> {
-        let req = self.api.delete(name, &dp)?;
-        self.client.request::<Object<P, U>>(req)
-    }
-    fn list(&self, lp: &ListParams) -> Result<ObjectList<Object<P, U>>> {
-        let req = self.api.list(&lp)?;
-        self.client.request::<ObjectList<Object<P, U>>>(req)
-    }
-    fn delete_collection(&self, lp: &ListParams) -> Result<ObjectList<Object<P, U>>> {
-        let req = self.api.delete_collection(&lp)?;
-        self.client.request::<ObjectList<Object<P, U>>>(req)
-    }
-    fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>) -> Result<Object<P, U>> {
-        let req = self.api.patch(name, &pp, patch)?;
-        self.client.request::<Object<P, U>>(req)
-    }
-    fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<Object<P, U>> {
-        let req = self.api.replace(name, &pp, data)?;
-        self.client.request::<Object<P, U>>(req)
-    }
+  fn get(&self, name: &str)
+    -> Result<Object<P, U>> {}
+
+  fn create(&self, pp: &PostParams, data: Vec<u8>)
+    -> Result<Object<P, U>> {}
+
+  fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>)
+    -> Result<Object<P, U>> {}
+
+  fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>)
+    -> Result<Object<P, U>> {}
+
+  fn watch(&self, lp: &ListParams, version: &str)
+    -> Result<Vec<WatchEvent<P, U>>> {}
+
+  fn list(&self, lp: &ListParams)
+    -> Result<ObjectList<Object<P, U>>> {}
+
+  fn delete_collection(&self, lp: &ListParams)
+    -> Result<Either<ObjectList<Object<P, U>>, Status>> {}
+
+  fn delete(&self, name: &str, dp: &DeleteParams)
+    -> Result<Either<Object<P, U>, Status>> {}
+}
 ```
 
-Everything takes the same `Params` (see the [docs](https://clux.github.io/kube-rs/kube/api/index.html) for details), and these can easily be converted into `Request` objects (containers for a url, query params, and data).
+These are the main query methods on our core `Api` ([docs](https://clux.github.io/kube-rs/kube/api/struct.Api.html) / [src](https://github.com/clux/kube-rs/blob/master/src/api/typed.rs)). Observe that similar types of requests take the same `*Params` objects to configure the queries, and the return types have clear patterns.
 
-The real satisfying part here, is how you can just tell `client.request` to parse the `list` of objects as an `ObjectList<Object<P, U>>`.
-
-## Api Usage
-Using the `Api` now amounts to choosing one of the constructors for the native type you want (or perhaps a `customResource`) and use the verbs listed above. Thus, it actually nicely [overlaps quite a bit with how it's presented in client-go](https://github.com/kubernetes/client-go/blob/7b18d6600f6b0022e31c46b46875beffd85cc71a/kubernetes/typed/core/v1/pod.go#L39-L50).
-
-For `Pod` objects, you can get such an object with:
+There's isn't some hidden de-multiplexing on the parsing side here either. When calling `list`, we really just [turbofish](https://turbo.fish/) that type in for `serde` to deal with internally:
 
 ```rust
-let pods = OpenApi::v1Pod(client).within("kube-system");
-let pl = pods.list(&ListParams::default())?;
+self.client.request::<ObjectList<Object<P, U>>>(req)
 ```
 
-Which would return `pl` as an `ObjectList` of `Object<PodSpec, PodStatus>`, leveraging `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source for these large types.
+### client-go semantics
+While it might not seem like it with all this talk about generics, we are actually trying to model things a little closer to `client-go` and internal kube `apimachinery` (where it makes sense).
 
-You can define these structs yourself however, and for a custom resource, you are required to do so:
+Just have a look at [how client-go presents Pod objects](https://github.com/kubernetes/client-go/blob/7b18d6600f6b0022e31c46b46875beffd85cc71a/kubernetes/typed/core/v1/pod.go#L39-L50). There's already a pretty clear overlap with the above signatures.
+
+Amusingly, Bryan Liles said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. Clearly, we have no idea what's actually going on deep inside of that library either (proof of mortality?), but we would like to add that it's still an amazing client library.
+
+At any rate, the terminology in this library should already by a lot more representative of what people expect after following the [canonical sources](https://kubernetes.io/docs/reference/using-api/api-concepts/) and taking inspiration from stuff like [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kube isn't as generic as we inadvertently promised it to be.
+
+Enough waffle. Let's look at how to use it.
+
+## Api Usage
+Using the `Api` now amounts to choosing one of the constructors for the native type you want (or perhaps a `customResource`) and use the verbs listed above.
+
+For `Pod` objects, you can construct and use such an object like:
+
+```rust
+let pods = Api::v1Pod(client).within("kube-system");
+let podlist = pods.list(&ListParams::default())?;
+```
+
+Here the `podlist` var is an `ObjectList` of `Object<PodSpec, PodStatus>`; leveraging `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source for these large types.
+
+You [can define these structs yourself](https://github.com/clux/kube-rs#raw-api) if you only need parts of the spec. But let's talk about [CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/), because you are required to define everything about them anyway:
 
 ```rust
 #[derive(Deserialize, Serialize, Clone)]
@@ -131,13 +145,13 @@ pub struct FooStatus {
 }
 ```
 
-but then you can do all the operations on it after telling `kube` where to look:
+Thankfully, this is all you need to get your code generation. No external tools to shell out to, `cargo build` does it for you. You can the construct your `Api` interface as follows:
 
 ```rust
-let foos : OpenApi<FooSpec, FooStatus> = OpenApi::customResource(client, "foos")
+let foos : Api<FooSpec, FooStatus> = Api::customResource(client, "foos")
     .version("v1")
     .group("clux.dev")
-    .within("dev");
+    .within("default");
 
 let baz = foos.get("baz")?;
 assert_eq!(baz.spec.info, "baz info");
@@ -162,7 +176,7 @@ Easy enough. What about a [patch](https://kubernetes.io/docs/tasks/run-applicati
 let patch = json!({
     "spec": { "info": "patched baz" }
 });
-let (o, _) = foos.patch("baz", &pp, serde_json::to_vec(&patch)?)?;
+let o = foos.patch("baz", &pp, serde_json::to_vec(&patch)?)?;
 assert_eq!(o.spec.info, "patched baz");
 assert_eq!(o.spec.name, "baz");
 ```
@@ -170,22 +184,72 @@ assert_eq!(o.spec.name, "baz");
 Works fine. Although it's `patch --type=merge` which is the [only supported format atm](https://github.com/clux/kube-rs/issues/24).
 
 ## Higher level abstractions
-With the core api abstractions in place. We can build Reflectors (structs that contain the logic to watch and cache state for a single resource type), and more. Since we talked about Reflector's earlier; Let's cover Informers.
+With the core api abstractions in place, we can easily build Reflectors (structs that contain the logic to watch and cache state for a single resource type), and more. Since we [talked about Reflector's earlier](/post/2019-04-29-rust-on-kubernetes); Let's cover Informers.
 
 ### Informers
-An informer in is just something that informs you of events. In go, you attach event handler functions to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
+An informer for a resource is an event notifier for that resource. It calls `watch` when you ask it to, and it informs you of new events. In go, you attach event handler functions to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
 
 ```rust
 fn handle_nodes(client: &APIClient, ev: WatchEvent<NodeSpec, NodeStatus>) -> Result<(), failure::Error> {
     match ev {
-        WatchEvent::Added(r) => {},
-        WatchEvent::Modified(r) => {},
-        WatchEvent::Deleted(r) => {},
+        WatchEvent::Added(o) => {},
+        WatchEvent::Modified(o) => {},
+        WatchEvent::Deleted(o) => {},
         WatchEvent::Error(e) => {}
     }
     Ok(())
 }
 ```
+
+The  `o` being destructured here is an `Object<NodeSpec, NodeStatus>`. See [informer examples](https://github.com/clux/kube-rs/blob/master/examples/) for doing something with the objects.
+
+To actually initialize and drive a node informer, you can do something like this:
+
+```rust
+fn main() -> Result<(), failure::Error> {
+    let config = config::load_kube_config().expect("failed to load kubeconfig");
+    let client = APIClient::new(config);
+    let nodes = RawApi::v1Node();
+    let ni = Informer::raw(client.clone(), nodes)
+        .labels("role=worker")
+        .init()?;
+
+    loop {
+        ni.poll()?;
+
+        while let Some(event) = ni.pop() {
+            handle_nodes(&client, event)?;
+        }
+    }
+}
+```
+
+The harder parts typically come if you need a separate threads; like one to handle polling, one for handling events async, perhaps you are interacting with a set of threads in an tokio/actix runtime.
+
+You should handle these cases (see [google's best practices tip #5](https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps)), and it's not hard. You can give out a `.clone()` of an `Informer` to the runtime, for instance as `actix` state with: `App::new().data(informer.clone())`, and you can poll your own clone separately. The [controller-rs](https://github.com/clux/controller-rs) example shows [how to encapsulate an informer](https://github.com/clux/controller-rs/blob/master/src/state.rs) with [actix](https://github.com/clux/controller-rs/blob/5db6caca13f4a33d168c1abe7c94a02559d4f46e/src/main.rs#L20-L51) (using the 1.0.0 rc).
+
+You should end up with a complete controller in a [7MB alpine image](https://github.com/clux/controller-rs/blob/master/Dockerfile).
+
+### Informer Internals
+Informers are just wrappers around a `watch` call that keeps track of `resouceVersion`. There's very little inside of it:
+
+```rust
+#[derive(Clone)]
+pub struct Informer<P, U> where
+    P: Clone + DeserializeOwned,
+    U: Clone + DeserializeOwned + Default,
+{
+    events: Arc<RwLock<WatchQueue<P, U>>>,
+    version: Arc<RwLock<String>>,
+    client: APIClient,
+    resource: RawApi,
+    params: ListParams,
+}
+```
+
+If it wasn't for the internal event queue (that users are meant to consume), we could easily have built `Reflector` on top of `Informer`, but it felt a bit wasteful to do so.
+
+As with `Reflector`, the underlying enum that captures the [more awkward go WatchEvent](https://github.com/kubernetes/apimachinery/blob/594fc14b6f143d963ea2c8132e09e73fe244b6c9/pkg/apis/meta/v1/watch.go) is this:
 
 ```rust
 #[derive(Deserialize, Serialize, Clone)]
@@ -200,101 +264,49 @@ pub enum WatchEvent<P, U> where
 }
 ```
 
+It was private when we only supported `Reflector`, but now it's the main interface.
 
-Where the `r` being pattern-matched here is a `Resource<NodeSpec, NodeStatus>`, i.e. it'll be our generic version of `k8s_openapi::api::core::v1::Node`. See the various [informer examples](https://github.com/clux/kube-rs/blob/master/examples/) for ideas on how to use the data.
+## Drawbacks
+Up until this point, things have been painted with a a pretty rosy brush. Let's knock it down a couple of notches.
 
-To actually initialize and drive a node informer (`: Informer<NodeSpec, NodeStatus>`), you can do something like this:
+### Everything is camelCase!
+Yeah.. Global `#![allow(non_snake_case)]`. It's actually less helpful to map cases to our own language convention when you need to cross reference values with the [main API docs using Go conventions](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14). Do people have strong feelings about this?
 
-```rust
-fn main() -> Result<(), failure::Error> {
-    let config = config::load_kube_config().expect("failed to load kubeconfig");
-    let client = APIClient::new(config);
+### Plenty of stuff left
+While many of the remaining tasks are not too difficult, there are a lot of them:
 
-    let nodes = ResourceType::Nodes;
-    let inf = Informer::new(client.clone(), nodes.into())
-        .labels("role=worker")
-        .init()?;
+- [integrating all the remaining native objects](https://github.com/clux/kube-rs/issues/25) (can be done one-by-one)
+- more than the only [one patch strategy supported](https://github.com/clux/kube-rs/issues/24)
+- [backoff crate](https://docs.rs/backoff/0.1.5/backoff/) use for [exponential backoff](https://github.com/clux/kube-rs/issues/34) => less cascady network failures
+- support [local kubeconfig auth providers](https://github.com/clux/kube-rs/issues/19)
 
-    loop {
-        inf.poll()?;
+The last one is a huge faff, with differences across providers, all in the name of avoiding [impersonating a service accounts when developing locally](/post/2019-03-31-impersonating-kube-accounts).
 
-        while let Some(event) = inf.pop() {
-            handle_nodes(&client, event)?;
-        }
-    }
-}
-```
+### Delete returns an Either
+The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case. Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
 
-If you need a separate threads, like one to handle polling and events, and another set of threads to support a tokio/actix runtime, then you can give out a `.clone()` of an `Informer` to the runtime, for instance as actix state with: `App::with_state(informer.clone())`, and you can poll your own clone separately. The `Informer` synchronizes its internal event cache and current `resourceVersion` after polling and popping events. See [controller-rs](https://github.com/clux/controller-rs) for a full fledged actix controller example that deploys with a [7MB alpine image](https://github.com/clux/controller-rs/blob/master/Dockerfile).
+### Some resources are true snowflakes
+While we do handle the [generic subresources](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#subresources) like [Scale](https://github.com/clux/kube-rs/blob/c14ef965af7d68d37e6acb343d02ef5841c5bf37/src/api/typed.rs#L126-L142), some objects has a bunch of special subresources associated with them.
 
-resolved shit:
-- parameters exposed generically
-- native objects exposed generically
-- interspersing kube api calls ez now
-- informers
+The most common example is `v1Pod`, which has `pods/attach`, `pods/portforward`, `pods/eviction`, `pods/exec`, `pods/log`, to name a few. Similarly, we can `drain` or `cordon` a `v1Node`. So we clearly have non-standard verbs and non-standard nouns.
 
-unresolved:
-- reflectors on top of informers
-- new terminology?
+Now, we **can** implement a `generic_verb_noun` thing on `RawApi` ([see #30](https://github.com/clux/kube-rs/issues/30)) for our supported **stable apis** (because let's be realistic here).
 
-resources:
-- https://engineering.bitnami.com/articles/kubewatch-an-example-of-kubernetes-custom-controller.html
-- https://www.firehydrant.io/blog/stay-informed-with-kubernetes-informers/
-- https://kubernetes.io/docs/reference/using-api/api-concepts/
-- https://book.kubebuilder.io/
-- https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/
+It obviously breaks the generic model somewhat, but thankfully only in the areas you'd expect it to break.
 
-## Informers
-An informer in is just something that informs you of events. In go, you attach event handlers to it. In rust, we grab the event directly and you can pattern match the type of it directly for the same effect:
+### Not everything follows the Spec + Status model
+Out of everything this one ([#35](https://github.com/clux/kube-rs/issues/35)) hurts the most. A bunch of native objects do not use `Spec` and `Status` at all. Unfortunately, they are also so common they are hard to disregard:
 
-```rust
-fn handle_nodes(client: &APIClient, ev: WatchEvent<NodeSpec, NodeStatus>) -> Result<(), failure::Error> {
-    match ev {
-        WatchEvent::Added(o) => {
-            info!("New Node: {}", o.spec.provider_id.unwrap());
-        },
-        WatchEvent::Modified(o) => {
-            if let Some(true) = o.spec.unschedulable {
-                let failed = o.status.conditions.unwrap().into_iter().filter(|c| {
-                    (c.status == "True" && c.type_ != "Ready") ||
-                    (c.status == "False" &&  c.type_ == "Ready")
-                }).map(|c| c.message).collect::<Vec<_>>(); // failed statuses
-                warn!("Unschedulable Node: {}, ({:?})", o.metadata.name, failed);
-                // Separate API call with client to find events related to this node
-                let sel = format!("involvedObject.kind=Node,involvedObject.name={}", o.metadata.name);
-                let opts = ListEventForAllNamespacesOptional {
-                    field_selector: Some(&sel),
-                    ..Default::default()
-                };
-                let req = Event::list_event_for_all_namespaces(opts)?.0;
-                let res = client.request::<Event>(req)?;
-                warn!("Node events: {:?}", res);
-            }
-        },
-        WatchEvent::Deleted(o) => {
-            warn!("Deleted node: {} ({:?}) running {:?} with labels: {:?}",
-                o.metadata.name, o.spec.provider_id.unwrap(),
-                o.status.conditions.unwrap(),
-                o.metadata.labels,
-            );
-        },
-        WatchEvent::Error(e) => {
-            warn!("Error event: {:?}", e);
-        }
-    }
-    Ok(())
-}
-```
+- [RoleBinding](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/rbac/v1/struct.RoleBinding.html)
+- [Role](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/rbac/v1/struct.Role.html)
+- [ConfigMap](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.ConfigMap.html)
+- [Endpoints](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.Endpoints.html)
+- [Event](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/events/v1beta1/struct.Event.html)
+- [ServiceAccount](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.ServiceAccount.html)
 
+There's just no good solution to this at the moment. You can't build a `Reflector<RoleBinding>`. Can you even do that in `client-go`? Do we have to `mod snowflake` for this?
 
-## abstracting
+## Help
+Going forward, further improvement is going to take [some help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). We'll try to maintain this as best we can, but it's strictly best effort.
 
-Controllers in go can be slightly awkward to write because of all the indirection; (shared informers -> blah)
-
-
-## Lacks
-### Missing native objects
-[Not all standard api-resources have been filled out yet!](https://github.com/clux/kube-rs/issues/25). Help is greatly appreciated.
-
-### Missing special case nouns
-Verbs defined above Object. Thus there's a current lack on working with special resources such as `pods/exec` or `pods/log`. See [#30](https://github.com/clux/kube-rs/issues/30).
+If you do use this, and you work in the open, [please let us link to your controllers for examples](https://github.com/clux/kube-rs/issues/12). If you are familiar with rust, the generated [docs](https://clux.github.io/kube-rs/kube/api/index.html) + [examples](https://github.com/clux/kube-rs/tree/master/examples) should get you started.
