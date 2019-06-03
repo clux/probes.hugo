@@ -304,7 +304,7 @@ Out of everything this one ([#35](https://github.com/clux/kube-rs/issues/35)) hu
 - [Event](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/events/v1beta1/struct.Event.html)
 - [ServiceAccount](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.ServiceAccount.html)
 
-There's just no good solution to this at the moment. You can't build a `Reflector<RoleBinding>`. Can you even do that in `client-go`? Do we have to `mod snowflake` for this?
+There's just no good solution to this at the moment. You can't build a `Reflector<RoleBinding>`. Can you even do that in `client-go`? Is this a `mod snowflake` situation, or do we have to lift the abstraction up one level?
 
 ## Help
 Going forward, further improvement is going to take [some help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). Hopefully, it'll end up being useful to some. With some familiarity with rust, the generated [docs](https://clux.github.io/kube-rs/kube/api/index.html) + [examples](https://github.com/clux/kube-rs/tree/master/examples) should get you started.
