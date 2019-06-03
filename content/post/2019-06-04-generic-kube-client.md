@@ -1,7 +1,7 @@
 ---
 title: A generic kubernetes client
 subtitle: Shaving a yak for a client-rust
-date: 2019-06-03
+date: 2019-06-04
 tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
