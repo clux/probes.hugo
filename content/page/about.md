@@ -6,7 +6,7 @@ comments: false
 
 My name is Eirik and this is an attempt to collect my thoughts, and provide the occasional guide to software.
 
-Posts herein are my own opinions and not those of my employer. Words like **we** or **us** is often used in the the mathematical (collaborative) sense and does not necessarily mean consensus.
+Posts herein are my own opinions and not those of my employer.
 
 Below contains a bit about who I am / what I have done / like to do. I.e. a brief summary and status of various creative and dexterous endeavours that I am generally happy to spend / have spent time on.
 
