@@ -128,9 +128,9 @@ let pods = Api::v1Pod(client).within("kube-system");
 let podlist = pods.list(&ListParams::default())?;
 ```
 
-Here the `podlist` var is an `ObjectList` of `Object<PodSpec, PodStatus>`; leveraging `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source for these large types.
+Here the `podlist` var is an `ObjectList` of `Object<PodSpec, PodStatus>`, leveraging `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source for these large types.
 
-You [can define these structs yourself](https://github.com/clux/kube-rs#raw-api) if you only need parts of the spec. But let's talk about [CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/), because you are required to define everything about them anyway:
+Now, you [can define these structs yourself](https://github.com/clux/kube-rs#raw-api) if you only need parts of the spec. But let's do that for [CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/), because you are required to define everything about them anyway:
 
 ```rust
 #[derive(Deserialize, Serialize, Clone)]
@@ -145,7 +145,7 @@ pub struct FooStatus {
 }
 ```
 
-Thankfully, this is all you need to get your code generation. No external tools to shell out to, `cargo build` does it for you. You can the construct your `Api` interface as follows:
+This is all you need to get your code generation. No external tools to shell out to, `cargo build` gives you your json serialization/deserialization from this. With it, you can the construct and use your `customResource` as follows:
 
 ```rust
 let foos : Api<FooSpec, FooStatus> = Api::customResource(client, "foos")
@@ -157,7 +157,7 @@ let baz = foos.get("baz")?;
 assert_eq!(baz.spec.info, "baz info");
 ```
 
-Being able to parse straight into your typed structs is nice, what about posting and patching? For brevity, let's `create` and `patch` a `Foo` using the [serde_json json macro](https://docs.serde.rs/serde_json/macro.json.html):
+Here we are parsing straight into the typed structs, so what about posting and patching? For brevity, let's `create` and `patch` a `Foo` using the [serde_json macro](https://docs.serde.rs/serde_json/macro.json.html):
 
 ```rust
 let f = json!({
@@ -170,7 +170,7 @@ let o = foos.create(&pp, serde_json::to_vec(&f)?)?;
 assert_eq!(f["metadata"]["name"], o.metadata.name)
 ```
 
-Easy enough. What about a [patch](https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#alternate-forms-of-the-kubectl-patch-command)?
+Easy enough (if [a little verbose](https://github.com/clux/kube-rs/issues/31)). What about a [patch](https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#alternate-forms-of-the-kubectl-patch-command)?
 
 ```rust
 let patch = json!({
@@ -181,7 +181,7 @@ assert_eq!(o.spec.info, "patched baz");
 assert_eq!(o.spec.name, "baz");
 ```
 
-Works fine. Although it's `patch --type=merge` which is the [only supported format atm](https://github.com/clux/kube-rs/issues/24).
+Here `json!` really shines. You can also reference variables and [you can attach structs to keys](https://github.com/clux/kube-rs/blob/c14ef965af7d68d37e6acb343d02ef5841c5bf37/examples/crd_openapi.rs#L140-L146) within.
 
 ## Higher level abstractions
 With the core api abstractions in place, we can easily build Reflectors (structs that contain the logic to watch and cache state for a single resource type), and more. Since we [talked about Reflector's earlier](/post/2019-04-29-rust-on-kubernetes); Let's cover Informers.
@@ -276,7 +276,7 @@ Yeah.. Global `#![allow(non_snake_case)]`. It's actually less helpful to map cas
 While many of the remaining tasks are not too difficult, there are a lot of them:
 
 - [integrating all the remaining native objects](https://github.com/clux/kube-rs/issues/25) (can be done one-by-one)
-- more than the only [one patch strategy supported](https://github.com/clux/kube-rs/issues/24)
+- support more than [`patch --type=merge`](https://github.com/clux/kube-rs/issues/24)
 - [backoff crate](https://docs.rs/backoff/0.1.5/backoff/) use for [exponential backoff](https://github.com/clux/kube-rs/issues/34) => less cascady network failures
 - support [local kubeconfig auth providers](https://github.com/clux/kube-rs/issues/19)
 
@@ -307,6 +307,8 @@ Out of everything this one ([#35](https://github.com/clux/kube-rs/issues/35)) hu
 There's just no good solution to this at the moment. You can't build a `Reflector<RoleBinding>`. Can you even do that in `client-go`? Do we have to `mod snowflake` for this?
 
 ## Help
-Going forward, further improvement is going to take [some help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). We'll try to maintain this as best we can, but it's strictly best effort.
+Going forward, further improvement is going to take [some help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). Hopefully, it'll end up being useful to some. With some familiarity with rust, the generated [docs](https://clux.github.io/kube-rs/kube/api/index.html) + [examples](https://github.com/clux/kube-rs/tree/master/examples) should get you started.
 
-If you do use this, and you work in the open, [please let us link to your controllers for examples](https://github.com/clux/kube-rs/issues/12). If you are familiar with rust, the generated [docs](https://clux.github.io/kube-rs/kube/api/index.html) + [examples](https://github.com/clux/kube-rs/tree/master/examples) should get you started.
+Anyway, if you do end up using this, and you work in the open, [please let us link to your controllers for examples](https://github.com/clux/kube-rs/issues/12).
+
+</🐂💈>
