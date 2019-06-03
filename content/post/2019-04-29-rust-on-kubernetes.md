@@ -251,3 +251,20 @@ pub struct ResourceList<T> where
 
 ### Next steps
 Would be to port [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) (a small operator in babylon's cloud) to use this client. Hopefully, after some battle testing in a slightly more advanced setting, this stuff can be less <img alt="kubernetes alpha client" style="display:inline" src="https://img.shields.io/badge/kubernetes%20client-alpha-green.svg?style=plastic&colorA=306CE8"/> mode.
+
+### EDIT: Resolved in kube 0.6.0
+The above is untouched, but out of date now. Here are the major changes in `0.6.0`:
+
+- the `Named` trait deemed unnecessary (just using `metadata.name` instead)
+- Native kube objects are supported
+- `WatchEvent` type has been changed and exposed via a new `Informer` struct
+- handling events directly is now possible
+- polling is easier now
+
+Another thing that's been highlighted is the misuse of kubernetes terminology. This is more describing a controller than an operator.
+
+- `operator-rs` has been renamed to [controller-rs](https://github.com/clux/controller-rs)
+
+Additionally, [raftcat was easily portable to use Reflectors](https://github.com/Babylonpartners/shipcat/blob/1e477411e8cb47dc97037fd8993278995a8f3f3e/raftcat/src/state.rs#L28-L40) and so provides a bigger example.
+
+See the follow-up blog post on this.
