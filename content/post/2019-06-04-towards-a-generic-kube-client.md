@@ -70,18 +70,18 @@ If you follow this rabbit hole, you can end up with the following type signature
 impl<K> Api<K> where
     K: Clone + DeserializeOwned + KubeObject
 {
-  fn get(&self, name: &str) -> Result<K>;
-  fn create(&self, pp: &PostParams, data: Vec<u8>) -> Result<K>;
-  fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>) -> Result<K>;
-  fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<K>;
-  fn watch(&self, lp: &ListParams, version: &str) -> Result<Vec<WatchEvent<P, U>>>;
-  fn list(&self, lp: &ListParams) -> Result<ObjectList<K>>;
-  fn delete_collection(&self, lp: &ListParams) -> Result<Either<ObjectList<K>, Status>>;
-  fn delete(&self, name: &str, dp: &DeleteParams) -> Result<Either<K, Status>>;
+    fn get(&self, name: &str) -> Result<K>;
+    fn create(&self, pp: &PostParams, data: Vec<u8>) -> Result<K>;
+    fn patch(&self, name: &str, pp: &PostParams, patch: Vec<u8>) -> Result<K>;
+    fn replace(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<K>;
+    fn watch(&self, lp: &ListParams, version: &str) -> Result<Vec<WatchEvent<P, U>>>;
+    fn list(&self, lp: &ListParams) -> Result<ObjectList<K>>;
+    fn delete_collection(&self, lp: &ListParams) -> Result<Either<ObjectList<K>, Status>>;
+    fn delete(&self, name: &str, dp: &DeleteParams) -> Result<Either<K, Status>>;
 
-  fn get_status(&self, name: &str) -> Result<K>;
-  fn patch_status(&self, name: &str, pp: &PostParams, patch: Vec<u8>) ->Result<K>;
-  fn replace_status(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<K>;
+    fn get_status(&self, name: &str) -> Result<K>;
+    fn patch_status(&self, name: &str, pp: &PostParams, patch: Vec<u8>) ->Result<K>;
+    fn replace_status(&self, name: &str, pp: &PostParams, data: Vec<u8>) -> Result<K>;
 }
 ```
 
