@@ -269,7 +269,7 @@ Yeah.. `#![allow(non_snake_case)]`. It's arguably more helpful to be able to eas
 That said, we currently rely on `k8s-openapi` (and that crate maps cases..). Do people have strong feelings about this?
 
 ### Delete returns an Either
-The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case. Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
+The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case ([crd example](https://github.com/clux/kube-rs/blob/3d1562d5f3e1d06dc599b05cbf6dc44176d710e0/examples/crd_openapi.rs#L40-L52)). Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
 
 ### Some resources are true snowflakes
 While we do handle the [generic subresources](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#subresources) like [Scale](https://github.com/clux/kube-rs/blob/c14ef965af7d68d37e6acb343d02ef5841c5bf37/src/api/typed.rs#L126-L142), some objects has a bunch of special subresources associated with them.
