@@ -33,7 +33,7 @@ pub struct Object<T, U> where T: Clone, U: Clone
 You can infer a lot of the inner api workings by looking at [apimachinery/meta/types.go](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go). Kris Nova's 2019 FOSDEM talk on [the internal clusterfuck of kubernetes]
 (https://fosdem.org/2019/schedule/event/kubernetesclusterfuck/) also provides a much welcome, rant-flavoured context.
 
-By taking advantage of this construct, and similar generic api concepts we can provide a much simpler interface to what the generated openapi bindings can provide, but with some caveats that we'll cover later.
+By taking advantage of this, we can provide a much simpler interface to what the generated openapi bindings can provide. But it requires some other abstractions:
 
 ## More object patterns
 Let's compare some openapi generated structs:
@@ -85,15 +85,15 @@ impl<K> Api<K> where
 }
 ```
 
-These are the _main_ query methods on our core `Api` ([docs](https://clux.github.io/kube-rs/kube/api/struct.Api.html) / [src](https://github.com/clux/kube-rs/blob/master/src/api/typed.rs)). Observe that similar types of requests take the same `*Params` objects to configure queries. Return types also have clear patterns.
+These are the _main_ query methods on our core `Api` ([docs](https://clux.github.io/kube-rs/kube/api/struct.Api.html) / [src](https://github.com/clux/kube-rs/blob/master/src/api/typed.rs)). Observe that similar types of requests take the same `*Params` objects to configure queries. Return types have clear patterns, and serialization happens before entering the `Api`.
 
-There's is no hidden de-multiplexing on the parsing side either. When calling `list`, we just [turbofish](https://turbo.fish/) that type in for `serde` to deal with internally:
+There's is no hidden de-multiplexing on the parsing side. When calling `list`, we just [turbofish](https://turbo.fish/) that type in for `serde` to deal with internally:
 
 ```rust
-self.client.request::<ObjectList<Object<P, U>>>(req)
+self.client.request::<ObjectList<K>>(req)
 ```
 
-There is a new required trait `KubeObject` to deal with, but this has an automatic blanket implementation this for `K = Object<P, U>`.
+Where, typically `K = Object<P, U>`, but actually; `K` is something implementing a `KubeObject` trait. This is our one required trait, and you shouldn't don't have to deal with it because of an automatic blanket implementation for `K = Object<P, U>`.
 
 ### client-go semantics
 While it might not seem like it with all this talk about generics; we are actually trying to model things a little closer to `client-go` and internal kube `apimachinery` (insofar as it makes sense).
@@ -102,21 +102,23 @@ Just have a look at how `client-go` presents [Pod objects](https://github.com/ku
 
 Maybe you are in the camp with `Bryan Liles`, who said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. It's certainly a large library (sitting at ~80k lines of mostly go), but amongst the [somewhat cruft-filled chunks](https://godoc.org/k8s.io/client-go/tools/cache), it does embed some [really interesting patterns](https://godoc.org/k8s.io/client-go/util/retry#RetryOnConflict) to consider.
 
-The terminology in this library should therefore be a lot more familiar now. Not only are we trying to use ideas from `client-go`, we follow the [api-concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/) better, and take inspiration from frameworks such as [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kubernetes isn't as generic as we inadvertently promised it to be.
+The terminology in this library should therefore be a lot more familiar now. Not only are using ideas from `client-go`, our core assumptions come from [api-concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/), and we otherwise try to take inspiration from frameworks such as [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kubernetes isn't as generic as we inadvertently promised it to be.
 
-But delay that sad tale; let's look at how to use the `Api`:
+But delay that tale; let's first look at how to use the `Api`:
 
 ## Api Usage
-Using the `Api` now amounts to choosing one of the constructors for the native types you want (or perhaps a `customResource`) and use the verbs listed above.
+Using the `Api` now amounts to choosing one of the constructors for the native / custom type(s) you want and use with the verbs listed above.
 
 For `Pod` objects, you can construct and use such an object like:
 
 ```rust
 let pods = Api::v1Pod(client).within("kube-system");
-let podlist = pods.list(&ListParams::default())?;
+for p in pods.list(&ListParams::default())?.items {
+    println!("Got Pod: {}", p.metadata.name);
+}
 ```
 
-Here the `podlist` var is an `ObjectList` of `Object<PodSpec, PodStatus>`. This leverages `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source of these large types.
+Here the `p` is an `Object<PodSpec, PodStatus>`. This leverages `k8s-openapi` for [PodSpec](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodSpec.html) and [PodStatus](https://docs.rs/k8s-openapi/0.4.0/k8s_openapi/api/core/v1/struct.PodStatus.html) as the source of these large types.
 
 If needed, you [can define these structs yourself](https://github.com/clux/kube-rs#raw-api), but as an example, let's show how that plays in with [CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/); because custom resources require you to define everything about them anyway.
 
@@ -135,7 +137,9 @@ pub struct FooStatus {
 type Foo = Object<FooSpec, FooStatus>;
 ```
 
-This is all you need to get your "code generation". No external tools to shell out to; `cargo build` gives you your json serialization/deserialization, and the generic `Api` gives you your api machinery. With it, you can the construct and use your `customResource` as follows:
+This is all you need to get your "code generation". No external tools to shell out to; `cargo build` gives you your json serialization/deserialization, and the generic `Api` gives you your api machinery.
+
+You can therefore interact with your `customResource` as follows:
 
 ```rust
 let foos : Api<Foo> = Api::customResource(client, "foos")
@@ -172,10 +176,10 @@ let o = foos.patch("baz", &pp, serde_json::to_vec(&patch)?)?;
 assert_eq!(o.spec.info, "patched baz");
 ```
 
-Here `json!` really shines. The macro is actually also sufficiently context-aware that you can reference variables, and even [attach structs to keys](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/examples/crd_openapi.rs#L140-L146) within.
+Here `json!` really shines. The macro is actually also so context-aware, that you can reference variables, and even [attach structs to keys](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/examples/crd_openapi.rs#L140-L146) within.
 
 ## Higher level abstractions
-With the core api abstractions in place, we can easily build `Reflector<K>` (an automatic resource cache for a `K` which, through sustained `watch` calls, ensures its cache reflect the `etcd` state). We have [talked about Reflector's earlier](/post/2019-04-29-rust-on-kubernetes); so let's cover Informers.
+With the core api abstractions in place, an easy abstraction is `Reflector<K>`: an automatic resource cache for a `K` which - through sustained `watch` calls - ensures its cache reflect the `etcd` state. We have [talked about Reflectors earlier](/post/2019-04-29-rust-on-kubernetes); so let's cover Informers.
 
 ### Informers
 An informer for a resource is an event notifier for that resource. It calls `watch` when you ask it to, and it informs you of new events. In go, you [attach event handler functions](https://engineering.bitnami.com/articles/a-deep-dive-into-kubernetes-controllers.html) to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
@@ -260,7 +264,9 @@ You can compare with [client-go's WatchEvent](https://github.com/kubernetes/apim
 So. What's awful?
 
 ### Everything is camelCase!
-Yeah.. Global `#![allow(non_snake_case)]`. It's arguably less helpful to map case-preference to rust's language convention when you need to cross reference values with the [main API docs using Go conventions](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14). But then again we do rely on openapi for a lot of this stuff anyway. Do people have strong feelings about this?
+Yeah.. `#![allow(non_snake_case)]`. It's arguably more helpful to be able to easily cross reference values with the [main API docs using Go conventions](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14), than to map them to rust's snake_case preference.
+
+That said, we currently rely on `k8s-openapi` (and that crate maps cases..). Do people have strong feelings about this?
 
 ### Delete returns an Either
 The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case. Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
@@ -284,7 +290,7 @@ You might think these exceptions make up a short and insignificant list of legac
 - [Event](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#event-v1-core) - with 17 random fields!
 - [ServiceAccount](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#serviceaccount-v1-core) - `secrets` vector + misc fields
 
-And that was only like 20 minutes in the API docs. Long story short, [we eventually](https://github.com/clux/kube-rs/issues/35) stopped relying on `Object<P, U>` everywhere in favour of `KubeObject` trait objects. This meant we could deal with these special objects in [mod snowflake](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/src/api/snowflake.rs#L15-L62), and we don't have to feel too dirty about it..
+And that was only like 20 minutes in the API docs. Long story short, [we eventually](https://github.com/clux/kube-rs/issues/35) stopped relying on `Object<P, U>` everywhere in favour of `KubeObject`. This meant we could deal with these special objects in [mod snowflake](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/src/api/snowflake.rs#L15-L62), without feeling too dirty about it..
 
 ### Remaining toil
 While many of the remaining tasks are not too difficult, there are quite a few of them:
