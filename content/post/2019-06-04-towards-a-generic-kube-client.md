@@ -1,7 +1,7 @@
 ---
 title: A generic kubernetes client
 subtitle: Shaving a yak for a client-rust
-date: 2019-06-03
+date: 2019-06-04
 tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
@@ -200,7 +200,7 @@ fn main() -> Result<(), failure::Error> {
     let config = config::load_kube_config().expect("failed to load kubeconfig");
     let client = APIClient::new(config);
     let nodes = Api::v1Node(client);
-    let ni = Informer::raw(nodes)
+    let ni = Informer::new(nodes)
         .labels("role=worker")
         .init()?;
 
