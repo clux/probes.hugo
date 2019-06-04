@@ -255,7 +255,7 @@ pub enum WatchEvent<K> where
 }
 ```
 
-You can compare with the [client-go's WatchEvent](https://github.com/kubernetes/apimachinery/blob/594fc14b6f143d963ea2c8132e09e73fe244b6c9/pkg/apis/meta/v1/watch.go).
+You can compare with [client-go's WatchEvent](https://github.com/kubernetes/apimachinery/blob/594fc14b6f143d963ea2c8132e09e73fe244b6c9/pkg/apis/meta/v1/watch.go).
 
 ## Drawbacks
 So. What's awful?
