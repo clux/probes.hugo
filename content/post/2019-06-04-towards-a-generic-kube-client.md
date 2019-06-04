@@ -6,7 +6,7 @@ tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
 
-It's been about a months since we released [`kube`](https://github.com/clux/kube-rs), a new rust client library for kubernetes. We wrote a [blog post at the time explaining the initial setup](/post/2019-04-29-rust-on-kubernetes), and while we did explore some high level concepts, everything was uncertain. Would the generic setup work with native objects? How far would it extend? Would it be a primarily deserializing type client? What about custom queries? Event handling? Surely, it'd be a fools errand to write an entire client library?
+It's been about a month since we released [`kube`](https://github.com/clux/kube-rs), a new rust client library for kubernetes. We [covered](/post/2019-04-29-rust-on-kubernetes) the initial release, but it was full of naive optimism and uncertainty. Would the generic setup work with native objects? How far would it extend? Non-standard objects? Patch handling? Event handling? Surely, it'd be a fools errand to write an entire client library?
 
 With the last `0.10.0` release, it's now clear that the generic setup extends quite far. Unfortunately, this yak is hairy, even by yak standards.
 
@@ -85,7 +85,7 @@ impl<K> Api<K> where
 }
 ```
 
-These are the main query methods on our core `Api` ([docs](https://clux.github.io/kube-rs/kube/api/struct.Api.html) / [src](https://github.com/clux/kube-rs/blob/master/src/api/typed.rs)). Observe that similar types of requests take the same `*Params` objects to configure queries. Return types also have clear patterns.
+These are the _main_ query methods on our core `Api` ([docs](https://clux.github.io/kube-rs/kube/api/struct.Api.html) / [src](https://github.com/clux/kube-rs/blob/master/src/api/typed.rs)). Observe that similar types of requests take the same `*Params` objects to configure queries. Return types also have clear patterns.
 
 There's is no hidden de-multiplexing on the parsing side either. When calling `list`, we just [turbofish](https://turbo.fish/) that type in for `serde` to deal with internally:
 
@@ -96,13 +96,13 @@ self.client.request::<ObjectList<Object<P, U>>>(req)
 There is a new required trait `KubeObject` to deal with, but this has an automatic blanket implementation this for `K = Object<P, U>`.
 
 ### client-go semantics
-While it might not seem like it with all this talk about generics, we are actually trying to model things a little closer to `client-go` and internal kube `apimachinery` (insofar as it makes sense).
+While it might not seem like it with all this talk about generics; we are actually trying to model things a little closer to `client-go` and internal kube `apimachinery` (insofar as it makes sense).
 
 Just have a look at how `client-go` presents [Pod objects](https://github.com/kubernetes/client-go/blob/7b18d6600f6b0022e31c46b46875beffd85cc71a/kubernetes/typed/core/v1/pod.go#L39-L50) or [Deployment objects](https://github.com/kubernetes/client-go/blob/e65ca70987a6941be583f205696e0b1b7da82002/kubernetes/typed/extensions/v1beta1/deployment.go#L39-L53). There's already a pretty clear overlap with the above signatures.
 
-Maybe you are in the camp with `Bryan Liles`, who said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. It's certainly a large library (sitting at ~80k lines of mostly go), but amongst the [chunks of intermixed cruft and useful code](https://godoc.org/k8s.io/client-go/tools/cache), it does embed a bunch of [really interesting patterns](https://godoc.org/k8s.io/client-go/util/retry#RetryOnConflict).
+Maybe you are in the camp with `Bryan Liles`, who said that ["client-go is not for mortals"](https://youtu.be/Rbe0eNXqCoA?t=563) during his kubecon 2019 keynote. It's certainly a large library (sitting at ~80k lines of mostly go), but amongst the [somewhat cruft-filled chunks](https://godoc.org/k8s.io/client-go/tools/cache), it does embed some [really interesting patterns](https://godoc.org/k8s.io/client-go/util/retry#RetryOnConflict) to consider.
 
-At any rate, the terminology in this library should now be a lot more familiar now that we're trying use ideas from `client-go`, follow the [api-concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/) better, and take inspiration from frameworks [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kubernetes isn't as generic as we inadvertently promised it to be.
+The terminology in this library should therefore be a lot more familiar now. Not only are we trying to use ideas from `client-go`, we follow the [api-concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/) better, and take inspiration from frameworks such as [kubebuilder](https://book.kubebuilder.io/). That said, we are inevitably going to hit some walls when kubernetes isn't as generic as we inadvertently promised it to be.
 
 But delay that sad tale; let's look at how to use the `Api`:
 
@@ -147,7 +147,9 @@ let baz = foos.get("baz")?;
 assert_eq!(baz.spec.info, "baz info");
 ```
 
-Here we are fetching and parsing straight into the typed struct. But what about posting and patching? For brevity, let's `create` and `patch` a `Foo` using the [serde_json macro](https://docs.serde.rs/serde_json/macro.json.html):
+Here we are fetching and parsing straight into the `Foo` object on `.get()`.
+
+So what about posting and patching? For brevity, let's use the [serde_json macro](https://docs.serde.rs/serde_json/macro.json.html):
 
 ```rust
 let f = json!({
@@ -160,7 +162,7 @@ let o = foos.create(&pp, serde_json::to_vec(&f)?)?;
 assert_eq!(f["metadata"]["name"], o.metadata.name)
 ```
 
-Easy enough (if [a little verbose](https://github.com/clux/kube-rs/issues/31)). What about a [patch](https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#alternate-forms-of-the-kubectl-patch-command)?
+Easy enough, if [a tad verbose](https://github.com/clux/kube-rs/issues/31). What about a [patch](https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#alternate-forms-of-the-kubectl-patch-command)?
 
 ```rust
 let patch = json!({
@@ -168,16 +170,15 @@ let patch = json!({
 });
 let o = foos.patch("baz", &pp, serde_json::to_vec(&patch)?)?;
 assert_eq!(o.spec.info, "patched baz");
-assert_eq!(o.spec.name, "baz");
 ```
 
-Here `json!` really shines. You can also reference variables and [you can attach structs to keys](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/examples/crd_openapi.rs#L140-L146) within.
+Here `json!` really shines. The macro is actually also sufficiently context-aware that you can reference variables, and even [attach structs to keys](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/examples/crd_openapi.rs#L140-L146) within.
 
 ## Higher level abstractions
-With the core api abstractions in place, we can easily build Reflectors (structs that contain the logic to watch and cache all state for a single resource type), and more. Since we [talked about Reflector's earlier](/post/2019-04-29-rust-on-kubernetes); Let's cover Informers.
+With the core api abstractions in place, we can easily build `Reflector<K>` (an automatic resource cache for a `K` which, through sustained `watch` calls, ensures its cache reflect the `etcd` state). We have [talked about Reflector's earlier](/post/2019-04-29-rust-on-kubernetes); so let's cover Informers.
 
 ### Informers
-An informer for a resource is an event notifier for that resource. It calls `watch` when you ask it to, and it informs you of new events. In go, you attach event handler functions to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
+An informer for a resource is an event notifier for that resource. It calls `watch` when you ask it to, and it informs you of new events. In go, you [attach event handler functions](https://engineering.bitnami.com/articles/a-deep-dive-into-kubernetes-controllers.html) to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
 
 ```rust
 fn handle_nodes(ev: WatchEvent<Node>) -> Result<(), failure::Error> {
@@ -216,9 +217,7 @@ fn main() -> Result<(), failure::Error> {
 
 The harder parts typically come if you need a separate threads; like one to handle polling, one for handling events async, perhaps you are interacting with a set of threads in an tokio/actix runtime.
 
-You [should handle these cases](https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps) (#5), but it's thankfully, not hard. You can just give out a `.clone()` of an `Informer` to the runtime. With `actix` data it's as simple as passing `App::new().data(informer.clone())`, and you can then poll your own clone separately. The [controller-rs](https://github.com/clux/controller-rs) example shows [how to encapsulate an informer](https://github.com/clux/controller-rs/blob/master/src/state.rs) with [actix](https://github.com/clux/controller-rs/blob/5db6caca13f4a33d168c1abe7c94a02559d4f46e/src/main.rs#L20-L51) (using the 1.0.0 rc).
-
-You should end up with a complete controller in a [7MB alpine image](https://github.com/clux/controller-rs/blob/master/Dockerfile).
+You [should handle these cases](https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps), but it's thankfully, not hard. You can just give out a `clone` of your `Informer` to the runtime. The [controller-rs](https://github.com/clux/controller-rs) example shows how trivial it is [to encapsulate an informer](https://github.com/clux/controller-rs/blob/master/src/state.rs) and drive it [along actix](https://github.com/clux/controller-rs/blob/5db6caca13f4a33d168c1abe7c94a02559d4f46e/src/main.rs#L20-L51) (using the 1.0.0 rc). The result is a complete example controller in a [tiny alpine image](https://github.com/clux/controller-rs/blob/master/Dockerfile).
 
 ### Informer Internals
 Informers are just wrappers around a `watch` call that keeps track of `resouceVersion`. There's very little inside of it:
