@@ -240,7 +240,7 @@ pub struct Informer<K> where
 
 If it wasn't for the extra internal event queue (that users are meant to consume), we could easily have built `Reflector` on top of `Informer`. The only main difference is that a `Reflector` uses the events to maintain an up-to-date `BTreeMap` rather than handing the events out.
 
-As with `Reflector`, the underlying enum that captures the [more awkward go WatchEvent](https://github.com/kubernetes/apimachinery/blob/594fc14b6f143d963ea2c8132e09e73fe244b6c9/pkg/apis/meta/v1/watch.go):
+As with `Reflector`, we rely on this foundational enum (now public) to encapsulate events:
 
 ```rust
 #[derive(Deserialize, Serialize, Clone)]
@@ -255,23 +255,13 @@ pub enum WatchEvent<K> where
 }
 ```
 
-It was private when we only supported `Reflector`, but it's now exposed for event handlers directly.
+You can compare with the [client-go's WatchEvent](https://github.com/kubernetes/apimachinery/blob/594fc14b6f143d963ea2c8132e09e73fe244b6c9/pkg/apis/meta/v1/watch.go).
 
 ## Drawbacks
 So. What's awful?
 
 ### Everything is camelCase!
 Yeah.. Global `#![allow(non_snake_case)]`. It's arguably less helpful to map case-preference to rust's language convention when you need to cross reference values with the [main API docs using Go conventions](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14). But then again we do rely on openapi for a lot of this stuff anyway. Do people have strong feelings about this?
-
-### Plenty of stuff left
-While many of the remaining tasks are not too difficult, there are a lot of them:
-
-- [integrating all the remaining native objects](https://github.com/clux/kube-rs/issues/25) (can be done one-by-one)
-- support more than [`patch --type=merge`](https://github.com/clux/kube-rs/issues/24)
-- [backoff crate](https://docs.rs/backoff/0.1.5/backoff/) use for [exponential backoff](https://github.com/clux/kube-rs/issues/34) => less cascady network failures
-- support [local kubeconfig auth providers](https://github.com/clux/kube-rs/issues/19)
-
-The last one is a huge faff, with differences across providers, all in the name of avoiding [impersonating a service accounts when developing locally](/post/2019-03-31-impersonating-kube-accounts).
 
 ### Delete returns an Either
 The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case. Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
@@ -286,7 +276,7 @@ This is probably solveable with some blunt `generic_verb_noun` hammer on `RawApi
 It clearly breaks the generic model somewhat, but thankfully only in the areas you'd expect it to break.
 
 ### Not everything follows the Spec + Status model
-Yeah, it's not what was promised. You might think this is a short and insignificant list of legacy objects, but behold:
+You might think these exceptions make up a short and insignificant list of legacy objects, but look at this subset:
 
 - [RoleBinding](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#rolebinding-v1-rbac-authorization-k8s-io) with `subjects` + `roleRef`
 - [Role](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#role-v1-rbac-authorization-k8s-io) with a `rules` vec
@@ -295,7 +285,17 @@ Yeah, it's not what was promised. You might think this is a short and insignific
 - [Event](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#event-v1-core) - with 17 random fields!
 - [ServiceAccount](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#serviceaccount-v1-core) - `secrets` vector + misc fields
 
-And that was only like 20 minutes in the API docs. [Long story short](https://github.com/clux/kube-rs/issues/35) we eventually stopped relying on `Object<P, U>` everywhere in favour of the `KubeObject` trait. This meant we could deal with these special objects in [mod snowflake](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/src/api/snowflake.rs#L15-L62), and we don't have to feel too dirty about it..
+And that was only like 20 minutes in the API docs. Long story short, [we eventually](https://github.com/clux/kube-rs/issues/35) stopped relying on `Object<P, U>` everywhere in favour of `KubeObject` trait objects. This meant we could deal with these special objects in [mod snowflake](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/src/api/snowflake.rs#L15-L62), and we don't have to feel too dirty about it..
+
+### Remaining toil
+While many of the remaining tasks are not too difficult, there are quite a few of them:
+
+- [integrating all the remaining native objects](https://github.com/clux/kube-rs/issues/25) (can be done one-by-one)
+- support more than [`patch --type=merge`](https://github.com/clux/kube-rs/issues/24)
+- [backoff crate](https://docs.rs/backoff/0.1.5/backoff/) use for [exponential backoff](https://github.com/clux/kube-rs/issues/34) => less cascady network failures
+- support [local kubeconfig auth providers](https://github.com/clux/kube-rs/issues/19)
+
+The last one is a huge faff, with differences across providers, all in the name of avoiding [impersonating a service accounts when developing locally](/post/2019-03-31-impersonating-kube-accounts).
 
 ## Help
 The foundation is now there, in the sense that we feel like we're covering most of the theoretical bases (..that we could think of).
