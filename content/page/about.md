@@ -8,7 +8,7 @@ My name is Eirik and this is an attempt to collect my thoughts, and provide the 
 
 Posts herein are my own opinions and not those of my employer. Words like **we** or **us** is often used in the the mathematical (collaborative) sense and does not necessarily mean consensus.
 
-Below contains a bit about who I am / what I have done / like to do. I.e. a brief summary and status of various creative and dexterous endeavours that I am generally happy to spend / have spent time on.
+Below contains a bit about who I am, what I have done, and what like to do. Basically, a brief summary and status of various creative and dexterous endeavours that I am generally happy to have spent time on.
 
 The alternate category of endeavours that were a complete waste of time, or things I am remarkably bad at for my age is a much larger and more depressing list, and is left as an exercise to the reader to imagine.
 
@@ -19,28 +19,29 @@ Regardless, a lot of it is effectively uncharted experimentation territory, and 
 
 Big projects I've been heavily involved in include:
 
-- [babylon/shipcat](https://github.com/Babylonpartners/shipcat) - a config management system for kubernetes microservices
+- [babylonhealth/shipcat](https://github.com/Babylonpartners/shipcat) - a config management system for kubernetes microservices
 - [cisco/lal](https://github.com/cisco/lal-build-manager) - a strict, language agnostic build system (the [old build team](https://github.com/orgs/lalbuild/people) have a [fork](https://github.com/lalbuild/lal))
 
 There are also numerous smaller projects under my [github account](https://github.com/clux?tab=repositories) that solve some problems. In particular:
 
 - [muslrust](https://github.com/clux/muslrust) - a canonical `x86_64-unknown-linux-musl` rust build image for the cloud
+- [kube](https://github.com/clux/kube) - a kubernetes client for rust
 - [tournament](https://github.com/clux/tournament) - a suite of modules for managing state and lifecycles of competitions
 
-A recent trend is heavy usage of [rust](https://www.rust-lang.org/) due to its safety guarantees and slow compile times, but [I like to dabble](https://github.com/clux/magic-forest).
+Last four years have had heavy usage of [rust](https://www.rust-lang.org/) due to its safety guarantees and great libraries. But [I also like to dabble](https://github.com/clux/magic-forest).
 
 ### Mathematics
-There exists a dusty piece with my name and  `Master of Mathematics` on it. While no one has ever asked to look at, it does feature on my [resume](http://clux.github.io/vitae/), as well as giving `+5` to saves vs. bad mathematics.
+There exists a dusty, but laminated piece of paper with my name +  `Master of Mathematics` on it. While no one has ever asked to look at it, it keeps being featured on my [resume](http://clux.github.io/vitae/) every `n` years.
 
-This esoteric knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of __\*\*chanting\*\*__ `4 more years`.
+This esoteric knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of `4 more years`.
 
 ### Dungeon Mastering
-I run a forgotten realms style `D&D` campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) wherein a bunch of humans continue to tolerate my antics and bad improv. [Campaign links for underlings](https://www.dndbeyond.com/campaigns/156017).
+I run a forgotten realms style `D&D` campaign based on [Out of the Abyss](http://dnd.wizards.com/products/tabletop-games/rpg-products/outoftheabyss) wherein a bunch of humans continue to tolerate my antics and bad improv. [Campaign links for players](https://www.dndbeyond.com/campaigns/156017).
 
 ### Music
-Played `violin` from age `~7-17`, and as such can tell you about instrument UX. If you are considering starting/hooking up your kid; buy an `otamatone` first to see if you think you can [handle](https://www.stoppingpoints.com/devils-dictionary/fiddle.html) listening to someone wrangling with a fretless, non-linear interface for years.
+Played `violin` from age `~7-17`, and as such feel qualified to rant about instrument UX. If you are considering starting/hooking up your kid; buy an `otamatone` first to see if you think you can [handle](https://www.stoppingpoints.com/devils-dictionary/fiddle.html) listening to someone wrangling with a fretless, non-linear interface for years.
 
-Been playing `piano` for a few years after accepting my defeat with the stringed devil. Sounds better already, and it satisfies my habit of committing useless chunks of knowledge to muscle memory.
+Been playing `piano` for a few years after parting ways with my other stringed devil. It sounded better quickly, and it now satisfies my habit of committing useless chunks of finger movement to muscle memory.
 
 ### Gaming
 Well designed game mechanics that require some type of dexterous mastery have often drawn me in. Here's some stuff I spent time on over the years..
