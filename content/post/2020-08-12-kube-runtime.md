@@ -1,0 +1,58 @@
+---
+title: kube-runtime release
+subtitle: a different direction for kubernetes controller runtime
+date: 2020-08-12
+tags: ["rust", "kubernetes"]
+categories: ["software"]
+---
+
+Last year, [kube-rs](https://github.com/clux/kube-rs) was made and the first crate [kube](https://crates.io/crates/kube) published. Originally, as a way to make API calls to kubernetes in rust, but over the course of 3-4 months evolved into a system that could handle generic runtime abstractions.
+
+The system worked, it got users (>100k dls), we ironed out many of the watch kinks, tons of people chimed in with issues/solutions. But the big `Controller<K>` abstraction was [still elusive](https://github.com/clux/kube-rs/issues/148).
+
+<!--more-->
+
+Now, you could technically have written something equivalent to a controller yourself in the past, by gluing together one or more informers, but it's really that glue and all the error cases this presents that is difficult to do.
+
+## Watch Difficulties
+Just take a look at **watching**. To continuously watch, you need to follow the guidelines and [keep tracking resource versions](https://kubernetes.io/docs/reference/using-api/api-concepts/#efficient-detection-of-changes). But also;
+
+- deal with resource versions disappearing/going stale: [kubernetes#87292](https://github.com/kubernetes/kubernetes/issues/87292)
+- restart a watch at least every 5 minutes: [kubernetes#6513](https://github.com/kubernetes/kubernetes/issues/6513)
+- deal with repeat notifications when your controller writes to the status object you control
+
+I will be ranting slightly about this at KubeCon2020. But the unfortunate consequence of expected errors and being forced to restart watches means that you:
+
+- need a complicated machinery to discern api error types
+- users cannot rely on `REMOVED` events
+- users get a lot of pointless events
+
+## Stream Difficulties
+Having multiple streaming watch calls open at the same time also forces a bunch of questions;
+
+- what is in charge of draining these streams?
+- what should filter out removed events?
+- how to translate a stream of watched type to a stream of owning object type?
+- how to do such a translation generically?
+
+When we started out we [tried building on top of](https://github.com/clux/kube-rs/pull/184/files) our old `Informer` model; each informer dealt with one stream and was [a struct with a client and its current state](https://github.com/clux/kube-rs/blob/addf4ab947fefcd15519a0315ccf9adf333be156/kube/src/runtime/informer.rs#L28-L36) (i.e. resource version, watch cycle). This way we exposed a clean `Stream`, but we did all the error handling as a wrapper before passing on the `WatchEvents` verbatim.
+
+However, creating a struct for something that really just a tweaked a stream now forced us to start wrapping things in `Arc`s and `Mutex`es to pass around. Sure, we could allow users to `Informer::reset` or `Informer::set_version` to tweak `resourceVersions` and trigger watch resets manually, but why did we even do this? The whole point of a smart watcher was so the user didn't have to deal with those error cases.
+
+## A smarter `watcher`
+- no more poll -> impl Stream
+- FSM, with state transformer
+
+## A smarter `reflector` with a generic `Store`
+
+## stream filters
+
+## A `applier` stream combining streams through
+
+
+## unresolved
+- where all the helpers should sit (watcher stream trait?)
+- where non-standard filters should sit (observedGeneration)
+- default error deduplication
+- default error policy handling
+- where ctrl-c error handling should sit
