@@ -15,7 +15,7 @@ This is a log of stuff I needed to tweak to get [LXDE](https://wiki.archlinux.or
 # LXDE
 > LXDE is a free desktop environment with comparatively low resource requirements. This makes it especially suitable for use on older or resource-constrained personal computers such as netbooks or system on a chip computers.
 
-Alrighty. A `C` based WM using `GTK+ 2`. Not used this since Gnome 2, back in the 2012 days.
+Alrighty. A `C` based WM using `GTK+ 2`. Not used this since Gnome 2, back in the 2012 days. It's a weird time to try this. It hasn't had a release since November 2016.
 
 ## Installation
 Already had Arch Linux running [LightDM](https://wiki.archlinux.org/index.php/LightDM) as my Display Manager, so only needed the base install:
@@ -81,6 +81,10 @@ Default theme is quite ugly due to the overly glossy black panel, so you probabl
 Tiny file in `~/.config/lxsession/LXDE/desktop.conf` controls this.
 
 Articles [exist](https://www.addictivetips.com/ubuntu-linux-tips/lxde-themes/) online on how to install themes for it, but that's probably the gtk3 version. The few I tried didn't work.
+
+## Clear Improvements
+### Network Panel
+The network panel, even though it's still hooking through `nm-applet` AFAIKT, it has an extra animation that shows when your VPN connection completes. This is actually super useful.
 
 # Verdict
 The most awkward thing is the lack of a launcher bar so far. Performance is great. Keybindings are mostly workeable. If some better tiling-like commands can be set up maybe you can make do with `alacritty`.
