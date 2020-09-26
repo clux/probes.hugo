@@ -1,5 +1,5 @@
 ---
-title: Campaign Brain
+title: Foaming Campaign Brain
 subtitle: Exploring alternatives for a second brain for campaign tracking
 date: 2020-09-26
 tags: ["zettelkasten"]
