@@ -6,7 +6,7 @@ tags: ["zettelkasten", "foam"]
 categories: ["roleplaying"]
 ---
 
-After 2 years of running a D&D campaign, my last note taking setup has reached serious problems. If you're using OneNote or another online managed system for tracking notes/cities/npcs/pcs/events, but know how to use programmers tools like `git` and `code`; boy are there a world of advantages available to you.
+After 2 years of running a D&D campaign almost every week, my note taking setup reached several breaking points. If you're using `OneNote` or another online managed system for tracking notes/cities/npcs/pcs/events, but know how to use programmers tools like `git` and `code`; boy are there a world of advantages available to you.
 
 This is a story of my original note talking setup, a comparison between newer technologies, and how I am back to writing markdown in a folder.
 
@@ -21,32 +21,37 @@ A year down the line, my OneNote looked like this:
 
 ![one note campaign](/imgs/foam/onenote-campaign.png)
 
-Still, image integration straight from a google search and into your document was great. Well, not google, but bing, I guess. In practice, I wasn't always sure what I was going for, so I often ended up searching for images in my browser first via google, getting shunted to pinterest and find something promising there. Since OneNote returned completely different images, I generally had to save and upload my findings anyway.
+Still, image integration straight from a google search and into your document was great. Well, not `Google`, but `Bing`, I guess. In practice, I wasn't always sure what I was going for, so I often ended up searching for images in my browser first via google, getting shunted to pinterest and find something promising there. Since `OneNote` returned completely different images, I generally had to __save and upload__ my findings anyway.
 
-OneNote did let you place random text fields anywhere on your page (like it was some kind of janky e-scrap book), and this did actually help get around the actual problem I was having; **splitting the data is hard in a browser**.
+`OneNote` did let you place random text fields anywhere on your page (like some kind of janky e-scrap book), and this did actually help get around one problem I was having:
+
+> **splitting the data is hard in a browser**
 
 Why? You click on a link, the browser makes several HTTP requests, and after waiting 400ms you finally get to see the results (one drive is not super responsive), but this movement drops your place to the current page you needed to cross reference with. So now you either go back, and shift-click the reference so you now have two tabs that you can Shift-Tab between, or you prepare those tabs up in advance (typically before the session).
 
-In practice I often ended up with a 20 tab browser window for every session, which generally, looked something like:
+In practice I often ended up with a 30 tab browser window for every session, which generally, looked something like:
+
+![session chrome window](/imgs/foam/session-chrome.png)
+
+with more common averages like;
 
 - 5 from OneNote (campaign brain)
 - 2 from Kobold Fight Club (potential encounters)
 - 6 from monsters / items
 - 2 youtube ambient music tabs
+- 2 for random generators
 - 5 from lore/wikis related to the story or NPCs
 
-and the squished icon/tab name meant you kind of had to tab between them a lot to figure out which one you wanted, and then eventually break the tab order when players did something out of left field (DMs; have this ever happened to you?).
+and the squished icon/tab name meant you kind of had to tab between them a lot to figure out which one you wanted only to the tab order when players did something out of left field (**DMs**; this never happens right?).
 
-![session chrome window](/imgs/foam/session-chrome.png)
-
-So there were definitely some problems with this. That said, it was free, it __generally__ was responsive, and (when the WIFI was perfectly reliable) the 400ms link opening time wasn't too much of a drain on the improv. However, it was definitely noticable, and it just took a few times where OneNote's **QoS** dropped, or my WIFI signals started getting a little dodgy (from one of the more farady cagey meeting rooms we occassionally played in), for it all to feel pointless. Then there was a whole week where I was unable to save anything with no errors shown to me. I didn't even get to the bottom of it, I just knew this could not continue.
+So there were definitely some problems with this. That said, it was free, it __generally__ was responsive, and the 400ms link opening time wasn't too much of a drain on the improv. However, it was definitely noticable, and it just took a few times where `OneNote`'s **QoS** dropped, or my WIFI signals started getting a little dodgy (from one of the more farady cagey meeting rooms we occassionally played in), for it all to feel pointless. Then there was a whole week where I was unable to save anything with no errors shown to me. I didn't even get to the bottom of it, I just knew this could not continue.
 
 ## The Git Repository
 After these problems, I realised that there's one thing I'm unwilling to compromise on:
 
-> My notes must be available offline
+> **My notes must be available offline**
 
-If that means I have to do a full sync up front; fine. A folder of documents behind `git` solves this. Incidentally, it also solves the merge conflict resolution problem that `OneNote` was giving me due to the way it hid its sync successes/failures. Imagine arriving back at your desktop computer only to find that your laptop didn't sync, so you either have to bring your laptop back up, or solve a merge conflict (with yourself..) the next time you open your laptop (on an interface worse than git's no less). Super annoying. Now just `git commit` and `git push`, and if you play your cards right you never get a merge conflict.
+If that means I have to do a full sync up front; fine. A folder of documents behind `git` solves this. Incidentally, it also solves the merge conflict resolution problem that `OneNote` was giving me due to the way it hid its sync successes/failures. Imagine arriving back at your desktop computer only to find that your laptop didn't sync, so you either have to bring your laptop back up, or solve a merge conflict (with yourself) the next time you open your laptop (on an interface worse than git's no less). Super annoying. Now just `git commit` and `git push`, and if you play your cards right you never get a merge conflict.
 
 That means that no matter how slick the following solutions look:
 
@@ -76,21 +81,21 @@ There are probably millions of ways to organise your stuff and still be successf
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Since it&#39;s a Monday, let&#39;s play which fantasy writer&#39;s desk would you want to write at:<br>1. Ursula K. Le Guin&#39;s<br>2. Neil Gaiman&#39;s<br>3. J.R.R. Tolkien&#39;s<br>4. Terry Pratchett&#39;s <a href="https://t.co/hsMRgI0JEh">pic.twitter.com/hsMRgI0JEh</a></p>&mdash; Into The Forest Dark (@ElliottBlackwe3) <a href="https://twitter.com/ElliottBlackwe3/status/1308030597688971265?ref_src=twsrc%5Etfw">September 21, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <!--shortcode fails on my hugo install..< tweet 1308030597688971265 >-->
 
-However, this [article on sociologist Niklas Luhmann and his Zettelkasten system](
-https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) did highlight some very important data modelling approaches on note taking:
+Individualism notwithstanding, this [article on sociologist Niklas Luhmann and his Zettelkasten system](
+https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) really brought up some very important data modelling problem inherent to note taking:
 
-- categorising notes by **folders**
-- categorising notes by **tags**
-- categorising notes by **links**
+- do we categorise notes by **folders**?
+- do we categorise notes by **tags**?
+- do we categorise notes by **links**?
 
-All cause data to get lost on their own, but together you have a strong, self-reinforcing system. And if Luhmann could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then there must be ways to do this with an editor you know without delving into [orgmode](https://orgmode.org/) land and having to re-learn something equivalent to markdown.
+All these methods on their own cause data to get lost, but using all of them at the same time gives you a strong, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then there are bound to be nice ways to do this in __your__ editor without delving into [orgmode](https://orgmode.org/) land.
 
 The principles listed in this article is also interesting. Particularly 3:
 
 > **Always link your notes**
 > Whenever you add a note, make sure to link it to already existing notes. Avoid notes that are disconnected from other notes. As Luhmann himself put it, "each note is just an element that derives its quality from the network of links in the system. A note that is not connected to the network will be lost, will be forgotten by the Zettelkasten"
 
-The same can be said about D&D campaigns. An NPC already linked to a player can be a lot easier, and more sensible to quickly re-instate, than to copy or slightly tweak [one of your 10 existing characters](https://old.reddit.com/r/dndmemes/comments/iuajhd/im_basically_a_voice_actor/) - at least if they are popular/good. Plus, it will help the players remember them better. A campaign quickly accumulates a lot of information. No need to make this harder than it already is.
+This feels like good D&D advice as well. An NPC already linked to a player can be a lot easier, and more sensible to quickly re-instate, than to copy or slightly tweak [one of your 10 existing characters](https://old.reddit.com/r/dndmemes/comments/iuajhd/im_basically_a_voice_actor/) - at least if they are popular/good. Plus, it will help the players remember them better. A campaign quickly accumulates a lot of information. No need to make this harder than it already is.
 
 ## Obsidian
 The article by [joshwin](joshwin.imprint.to) on how he [uses obsidian to manage goals, tasks, notes, and more](https://joshwin.imprint.to/post/how-i-use-obsidian-to-manage-my-goals-tasks-notes-and-software-development-knowledge-base) is interesting. A pre-configured all-in-one application that is flexible and powerful enough to let you handle all these different categoris. Well worth [looking into](https://obsidian.md/) **if** you don't have a good editor already. Their [feature list](https://obsidian.md/features) is decent.
@@ -121,7 +126,7 @@ There is a [zettelkasten plugin for sublime](https://github.com/renerocksai/subl
 ## Foam
 We close with [foam](https://foambubble.github.io/foam/), the system we ended up using. Inspired by Roam (a system I neglected to talk about because of sync/offline problems, and it's also not cheap).
 
-The selling point here, is really that `Foam` is really just a collection of [VS Code](https://github.com/microsoft/vscode) extensions, that you can [default-recommend](https://code.visualstudio.com/docs/editor/extension-gallery#_recommended-extensions) at the [repo level](https://github.com/foambubble/foam-template/blob/master/.vscode/extensions.json).
+It does seem like a pretty early stage system, but the selling point here, is that `Foam` is really just a collection of [VS Code](https://github.com/microsoft/vscode) extensions, that you can [default-recommend](https://code.visualstudio.com/docs/editor/extension-gallery#_recommended-extensions) at the [repo level](https://github.com/foambubble/foam-template/blob/master/.vscode/extensions.json) and configure how you want.
 
 The main ones here are:
 
@@ -132,11 +137,11 @@ The main ones here are:
 - [esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Prettier for auto formatting code
 - [eamodio.gitlens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - GitLens for seeing version history inline
 
-All of which are very popular, standard programming extensions, with the sole exception of the `foam`; a [smaller looking](https://github.com/foambubble/foam/tree/master/packages/foam-vscode) extension that helps manage the wiki links. Frankly, it's somewhat strange to me that they list the off-putting "tolerance for alpha software" as a requirement when most of their logic resides outside their codebase.
+All of which are very popular, standard programming extensions, with the sole exception of the `foam`; a [smaller looking](https://github.com/foambubble/foam/tree/master/packages/foam-vscode) extension that helps manage the wiki links. Frankly, it's somewhat strange to me that they list the off-putting `tolerance for alpha software` as a requirement when most of their logic resides outside their codebase.
 
 If you've dealt with a code editors plugin ecosystem before, this is a lot more welcoming than obsidian to me. Bug in the system? Well, probably one of the extensions. You've got options for dealing with it: report & wait, fork + fix, try other replacement extensions.
 
-Oh, and I can we can swap out the [default provided dark theme](https://marketplace.visualstudio.com/items?itemName=philipbe.theme-gray-matter) for one you like (mine is [Seti](https://marketplace.visualstudio.com/items?itemName=tnaseem.theme-seti))
+Oh, and I can we can swap out the [default provided dark theme](https://marketplace.visualstudio.com/items?itemName=philipbe.theme-gray-matter) for one you like, e.g. [Seti](https://marketplace.visualstudio.com/items?itemName=tnaseem.theme-seti):
 
 ![foam backlinks seti](/imgs/foam/foam-backlinks.png)
 
@@ -161,6 +166,6 @@ Most of the time, I am editing with markdown on the left, preview on the right, 
 
 Even if some of these plugins don't evolve much, I see this as a pretty future proof setup (the [why foam issue](https://github.com/foambubble/foam/issues/88) is also refreshingly honest). The investment in new tech is small, and migration cost away from said tech is also minimal.
 
-From a RPG perspective, the need to pre-empt players with pre-prepared tabs is now a little less problematic as we can quickly browse to the resource either with the standard editor fuzzy file search, or by following links. We also have complete full text search locally with [ripgrep](https://github.com/BurntSushi/ripgrep).
+From a RPG perspective, the need to pre-empt players with pre-prepared tabs is now a little less problematic as we can quickly browse to the resource either with the standard editor fuzzy file search, or by following links. There's also complete full text search on your terminal with [ripgrep](https://github.com/BurntSushi/ripgrep).
 
 The hope with all this is that the amount of hard-to-navigate "running the game tabs" should be significantly reduced with this setup, and my world should feel more integrated thanks to the extensive Zettelkasten style linking. Well. Fingers crossed anyway.
