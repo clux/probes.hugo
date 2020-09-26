@@ -81,8 +81,8 @@ There are probably millions of ways to organise your stuff and still be successf
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Since it&#39;s a Monday, let&#39;s play which fantasy writer&#39;s desk would you want to write at:<br>1. Ursula K. Le Guin&#39;s<br>2. Neil Gaiman&#39;s<br>3. J.R.R. Tolkien&#39;s<br>4. Terry Pratchett&#39;s <a href="https://t.co/hsMRgI0JEh">pic.twitter.com/hsMRgI0JEh</a></p>&mdash; Into The Forest Dark (@ElliottBlackwe3) <a href="https://twitter.com/ElliottBlackwe3/status/1308030597688971265?ref_src=twsrc%5Etfw">September 21, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <!--shortcode fails on my hugo install..< tweet 1308030597688971265 >-->
 
-Individualism notwithstanding, this [article on sociologist Niklas Luhmann and his Zettelkasten system](
-https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) really brought up some very important data modelling problem inherent to note taking:
+Individualism notwithstanding, some methods are more refined than others. For instance, this [article on sociologist Niklas Luhmann and his Zettelkasten system](
+https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) talks about one refined system. Do at least skim that article for why that solution is so powerful. It brings up some very important data modelling problem inherent to note taking:
 
 - do we categorise notes by **folders**?
 - do we categorise notes by **tags**?
@@ -90,7 +90,7 @@ https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freaki
 
 All these methods on their own cause data to get lost, but using all of them at the same time gives you a strong, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then there are bound to be nice ways to do this in __your__ editor without delving into [orgmode](https://orgmode.org/) land.
 
-The principles listed in this article is also interesting. Particularly 3:
+The principles listed in this article is also smart. Particularly 3:
 
 > **Always link your notes**
 > Whenever you add a note, make sure to link it to already existing notes. Avoid notes that are disconnected from other notes. As Luhmann himself put it, "each note is just an element that derives its quality from the network of links in the system. A note that is not connected to the network will be lost, will be forgotten by the Zettelkasten"
