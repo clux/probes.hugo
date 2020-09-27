@@ -42,11 +42,11 @@ this type of tab/icon chaos generally included:
 - 2 for random generators
 - 5 from lore/wikis related to the story or NPCs
 
-and their multitude meant you kind of had to tab between them a lot to figure out which one you wanted only to the tab order when players did something out of left field..
+and their multitude meant I needed to tab between them to find the right one, only to have to change them when players did something out of left field.
 
 > **DMs**; does this happen to you?
 
-So there were definitely some problems with this. That said, it was free, it __generally__ was responsive, and the 400ms link opening time wasn't too much of a drain on the improv. Definitely noticable though, and it just took a few times where `OneNote`'s **QoS** dropped, or my WIFI signals started getting a little dodgy (from one of the more farady cagey meeting rooms we occassionally played in), for it all to feel pointless.
+So this system definitely had problems, but it was free, __generally__ responsive, and the 400ms link opening time wasn't too much of a drain on the improv. It was definitely noticable though, and it just took a slightly decreased `OneNote` **QoS**, or a few interrupted WIFI evenings, for it all to feel pointless.
 
 ..there was also a whole week where I was unable to save anything with no errors shown to me. I never get to the bottom of it, but it was the last straw.
 
@@ -55,7 +55,9 @@ After these problems, I realised that there's one thing I'm unwilling to comprom
 
 > **My notes must be available offline**
 
-If that means I have to do a full sync up front; fine. A folder of documents behind `git` solves this. Incidentally, it also solves the merge conflict resolution problem that `OneNote` was giving me due to the way it hid its sync successes/failures. Imagine arriving back at your desktop computer only to find that your laptop didn't sync, so you either have to bring your laptop back up, or solve a merge conflict (with yourself) the next time you open your laptop (on an interface worse than git's no less). Super annoying. Now just `git commit` and `git push`, and if you play your cards right you never get a merge conflict.
+If that means I have to do a full sync up front; **fine**. A folder of documents behind `git` solves this. This also solves the merge conflict resolution problem that `OneNote` was giving me due to the way it hid its synchronisation mechanism. Imagine arriving back at your desktop computer only to find that your laptop didn't sync, so you either have to boot your laptop back up, or solve a merge conflict (with yourself) the next time you open your laptop (on an interface somehow worse than git). Not great.
+
+Now I just `git commit` and `git push`, and never get a merge conflict.
 
 That means that no matter how slick the following solutions look:
 
@@ -65,14 +67,14 @@ That means that no matter how slick the following solutions look:
 
 These solutions are off the table for me. Even if some of them might be a reasonable abstraction.
 
-With an offline document repo, it was immediately easy to get back the basic functionality needed; categorised text in sections (folders) and pages (markdown files within folder), and an offline way to access them (git repo).
+With an offline document repo, it was immediately easy to get back the basic functionality needed; categorised text in sections (folders) and pages (markdown files within folder), and an offline way to access them (cloned repo).
 
 ![git repo campaign](/imgs/foam/git-repo-campaign.png)
 
 ## The Markdown
-Using [Markdown](https://guides.github.com/features/mastering-markdown/) as the documention format is a no-brainer to me as a software engineer. This defacto documentation standard used nearly everywhere, supported by every editor to such a point it's hands down more productive than any [WYSIWYG application](https://www.microsoft.com/en-gb/microsoft-365/word) when you got the practice.
+Using [Markdown](https://guides.github.com/features/mastering-markdown/) as the documention format is a no-brainer to me as a software engineer. This defacto documentation standard [used](https://gohugo.io/content-management/formats/) [nearly](https://community.atlassian.com/t5/Jira-questions/Using-markdown-in-Jira/qaq-p/892041) [everywhere](https://github.github.com/gfm/), supported by [every](https://code.visualstudio.com/docs/languages/markdown) [major](https://github.com/plasticboy/vim-markdown) [code](https://github.com/SublimeText-Markdown/MarkdownEditing) editor.
 
-That said, many of the same problems I had with `OneNote` still manifested themselves:
+Still, many of the same problems I had with `OneNote` still manifested themselves:
 
 - linking markdown files requires lookup and hard-coding of filesystem paths
 - tendency to store everything in one file because linking is annoying
@@ -88,13 +90,13 @@ There are probably millions of ways to organise your stuff and still be successf
 <!--shortcode fails on my hugo install..< tweet 1308030597688971265 >-->
 
 Individualism notwithstanding, some methods are more refined than others. For instance, this [article on sociologist Niklas Luhmann and his Zettelkasten system](
-https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) talks about one refined system. Do at least skim that article for why that solution is so powerful. It brings up some very important data modelling problem inherent to note taking:
+https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freakishly-productive-997e4e0ca125) talks about one refined system. __Do at least skim__ that article for why that solution is so powerful. It brings up some very important data modelling problem inherent to note taking:
 
 - do we categorise notes by **folders**?
 - do we categorise notes by **tags**?
 - do we categorise notes by **links**?
 
-All these methods on their own cause data to get lost, but using all of them at the same time gives you a strong, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then making __your__ editor do it should be childs play.
+All these methods on their own cause data to get lost, but using all of them at the same time gives you a stronger, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then making __your__ editor do it should be childs play.
 
 Though, why this system? Well, for one it's an organic extension of what you already are doing. You don't need to follow it entirely, but the benifits of links and connection notes are huge. From the principles listed in that article. Number 3 in particular:
 
@@ -167,11 +169,10 @@ So that was a lot of information about comparison of note taking technology. How
 
 The [graphs sometimes overlaps](https://github.com/tchayen/markdown-links/issues/58) and [rebalances awkwardly](https://github.com/tchayen/markdown-links/issues/64) ([help seems to be requested](https://github.com/foambubble/call-for-visualization)), but the naive implementation still help out a whole lot.
 
-See this graph subset from some sea adventures aboard the `Artemis`:
-
+Here is a subset from our sea adventures aboard the `Artemis`:
 ![foam graph around artemis](/imgs/foam/graph-sea-campaign.png)
 
-Most of the time, I am editing with markdown on the left, preview on the right, or markdown on the left plus graph on the right, or just 100% markdown in a single view, depending on what type of work needs focus. The flexibility of this system is equivalent to that of a popular professional code editor by inheritance.
+Most of the time I just straight up edit markdown in two groups. Sometimes with a preview or graph instead on the right or below, depending on what type of work needs focus. The __flexibility__ of this system is equivalent to that of a popular professional code editor by inheritance.
 
 Even if some of these plugins don't evolve much, I see this as a pretty future proof setup (the [why foam issue](https://github.com/foambubble/foam/issues/88) is also refreshingly honest). The investment in new tech is small, and migration cost away from said tech ought to be minimal.
 
