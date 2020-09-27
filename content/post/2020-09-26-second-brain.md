@@ -1,6 +1,6 @@
 ---
 title: Foaming Campaign Brain
-subtitle: Exploring alternatives for a second brain for campaign tracking
+subtitle: Exploring second brain alternatives for campaign tracking
 date: 2020-09-26
 tags: ["zettelkasten", "foam"]
 categories: ["roleplaying"]
@@ -33,7 +33,7 @@ In practice I often ended up with a 30 tab browser window for every session, whi
 
 ![session chrome window](/imgs/foam/session-chrome.png)
 
-with more common averages like;
+this type of tab/icon chaos generally included:
 
 - 5 from OneNote (campaign brain)
 - 2 from Kobold Fight Club (potential encounters)
@@ -42,9 +42,13 @@ with more common averages like;
 - 2 for random generators
 - 5 from lore/wikis related to the story or NPCs
 
-and the squished icon/tab name meant you kind of had to tab between them a lot to figure out which one you wanted only to the tab order when players did something out of left field (**DMs**; this never happens right?).
+and their multitude meant you kind of had to tab between them a lot to figure out which one you wanted only to the tab order when players did something out of left field..
 
-So there were definitely some problems with this. That said, it was free, it __generally__ was responsive, and the 400ms link opening time wasn't too much of a drain on the improv. However, it was definitely noticable, and it just took a few times where `OneNote`'s **QoS** dropped, or my WIFI signals started getting a little dodgy (from one of the more farady cagey meeting rooms we occassionally played in), for it all to feel pointless. Then there was a whole week where I was unable to save anything with no errors shown to me. I didn't even get to the bottom of it, I just knew this could not continue.
+> **DMs**; does this happen to you?
+
+So there were definitely some problems with this. That said, it was free, it __generally__ was responsive, and the 400ms link opening time wasn't too much of a drain on the improv. Definitely noticable though, and it just took a few times where `OneNote`'s **QoS** dropped, or my WIFI signals started getting a little dodgy (from one of the more farady cagey meeting rooms we occassionally played in), for it all to feel pointless.
+
+..there was also a whole week where I was unable to save anything with no errors shown to me. I never get to the bottom of it, but it was the last straw.
 
 ## The Git Repository
 After these problems, I realised that there's one thing I'm unwilling to compromise on:
@@ -66,14 +70,16 @@ With an offline document repo, it was immediately easy to get back the basic fun
 ![git repo campaign](/imgs/foam/git-repo-campaign.png)
 
 ## The Markdown
-Using [Markdown](https://guides.github.com/features/mastering-markdown/) as the documention format is a no-brainer to me as a software engineer. Codified styling in a generic editor is so much more useful than a WYSIWYG tool like Word when you got the practice. That said, many of the same problems I had with `OneNote` still manifested themselves:
+Using [Markdown](https://guides.github.com/features/mastering-markdown/) as the documention format is a no-brainer to me as a software engineer. This defacto documentation standard used nearly everywhere, supported by every editor to such a point it's hands down more productive than any [WYSIWYG application](https://www.microsoft.com/en-gb/microsoft-365/word) when you got the practice.
+
+That said, many of the same problems I had with `OneNote` still manifested themselves:
 
 - linking markdown files requires lookup and hard-coding of filesystem paths
 - tendency to store everything in one file because linking is annoying
 - guessing what tabs are needed in your editor before the session
 - embedding images is a bit of a pain
 
-Now, none of these in theory were unsolvable. But was this something where homegrowing my own content management markdown system was really a smart way forward? After all, surely people writing books needs some kind of linked system to keep track of everything right?
+Now, none of these in theory were unsolvable. But was this something where homegrowing my own content management markdown system was really a smart way forward? After all, surely people writing books or research papers need some kind of system to keep track of everything, right?
 
 ## Zettelkasten
 There are probably millions of ways to organise your stuff and still be successful, just take a look at some famous writers' desks:
@@ -88,56 +94,59 @@ https://writingcooperative.com/zettelkasten-how-one-german-scholar-was-so-freaki
 - do we categorise notes by **tags**?
 - do we categorise notes by **links**?
 
-All these methods on their own cause data to get lost, but using all of them at the same time gives you a strong, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then there are bound to be nice ways to do this in __your__ editor without delving into [orgmode](https://orgmode.org/) land.
+All these methods on their own cause data to get lost, but using all of them at the same time gives you a strong, self-reinforcing system. If `Luhmann` could achieve this with a simple [slip box system of index cards](https://en.wikipedia.org/wiki/Zettelkasten#/media/File:Zettelkasten_(514941699).jpg), then making __your__ editor do it should be childs play.
 
-The principles listed in this article is also smart. Particularly 3:
+Though, why this system? Well, for one it's an organic extension of what you already are doing. You don't need to follow it entirely, but the benifits of links and connection notes are huge. From the principles listed in that article. Number 3 in particular:
 
 > **Always link your notes**
 > Whenever you add a note, make sure to link it to already existing notes. Avoid notes that are disconnected from other notes. As Luhmann himself put it, "each note is just an element that derives its quality from the network of links in the system. A note that is not connected to the network will be lost, will be forgotten by the Zettelkasten"
 
-This feels like good D&D advice as well. An NPC already linked to a player can be a lot easier, and more sensible to quickly re-instate, than to copy or slightly tweak [one of your 10 existing characters](https://old.reddit.com/r/dndmemes/comments/iuajhd/im_basically_a_voice_actor/) - at least if they are popular/good. Plus, it will help the players remember them better. A campaign quickly accumulates a lot of information. No need to make this harder than it already is.
+This feels like good D&D advice as well. An NPC already known by a player can be a lot easier and more sensible to re-instate, rather than fabricate a slightly different version of [one of your 10 existing characters](https://old.reddit.com/r/dndmemes/comments/iuajhd/im_basically_a_voice_actor/). Need a "dark city", but drawing a blank? Make a shadowfell version of of the same city and link them. Easier to remember for everybody. A campaign quickly accumulates a lot of information. No need to make this harder than it already is.
 
-## Obsidian
+## Considered Choices
+
+### 1. Sublime ZK
+There is a [zettelkasten plugin for sublime](https://github.com/renerocksai/sublime_zk), but it looks pretty **abandoned** at the moment. It also does not seem to let you build a graph of your links (one of the main selling points of Obsidian).
+
+### 2. Obsidian
 The article by [joshwin](joshwin.imprint.to) on how he [uses obsidian to manage goals, tasks, notes, and more](https://joshwin.imprint.to/post/how-i-use-obsidian-to-manage-my-goals-tasks-notes-and-software-development-knowledge-base) is interesting. A pre-configured all-in-one application that is flexible and powerful enough to let you handle all these different categoris. Well worth [looking into](https://obsidian.md/) **if** you don't have a good editor already. Their [feature list](https://obsidian.md/features) is decent.
 
 Personally, though, there are **reasons why I'm not going for this**:
 
-### Custom Editor
+#### Custom Editor
 While it looks like you __can__ customize this scope-limited editor close to what you fancy, it does mean that you will need to do go through all that yet another time. Having battled with Vim/Sublime/VSCode and various editors over the course of my life, there was a point where I have started feeling __satisfied__ with what [past-clux had already configured](https://github.com/clux/dotfiles).
 
-### Custom Install
+#### Custom Install
 The only provided [linux install](https://obsidian.md/) a single [snap package](https://snapcraft.io/). While snap **might become** a successful and perhaps the most prominent packaging distribution system on linux, it's nowhere near that tipping point yet; especially on [Arch](https://www.archlinux.org/). There's no need for me to introduce an [extra daemon](https://wiki.archlinux.org/index.php/Snap) to auto-upgrade packages when there's already [a solid system](https://wiki.archlinux.org/index.php/pacman) on Arch that lets me do this.
 
-### Custom Formats
+#### Custom Formats
 As with any another system bundling some pinned [electron](https://www.electronjs.org/) version, you now have yet another piece of software that will have security patches neglected as if development suddenly stops.
 
 Sure, you can keep your data because you can store it wherever, but if they control the system that defines the format then it would be super annoying to have to do a migration to something else.
 
-### Vendor locked plugins
+#### Vendor locked plugins
 One way out of this would be to have custom plugins, but their plugin API is not exposed (though on their [roadmap](https://trello.com/c/Z7qqKVXd/19-public-plugin-api-v10)).
 
 Ultimately, even if this eventually did get solved, I'd still rather go with a plugin system in a code editor I already know how to use, and backup, than to get locked in to something forked off electron where the development may stop at any time.
 
-So my preferred options would really be for Sublime or VS Code. Both very popular code editors. So what's out there?
+### 3. Orgmode with Roam
+Another all-emcompassing standard that hasn't really caught on as widely; [orgmode](https://orgmode.org/). Looks a bit like markdown, but has a lot more support for things I don't see an immediate need for. It seems kind of coupled with the [emacs](https://www.gnu.org/software/emacs/)/`lisp` ecosystem, so if that's your preference; check out [org-roam](https://github.com/org-roam/org-roam). For me, this is a bit **too off the beaten path**.
 
-## Sublime ZK
-There is a [zettelkasten plugin for sublime](https://github.com/renerocksai/sublime_zk), but it looks pretty abandoned at the moment. It also does not seem to let you build a graph of your links (one of the main selling points of Obsidian).
-
-## Foam
+### 4. Foam
 We close with [foam](https://foambubble.github.io/foam/), the system we ended up using. Inspired by Roam (a system I neglected to talk about because of sync/offline problems, and it's also not cheap).
 
-It does seem like a pretty early stage system, but the selling point here, is that `Foam` is really just a collection of [VS Code](https://github.com/microsoft/vscode) extensions, that you can [default-recommend](https://code.visualstudio.com/docs/editor/extension-gallery#_recommended-extensions) at the [repo level](https://github.com/foambubble/foam-template/blob/master/.vscode/extensions.json) and configure how you want.
+While it does seem somewhat early stage, the selling point here is that `Foam` is really just a collection of [VS Code](https://github.com/microsoft/vscode) extensions around markdown, that you can [default-recommend](https://code.visualstudio.com/docs/editor/extension-gallery#_recommended-extensions) at the [repo level](https://github.com/foambubble/foam-template/blob/master/.vscode/extensions.json) and configure how you want.
 
 The main ones here are:
 
-- [foam.foam-vscode](https://marketplace.visualstudio.com/items?itemName=foam.foam-vscode) - Foam's own extension
-- [tchayen.markdown-links](https://marketplace.visualstudio.com/items?itemName=tchayen.markdown-links) - Adds `show graph` command that displays graph of linked notes
-- [yzhang.markdown-all-in-one](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) - Tons of markdown goodies (lists, tables of content, so much more)
-- [kortina.vscode-markdown-notes](https://marketplace.visualstudio.com/items?itemName=kortina.vscode-markdown-notes) - `[[wiki-links]]`, backlinking etc
-- [esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Prettier for auto formatting code
-- [eamodio.gitlens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - GitLens for seeing version history inline
+- [foam.foam-vscode](https://marketplace.visualstudio.com/items?itemName=foam.foam-vscode) - foam's own extension
+- [kortina.vscode-markdown-notes](https://marketplace.visualstudio.com/items?itemName=kortina.vscode-markdown-notes) - markdown `[[wiki-links]]` and backlinking
+- [tchayen.markdown-links](https://marketplace.visualstudio.com/items?itemName=tchayen.markdown-links) - graphs markdown linked notes
+- [yzhang.markdown-all-in-one](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) - markdown writing helpers
+- [esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - an auto-formatter
+- [eamodio.gitlens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - online git history
 
-All of which are very popular, standard programming extensions, with the sole exception of the `foam`; a [smaller looking](https://github.com/foambubble/foam/tree/master/packages/foam-vscode) extension that helps manage the wiki links. Frankly, it's somewhat strange to me that they list the off-putting `tolerance for alpha software` as a requirement when most of their logic resides outside their codebase.
+All of which are very popular, standard extensions, with the sole exception of the `foam`; a [smaller looking](https://github.com/foambubble/foam/tree/master/packages/foam-vscode) extension that helps manage the wiki links. Frankly, it's somewhat strange to me that they list the off-putting [`tolerance for alpha software`](https://github.com/foambubble/foam/tree/master/packages/foam-vscode#requirements) as a requirement when most of their logic resides outside their codebase.
 
 If you've dealt with a code editors plugin ecosystem before, this is a lot more welcoming than obsidian to me. Bug in the system? Well, probably one of the extensions. You've got options for dealing with it: report & wait, fork + fix, try other replacement extensions.
 
@@ -164,8 +173,8 @@ See this graph subset from some sea adventures aboard the `Artemis`:
 
 Most of the time, I am editing with markdown on the left, preview on the right, or markdown on the left plus graph on the right, or just 100% markdown in a single view, depending on what type of work needs focus. The flexibility of this system is equivalent to that of a popular professional code editor by inheritance.
 
-Even if some of these plugins don't evolve much, I see this as a pretty future proof setup (the [why foam issue](https://github.com/foambubble/foam/issues/88) is also refreshingly honest). The investment in new tech is small, and migration cost away from said tech is also minimal.
+Even if some of these plugins don't evolve much, I see this as a pretty future proof setup (the [why foam issue](https://github.com/foambubble/foam/issues/88) is also refreshingly honest). The investment in new tech is small, and migration cost away from said tech ought to be minimal.
 
-From a RPG perspective, the need to pre-empt players with pre-prepared tabs is now a little less problematic as we can quickly browse to the resource either with the standard editor fuzzy file search, or by following links. There's also complete full text search on your terminal with [ripgrep](https://github.com/BurntSushi/ripgrep).
+From a RPG perspective, being able to immediately jump to anything through a responsive fuzzy search helps trim down on those `"hang on one second"` moments, and when you are planning by yourself, you have a whole linked **compendium of knowledge**.
 
 The hope with all this is that the amount of hard-to-navigate "running the game tabs" should be significantly reduced with this setup, and my world should feel more integrated thanks to the extensive Zettelkasten style linking. Well. Fingers crossed anyway.
