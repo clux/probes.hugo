@@ -1,7 +1,7 @@
 ---
 title: Foaming Campaign Brain
 subtitle: Exploring second brain alternatives for campaign tracking
-date: 2020-09-26
+date: 2020-09-27
 tags: ["zettelkasten", "foam"]
 categories: ["roleplaying"]
 ---
