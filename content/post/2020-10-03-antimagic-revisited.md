@@ -1,7 +1,7 @@
 ---
 title: Antimagic and Force Cubes
 subtitle: A lesson from weakly typed magic items
-date: 2020-10-01
+date: 2020-10-03
 tags: ["dnd"]
 categories: ["roleplaying"]
 ---
