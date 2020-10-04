@@ -244,7 +244,7 @@ In fact it only says the effect itself, it does not limit spells being cast insi
 
 This of course raises a lot more questions, but read on first.
 #### 5. Nothing?
-All matter, light, magical effects, spell effects, other forces. This is a real cage. You can't hear or see anything from the outside, and can relax in your (very visible) Sensory Deprivation. Incidentally, it is _omniphobic_; bad guys could just move it with `Telekineses`. Bring this cube into a lava pool, then just wait for it to expire. It's not like anyone inside would know.
+All matter, light, magical effects, spell effects, other forces. This is a real cage. You can't hear or see anything from the outside, and can relax in your (very visible) Sensory Deprivation. Incidentally, it is _omniphobic_; bad guys could just move it with `Telekinesis`. Bring this cube into a lava pool, then just wait for it to expire. It's not like anyone inside would know.
 
 ### This is dumb
 This interpretation is clearly strange, but it's the most consistent with the remainder of antimagic AFAIKT. The item is just too ambiguous; the wording does not match anything else in the otherwise pretty consistent spell list.
