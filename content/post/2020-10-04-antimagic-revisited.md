@@ -162,20 +162,20 @@ There's plenty of arguments to be made about how counterintuitive this is, but w
 
 ![fireball](/imgs/antimagic/fireball.jpg)
 
-This is probably a good thing, because a similar case can be made against `DBF` inside [Time Stop](https://roll20.net/compendium/dnd5e/Time%20Stop#content); a [tradition](https://www.dndbeyond.com/forums/dungeons-dragons-discussion/rules-game-mechanics/10141-spells-time-stop-and-delayed-fireball-question) is [too cool](https://www.reddit.com/r/dndnext/comments/f8jb53/how_would_time_stop_and_delayed_blast_fireball/) to [not work](https://thinkdm.org/2018/02/03/can-you-cast-multiple-delayed-blast-fireballs-during-time-stop/).
+This is probably a good thing, because a similar case can be made against `DBF` inside [Time Stop](https://roll20.net/compendium/dnd5e/Time%20Stop#content); a [tradition](https://www.dndbeyond.com/forums/dungeons-dragons-discussion/rules-game-mechanics/10141-spells-time-stop-and-delayed-fireball-question) that is [too cool](https://www.reddit.com/r/dndnext/comments/f8jb53/how_would_time_stop_and_delayed_blast_fireball/) to [not work](https://thinkdm.org/2018/02/03/can-you-cast-multiple-delayed-blast-fireballs-during-time-stop/).
 
 ## Antimagic Field vs...
 ### 1. ForceCage
-Let's look at how cancellation texts interact; `ForceCage` does not prevent magic being cast inside as long as the point of origin does not cross the boundary; so [you can cast `AMF` inside of a `ForceCage`](https://www.giantitp.com/comics/oots0627.html).
+Let's look at how cancellation texts interact; `ForceCage` does not prevent magic being cast inside as long as the point of origin does not cross the boundary; so [AMF suppresses FC](https://www.giantitp.com/comics/oots0627.html).
 
-The result being a `AMF` 10ft sphere sphere partially protruding a 10x10ft rectangle, allowing for some funny geometrical problems - if you are inclined to do some on-the-fly trig.
+The result being a 10ft sphere sphere partially protruding a 10x10ft `FC rectangle, allowing for some funny geometrical problems - if you are inclined to do some on-the-fly trig.
 
 > AMF: If the Sphere overlaps an area of magic, the part of the area that is covered by the Sphere is suppressed.
 
 Note that there's no __dynamic movement__ or __dynamic extensions__ for spell effects (movement typically happen as a discrete point at the start of a casters turn); `AMF` would leave the `ForceCage` active, just partially disabled where the the caster's sphere is covering it.
 
 ### 2. Self
-A final note, of its uncancellability; two `AMF`s do not cancel out each other. Their "sphere of influence" simply become their union.
+A final note of its uncancellability; two `AMF`s do not cancel out each other. Their "sphere of influence" simply become their union.
 
 > `AMF`: the spheres created by different antimagic field Spells don't nullify each other.
 
@@ -215,7 +215,7 @@ Funny you should mention that. We were just about ready to venture into silly-te
 
 <small>There's also a strange mechanic for number of chargers and a possibility of depleting it by hitting the barrier with certain high-levels spells, but this is not really relevant here.</small>
 
-You'll note how much more loosely worded this is. It leaves a lot of room for interpretation, does _not_ reference spells it mimics (like the Beholders Antimagic Cone ray), and thus these 8 word sentences are all we got. I noted what spells each face comes closest to in the table, but there's still a lot of questions arising from it:
+You'll note how much more loosely worded this is. It leaves a lot of room for interpretation, it does _not_ reference any spells it may mimic (unlike the Beholders Antimagic Cone), and thus these 8 word sentences are all we got. I noted what spells each face comes closest to in the list above, but a lot of questions ultimately arise:
 
 ### Questions
 #### 1. Gas as in state of matter?
@@ -244,7 +244,7 @@ In fact it only says the effect itself, it does not limit spells being cast insi
 
 This of course raises a lot more questions, but read on first.
 #### 5. Nothing?
-All matter, light, magical effects, spell effects, other forces. This is a real cage. You can't hear or see anything from the outside, and can relax in your (very visible) Sensory Deprivation tank that is _omniphobic_. Bad guys could just move it with `Telekineses`, drop this cube on top of a lava pool, and then just wait for it to expire. It's not like anyone inside would know.
+All matter, light, magical effects, spell effects, other forces. This is a real cage. You can't hear or see anything from the outside, and can relax in your (very visible) Sensory Deprivation. Incidentally, it is _omniphobic_; bad guys could just move it with `Telekineses`. Bring this cube into a lava pool, then just wait for it to expire. It's not like anyone inside would know.
 
 ### This is dumb
 This interpretation is clearly strange, but it's the most consistent with the remainder of antimagic AFAIKT. The item is just too ambiguous; the wording does not match anything else in the otherwise pretty consistent spell list.
@@ -267,7 +267,7 @@ A legendary spell casters focus. You can cast the following spells once per day 
 The focus is always the center of the spell. Attunement required by a `cleric`.
 
 #### Is this good?
-This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using. Though it's still a bit half-baked on my end. Still, over the `Cube of Force`? Easy, yes.
+This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using. While it's still a bit half-baked on my end; compare it the `Cube of Force`? Easy substitute.
 
 <!--
 If you want a wizard/sorcerer/warlock based one, you could instead use the following spells:
