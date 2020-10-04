@@ -267,7 +267,7 @@ A legendary spell casters focus. You can cast the following spells once per day 
 The focus is always the center of the spell. Attunement required by a `cleric`.
 
 #### Is this good?
-This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using. While it's still a bit half-baked on my end; compare it the `Cube of Force`? Easy substitute.
+This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using. While it's still a bit half-baked on my end; compared to the `Cube of Force`? Easy substitute.
 
 <!--
 If you want a wizard/sorcerer/warlock based one, you could instead use the following spells:
