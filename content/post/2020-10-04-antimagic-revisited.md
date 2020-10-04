@@ -249,7 +249,7 @@ All matter, light, magical effects, spell effects, other forces. This is a real 
 ### This is dumb
 This interpretation is clearly strange, but it's the most consistent with the remainder of antimagic AFAIKT. The item is just too ambiguous; the wording does not match anything else in the otherwise pretty consistent spell list.
 
-The [way we judged this in 2018](https://paper.dropbox.com/doc/CUBE-OF-FORCE-ijFUPdkLPXwXuux3hEkVe) looks nothing like the above list, but our original interpretation also did not work out with respect to game balance.
+The way we judged this in 2018 looks nothing like the above list, but our original interpretation also did not work out with respect to game balance.
 
 `Crawford` noted in the interview that he was actually recommending the removal of `AMF` for 5th edition, as it just has too many corner cases. Clearly, it was too iconic to remove and `Wizards` have done a reasonable job of tackling the ambiguities that follow from it, but for the `Cube of Force`? [The silence speaks volumes](https://twitter.com/search?q=JeremyECrawford%20%22cube%20of%20force%22).
 
