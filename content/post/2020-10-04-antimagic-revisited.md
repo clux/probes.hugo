@@ -6,35 +6,39 @@ tags: ["dnd", "homebrew"]
 categories: ["roleplaying"]
 ---
 
-In 2018, I introduced the explosive [Cube of Force](https://roll20.net/compendium/dnd5e/Cube%20of%20Force) into our home campaign. If you are considering it, you ought to know how `antimagic` in D&D is meant to work, why it's full of edge cases, why our hour long canonicalisation meeting for the Cube failed, and how to really design an item of that power.
+In 2018, we introduced the explosive [Cube of Force](https://roll20.net/compendium/dnd5e/Cube%20of%20Force) into our home campaign. We really did not expect it to cause us/me that much grief at the time, but despite long canonicalisation meetings, our interpretation was not even internally consistent.
+
+At the time we dealt with this by nerfing Cube down into the ground gradually rolling out alternatives, but it's time we dug into the concept of D&D `antimagic` properly.
 
 <!--more-->
 
 ## Words of wording
-Spell combinations are an inherently powerful thing in D&D, and so any spells that "cancels out magic" - potentially interacting with [Dispel Magic](https://5thsrd.org/spellcasting/spells/dispel_magic/) - must be carefully worded. And while [Wizards](https://company.wizards.com/) does a great job with this, there are still numerous ambiguities that end up at [JeremyECrawford](https://twitter.com/JeremyECrawford)'s table:
+Spell combinations are an inherently powerful thing in D&D, and so any spells that "cancels out magic" - potentially interacting with [Dispel Magic](https://5thsrd.org/spellcasting/spells/dispel_magic/) - must be carefully worded. And while [Wizards](https://company.wizards.com/) does a good job with this, there are still ambiguities that end up at [JeremyECrawford](https://twitter.com/JeremyECrawford)'s table:
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Have a D&amp;D rules question? There&#39;s a good chance I&#39;ve answered it!<br><br>1. Search the Sage Advice Compendium: <a href="https://t.co/nlIvbEC7D7">https://t.co/nlIvbEC7D7</a>.<br>2. Search Twitter, typing my handle (<a href="https://twitter.com/JeremyECrawford?ref_src=twsrc%5Etfw">@JeremyECrawford</a>) and a relevant term, like &quot;Twinned Spell.&quot;<br>3. Search <a href="https://t.co/5oYKuatgLB">https://t.co/5oYKuatgLB</a>. <a href="https://twitter.com/hashtag/DnD?src=hash&amp;ref_src=twsrc%5Etfw">#DnD</a> <a href="https://t.co/JXtO9catjP">pic.twitter.com/JXtO9catjP</a></p>&mdash; Jeremy Crawford (@JeremyECrawford) <a href="https://twitter.com/JeremyECrawford/status/931742038474727424?ref_src=twsrc%5Etfw">November 18, 2017</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <!--shortcode fails on my hugo install..< tweet 931742038474727424 >-->
 
-the referenced [Sage Advice Compendium](https://dnd.wizards.com/articles/sage-advice/sage-advice-compendium) is large and has many erratas for published books.
+the referenced [Sage Advice Compendium](https://dnd.wizards.com/articles/sage-advice/sage-advice-compendium) contains 21 pages of Q/A as well as links to erratas for published books.
 
-We'll focus on two spells that deal with antimagic before tackling the Cube.
+We'll focus on two spells that deal with antimagic, the philosophy and intent behind them, then we will tackle the Cube.
 
 ## ForceCarge
-[ForceCage](https://roll20.net/compendium/dnd5e/Forcecage) (or `FC` for short) first; is a `7th level` mechanism to trap players while also limiting __how__ spells can interact with it:
+[ForceCage](https://roll20.net/compendium/dnd5e/Forcecage) (or `FC` for short) first; is a `7th level` mechanism to trap players while also limiting __how__ spells can interact with trapped players:
 
 > `FC`; "creating a solid barrier that prevents any matter from passing through it and blocking any Spells cast into or out of the area".
 
-This wording only mentions the casting; i.e. the [line from the caster to the point of origin](https://www.dndbeyond.com/sources/basic-rules/spellcasting#Targets). `Fireball`'s blast would extend through, and any damaging concentration spell sitting in the middle before the cage comes down would also keep ticking __every round__ without proper recourse for the trapped players.
+This wording only mentions __the casting__; i.e. the [line from the caster to the point of origin](https://www.dndbeyond.com/sources/basic-rules/spellcasting#Targets). `Fireball`'s blast would extend through, and any damaging concentration spell sitting in the middle before the cage comes down would also keep ticking __every round__ without proper recourse.
 
-It is a deadly combination when used with spells like [Hunger of Hadar](https://www.dnd-spells.com/spell/hunger-of-hadar) (10 rounds), [Cloudkill](https://roll20.net/compendium/dnd5e/Cloudkill) (100 rounds), or [higher level clouds if available](https://5thsrd.org/spellcasting/spells/incendiary_cloud/), and you cannot even dispel the `FC`, you would need [something stronger](https://roll20.net/compendium/dnd5e/Disintegrate).
+It is a deadly combination when used with spells like [Hunger of Hadar](https://www.dnd-spells.com/spell/hunger-of-hadar) (10 rounds), [Cloudkill](https://roll20.net/compendium/dnd5e/Cloudkill) (100 rounds), or [higher level clouds if available](https://5thsrd.org/spellcasting/spells/incendiary_cloud/). Oh, but we'll just dispel..
+
+> `FC`: This spell can't be dispelled by Dispel Magic.
 
 ![hadar](/imgs/antimagic/hadar.jpg)
 
-Scary prospect though it may be, you can wrangle yourself out of it with using; `[Plane Shift](https://roll20.net/compendium/dnd5e/Plane%20Shift#content) / [Teleport](https://roll20.net/compendium/dnd5e/Teleport#content) / [Misty Step](https://roll20.net/compendium/dnd5e/Misty%20Step#content) / [Dimension Door](https://roll20.net/compendium/dnd5e/Dimension%20Door#content) on a successful charisma check. All it takes is for one player to get outside and stop the mage from hurling spell effects through the boundary.
+Scary prospect though it may be, you can wrangle yourself out of it with using; `[Plane Shift](https://roll20.net/compendium/dnd5e/Plane%20Shift#content) / [Teleport](https://roll20.net/compendium/dnd5e/Teleport#content) / [Misty Step](https://roll20.net/compendium/dnd5e/Misty%20Step#content) / [Dimension Door](https://roll20.net/compendium/dnd5e/Dimension%20Door#content) on a successful charisma check. All it takes is for one player to get outside and stop the mage from hurling spell effects through the boundary. It is also possible to [Disintegrate](https://roll20.net/compendium/dnd5e/Disintegrate) it.
 
-Still it highlights a difference with other antimagic. The "effect" of the spell leeches through the barrier of the cage, which is perhaps somewhat confusing when you can sometimes interpret the spell effect as _matter_. This is irrelevant as we'll see later; while a spell caster is shaping the underlying magical fabric; the effect is a _magical energy_.
+Still it highlights a difference with other antimagic. The barrier is not perfect, and the "effect" of the spell _leeches through_ the barrier of the cage, which is perhaps somewhat confusing when you can sometimes interpret the spell effect as _matter_. This is irrelevant as we'll see later; while a spell caster is shaping the underlying magical fabric; the effect is a _magical energy_.
 
 > Don't invoke special relativity or thermodynamics. Magic does not have to obey `E=mc^2`.
 
@@ -45,29 +49,28 @@ Still it highlights a difference with other antimagic. The "effect" of the spell
 
 The blast of a fireball detonating outside an `AMF` simply disappears into nothing at the boundary of its sphere of influence.
 
-But what happens if you throw a [Delayed Blast Fireball](https://roll20.net/compendium/dnd5e/Delayed%20Blast%20Fireball) inside an area, and put an `AMF` around the area, while powering up the fireball (`DBF` powers up with time and concentration) from the outside? This, I feel, really gets to the heart of the word __"suppressed"__; is the bead still there? Will it keep working after the `AMF` disappears? Has it powered up in the mean time? Has the duration elapsed?
+But what happens if you throw a [Delayed Blast Fireball](https://roll20.net/compendium/dnd5e/Delayed%20Blast%20Fireball) inside an area, and put an `AMF` around the area, while powering up the fireball from the outside? This, really claws at the heart of the word __"suppressed"__; is the fireball bead still there? Will it keep working after the `AMF` disappears? Has it powered up in the mean time? Has the duration elapsed?
 
-This is a harder corner-case, and requires some more guidance. And as far as corner-cases go, it's not alone:
+This is a harder corner-case, and requires some more guidance. And as far as corner-cases go, it's not alone, just think about:
 
 - class abilities like paladin's smite, monk's ki points, druid shapeshifting
 - monster abilities like dragon's breath, beholder rays
 - summoned creatures
-- magical items vs. magical artifacts (even though magic items are referenced)
 
 To answer whether these count as _magical_, we need some disambiguation.
 
 ## What is a magical effect?
 The best source here come from the [interview with Crawford from 2017](https://dnd.wizards.com/articles/features/tad-williams-storytelling) about antimagic and what they mean by `suppressing` magic.
 
-The short answer is that spells are **not dispelled**, they temporarily stop working, and the **duration of spells keeps ticking**, but that's not really getting to the meat of it.
+The short answer is that spells are **not dispelled**, they temporarily stop working, and the **duration of spells keeps ticking**.
 
-He describes magic in the D&D world as always existing in the background as a loose weave. And magical effects is this fabric formed into a particular shape; __background magic woven into an effect - using a formula__. "AMF introduces a \[temporary\] bug in this formula." Whereas `Dispel Magic` disperses that woven magic from a spell into background magic.
+He justifies it by describing magic in the D&D world as always existing in the background; a loose weave. Magical effects is __this fabric__ formed into a particular shape; __background magic woven into an effect - using a formula__. "AMF introduces a \[temporary\] bug in this formula." Whereas `Dispel Magic` disperses that woven magic from a spell into background magic.
 
-Because the world is inherently magical - and creatures like dragons and beholders would not make sense without it - `AMF` cannot possibly cancel this type of magic (as this would undo the very nature of the multiverse). Similarly, it could not cancel non-magical effects that were created through the means of past magic. Still:
+Because the world is inherently magical - and creatures like dragons and beholders would not make sense without it - `AMF` could not possibly cancel this type of magic (as this would undo the very nature of the multiverse). Neither could it cancel non-magical effects that were created through the means of past magic. However:
 
 > `AMF`: "You will not see any effects of magic while inside this field. The area is divorced from the magical energy that suffuses the multiverse".
 
-So we still need to distinguish those types of magic from the others. This is where we consult the __heuristic__ test from the [Sage Advice Compendium](https://media.wizards.com/2020/dnd/downloads/SA-Compendium.pdf) inlined below:
+This text establishes a need to distinguish those types of magic from the others. This is where we consult the __heuristic__ test from the [Sage Advice Compendium](https://media.wizards.com/2020/dnd/downloads/SA-Compendium.pdf) inlined below:
 
 ### Test for magical effects
 Answer `YES` to any of these to be classified as magical (and thus have `AMF` suppress its effect):
@@ -77,12 +80,12 @@ Answer `YES` to any of these to be classified as magical (and thus have `AMF` su
 - Is it a **spell attack**?
 - Is it creating the **effects of a spell mentioned in its description**?
 - Is it **fueled by spell slots**
-- Does the words `magic` or `magical` **appear in its effect description**?
+- Does the words `magic` or `magical` **appear in its description**?
 
 ### Examples
 While this seems like a well-thought-out heuristic, the results they mention are interesting:
 
-- Conjured creatures with concentration are magical
+- Conjured creatures relying on concentration are magical
 - Summoned creatures with instant cast duration are **NOT** magical
 
 Because the summoning has already taken place in the latter case.
@@ -103,7 +106,7 @@ Additionally, the following phenomenons (that at some point required magic to br
 ![beholder ray](/imgs/antimagic/beholder_ray.jpg)
 
 ### Artifacts
-Finally, `Artifacts` - or magic items either unavailable to mortals, or long forgotten - are also unaffected by `AMF` by a special flavour text (to,  presumably, prevent you from destroying them):
+Finally, `Artifacts` - magic items either unavailable to mortals, or long forgotten - are also unaffected by `AMF` by a special flavour text (presumably to prevent you from destroying them):
 
 > `AMF`: Spells and other magical Effects, **except those created by an artifact or a deity**, are suppressed in the Sphere and can't protrude into it.
 
@@ -153,15 +156,13 @@ Your concentration is not broken by `AMF`, and there's nothing explicitly indica
 
 - If concentration is _broken_ while the bead is inside an `AMF`, then bad luck. Nothing happens.
 
-- If there is a surpressed bead inside an `AMF` that is expiring, then hey, surprise; the bead is glowing once more, and a lot more than previously. Concentration paid off.
+- If there is a surpressed bead inside an expiring `AMF`, then hey, surprise; the bead can glow once more; and more intensely than before. Concentration paid off.
 
 There's plenty of arguments to be made about how counterintuitive this is, but we don't really know anything about the nature of concentration. The [general consensus is that this works](https://rpg.stackexchange.com/questions/136280/what-happens-if-a-delayed-blast-fireball-detonates-inside-an-antimagic-field#:~:text=A%20Delayed%20Fireball%20in%20an%20Antimagic%20Field%20wouldn't%20detonate&text=While%20an%20effect%20is%20suppressed,is%20suppressed%2C%20meaning%20nothing%20happens.).
 
 ![fireball](/imgs/antimagic/fireball.jpg)
 
-This is probably a good thing, because a similar case can be made against `DBF` inside `Time Stop`, and [that](https://www.reddit.com/r/dndnext/comments/f8jb53/how_would_time_stop_and_delayed_blast_fireball/) is [too](https://www.dndbeyond.com/forums/dungeons-dragons-discussion/rules-game-mechanics/10141-spells-time-stop-and-delayed-fireball-question) cool [to not work](https://thinkdm.org/2018/02/03/can-you-cast-multiple-delayed-blast-fireballs-during-time-stop/), and `Time Stop` is very weak in `5e` anyway:
-
-> __house rule__: Players incur automatic failures on _DEX saves_ from the spell that cancels `Time Stop`.
+This is probably a good thing, because a similar case can be made against `DBF` inside [Time Stop](https://roll20.net/compendium/dnd5e/Time%20Stop#content); a [tradition](https://www.dndbeyond.com/forums/dungeons-dragons-discussion/rules-game-mechanics/10141-spells-time-stop-and-delayed-fireball-question) is [too cool](https://www.reddit.com/r/dndnext/comments/f8jb53/how_would_time_stop_and_delayed_blast_fireball/) to [not work](https://thinkdm.org/2018/02/03/can-you-cast-multiple-delayed-blast-fireballs-during-time-stop/).
 
 ## Antimagic Field vs...
 ### 1. ForceCage
@@ -179,7 +180,7 @@ A final note, of its uncancellability; two `AMF`s do not cancel out each other. 
 > `AMF`: the spheres created by different antimagic field Spells don't nullify each other.
 
 ### 3. Anything
-By the heuristic magic test, I can't think of anything short of a `Wish` that could aid in removing an active `AMF`. Even spells like `Disintegrate` produce a magical effect.
+By the heuristic magic test, I can't think of anything short of a `Wish` that could aid in removing an active `AMF`, and that could still only work from the outside. Even spells like `Disintegrate` produce a magical effect.
 
 ### 4. Counterspell
 You can however, target it at the casting time with [Counterspell](https://www.dndbeyond.com/spells/counterspell). It is clearly the lowest level spell that can work, though it has a hard DC, it requires you to have your reaction ready, and it requires the DM being very nice and letting you recognise what spell is being thrown at you ([not always the case](https://rpg.stackexchange.com/questions/46830/what-do-i-know-when-deciding-whether-to-cast-counterspell)).
@@ -193,18 +194,18 @@ An sidenote; `Wild Shape` mentioned earlier, while magical (and `AMF`-cancellabl
 ## Antimagic Field Concentration
 Due to its hardline effect; `Crawford` notes that `AMF` is _intentionally a concentration spell that moves with you_, to give the players a chance to take out the mage. In conclusion; __don't put it on an item__.
 
-Funny you should mention that. We were just about to venture into silly-territory:
+Funny you should mention that. We were just about ready to venture into silly-territory:
 
 ## Cube of Force
 [A cube with 36 fast-recharging charges](https://roll20.net/compendium/dnd5e/Cube%20of%20Force#content), and special effects for each face. Simplified flavour text:
 
-> You can use an action to press one of the cube's faces. Each face has a different Effect. A barrier of Invisible force springs into existence, forming a cube 15 feet on a side. The barrier is centered on you, moves with you, and lasts for 1 minute, until you use an action to press the cube's sixth face, or the cube runs out of Charges.
+> You can use an action to press one of the cube's faces. Each face has a different Effect. A barrier of Invisible force springs into existence, forming `a cube 15 feet on a side`. The barrier is `centered on you`, moves with you, and `lasts for 1 minute`, until you use an action to press the cube's sixth face, or the cube runs out of Charges.
 
-> You can change the barrier's Effect by pressing a different face of the cube and expending the requisite number of Charges, resetting the Duration. If your Movement causes the barrier to come into contact with a solid object that can't pass through the cube, you can't move any closer to that object as long as the barrier remains.
+> You can `change the barrier's Effect by pressing a different face` of the cube and expending the requisite number of Charges, `resetting the Duration`. If your Movement causes the barrier to come into contact with a solid object that can't pass through the cube, you can't move any closer to that object as long as the barrier remains.
 
 ![cube of force](/imgs/antimagic/cubeofforce.jpg)
 
-### Face Effect:
+### Face Effects:
 - **1** Gases, wind, and fog can't pass through the barrier.
 - **2** Nonliving matter can't pass through the barrier. Walls, floors, and ceilings can pass through at your discretion.
 - **3** Living matter can't pass through the barrier. (`FC--`)
@@ -214,7 +215,7 @@ Funny you should mention that. We were just about to venture into silly-territor
 
 <small>There's also a strange mechanic for number of chargers and a possibility of depleting it by hitting the barrier with certain high-levels spells, but this is not really relevant here.</small>
 
-You'll note how much more loosely worded this is. It leaves a lot of room for interpretation, does _not_ reference spells it mimics (like the Beholders Antimagic Cone ray), and thus these 8 word sentences is all we got. I noted what spells each face comes closest to in the table, but there's still a lot of questions arising from it:
+You'll note how much more loosely worded this is. It leaves a lot of room for interpretation, does _not_ reference spells it mimics (like the Beholders Antimagic Cone ray), and thus these 8 word sentences are all we got. I noted what spells each face comes closest to in the table, but there's still a lot of questions arising from it:
 
 ### Questions
 #### 1. Gas as in state of matter?
@@ -234,14 +235,14 @@ Thus, this wording wouldn't be enough to stop the first example people think of.
 This is probably meant as an `Undead` shield, but be careful; a dead body still has living parts on it like cells and bacteria. You probably wouldn't want pass this barrier over the corpse of your friends if you want an easy resurrection.
 
 #### 3. Living matter?
-This sounds like `ForceCage`, but without the spell protection. You can protect yourself against arrows and charging enemies, but nor can you shoot out. You might just be trapped inside while enemies outside could target you with spells (or teleport inside).
+This sounds like `ForceCage`, but without the spell protection. You can protect yourself against arrows and charging enemies, but you cannot shoot out. You might just be trapped inside while enemies outside could target you with spells (or teleport inside).
 
 #### 4. Spell effects passing through?
-This is more ambiguous than `AMF`. The wording of `passing through` is strange - as D&D spell movement is discrete - but presumably any spell effects that crosses the boundary would probably fail to have that effect on the inside, kind of like `AMF` - but this does not specify that it functions like `AMF`.
+This one is hard. The wording of `passing through` is strange - as D&D spell movement is discrete - but presumably any spell effects that crosses the boundary would probably fail to have that effect on the inside, kind of like `AMF` - but this does not specify that it functions like `AMF`.
 
 In fact it only says the effect itself, it does not limit spells being cast inside, or targetting from the outside. In this case it's actually the inverse of `FC`; spells can actually traverse the boundary, just effects can not. A caster could step 1ft out of the cube, cast fireball inside, remain undamaged while the inside would be a closed fire chamber.
 
-This of course raises a lot more questions, but these will be ignored.
+This of course raises a lot more questions, but read on first.
 #### 5. Nothing?
 All matter, light, magical effects, spell effects, other forces. This is a real cage. You can't hear or see anything from the outside, and can relax in your (very visible) Sensory Deprivation tank that is _omniphobic_. Bad guys could just move it with `Telekineses`, drop this cube on top of a lava pool, and then just wait for it to expire. It's not like anyone inside would know.
 
@@ -252,11 +253,11 @@ The [way we judged this in 2018](https://paper.dropbox.com/doc/CUBE-OF-FORCE-ijF
 
 `Crawford` noted in the interview that he was actually recommending the removal of `AMF` for 5th edition, as it just has too many corner cases. Clearly, it was too iconic to remove and `Wizards` have done a reasonable job of tackling the ambiguities that follow from it, but for the `Cube of Force`? [The silence speaks volumes](https://twitter.com/search?q=JeremyECrawford%20%22cube%20of%20force%22).
 
-Just __don't use this item__. If you want this type of Legendary power, homebrew something using existing spells, but equally, don't put relieve a mage of antimagic concentration. Here's an alternative, yet still very poweful homebrew item:
+Just __don't use this item__. If you want this type of Legendary power, homebrew something using existing spells, but equally, __don't relieve a mage of antimagic concentration__. Here's an alternative - yet still very poweful - homebrew item:
 
 ![globe of invulnerability](/imgs/antimagic/globe_invuln.jpg)
 
-#### Umberlee's Upheaval
+### `Umberlee's Upheaval`
 A legendary spell casters focus. You can cast the following spells once per day from the following list of spells. The sphere will maintain concentration on one spell at a time, until it has been made to drop it via a command word or if the item is dropped;
 
 - [Hallow](https://5thsrd.org/spellcasting/spells/hallow/) (centered on the focus)
@@ -266,7 +267,7 @@ A legendary spell casters focus. You can cast the following spells once per day 
 The focus is always the center of the spell. Attunement required by a `cleric`.
 
 #### Is this good?
-This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using.
+This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using. Though it's still a bit half-baked on my end. Still, over the `Cube of Force`? Easy, yes.
 
 <!--
 If you want a wizard/sorcerer/warlock based one, you could instead use the following spells:
@@ -282,4 +283,4 @@ or a paladin based one:
 -->
 
 ### Ending thoughs
-If you've followed me through this rabbit hole in fantasy rule research, congratulations. Hope this has been interesting. At the very least, I will feel a little more confident in running high level games with liches.
+If you've followed me through this rabbit hole in fantasy rule research, congratulations. Hope this has been interesting. At the very least, I will feel a little more confident in running high level games that may or may not contain liches.
