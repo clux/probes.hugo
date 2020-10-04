@@ -23,7 +23,7 @@ the referenced [Sage Advice Compendium](https://dnd.wizards.com/articles/sage-ad
 
 We'll focus on two spells that deal with antimagic, the philosophy and intent behind them, then we will tackle the Cube.
 
-## ForceCarge
+## ForceCage
 [ForceCage](https://roll20.net/compendium/dnd5e/Forcecage) (or `FC` for short) first; is a `7th level` mechanism to trap players while also limiting __how__ spells can interact with trapped players:
 
 > `FC`; "creating a solid barrier that prevents any matter from passing through it and blocking any Spells cast into or out of the area".
