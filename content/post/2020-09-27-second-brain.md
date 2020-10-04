@@ -111,7 +111,7 @@ This feels like good D&D advice as well. An NPC already known by a player can be
 There is a [zettelkasten plugin for sublime](https://github.com/renerocksai/sublime_zk), but it looks pretty **abandoned** at the moment. It also does not seem to let you build a graph of your links (one of the main selling points of Obsidian).
 
 ### 2. Obsidian
-The article by [joshwin](joshwin.imprint.to) on how he [uses obsidian to manage goals, tasks, notes, and more](https://joshwin.imprint.to/post/how-i-use-obsidian-to-manage-my-goals-tasks-notes-and-software-development-knowledge-base) is interesting. A pre-configured all-in-one application that is flexible and powerful enough to let you handle all these different categoris. Well worth [looking into](https://obsidian.md/) **if** you don't have a good editor already. Their [feature list](https://obsidian.md/features) is decent.
+The article by [joshwin](joshwin.imprint.to) on how he [uses obsidian to manage goals, tasks, notes, and more](https://joshwin.imprint.to/post/how-i-use-obsidian-to-manage-my-goals-tasks-notes-and-software-development-knowledge-base) is interesting. A pre-configured all-in-one application that is flexible and powerful enough to let you handle all these different categories. Well worth [looking into](https://obsidian.md/) **if** you don't have a good editor already. Their [feature list](https://obsidian.md/features) is decent.
 
 Personally, though, there are **reasons why I'm not going for this**:
 
