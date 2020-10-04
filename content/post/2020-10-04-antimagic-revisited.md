@@ -268,9 +268,6 @@ The focus is always the center of the spell. Attunement required by a `cleric`.
 #### Is this good?
 This is clearly very different; filled with largely protective/utility spells, modified to work in AOE around the focus. They all have well-defined use cases, and are all sufficiently different that they are all worth using.
 
-### Ending thoughs
-If you've followed me through this rabbit hole in fantasy rule research, congratulations. Hope this has been interesting. At the very least, I will feel a little more confident in running high level games with liches.
-
 <!--
 If you want a wizard/sorcerer/warlock based one, you could instead use the following spells:
 
@@ -283,3 +280,6 @@ or a paladin based one:
 - [Aura of Purity](https://www.dndbeyond.com/spells/aura-of-purity)
 - [Aura of Life](https://www.dndbeyond.com/spells/aura-of-life)
 -->
+
+### Ending thoughs
+If you've followed me through this rabbit hole in fantasy rule research, congratulations. Hope this has been interesting. At the very least, I will feel a little more confident in running high level games with liches.
