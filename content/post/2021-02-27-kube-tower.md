@@ -115,14 +115,6 @@ It's not hard to find benefits to standardising this abstraction: you can alread
 For now, however, the end result is a more light-weight http client: `hyper` over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` is the main start point).
 
 
-## TODO: done
-
-
-## TODO: kube-runtime
-- mention removal of old [informers](/post/2019-04-29-rust-on-kubernetes)
-- mention shutdown procedures
-
-
 ## Help
 
 [Help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) always appreciated, even if you are just fixing [docs](https://docs.rs/kube/0.50.1/kube/) or [examples](https://github.com/clux/kube-rs/tree/master/examples)
