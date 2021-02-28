@@ -142,4 +142,4 @@ Without being able to give any guarantees. Volunteer work, you know.
 
 Speaking of; **[help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental** for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
 
-Check our [discussions](https://github.com/clux/kube-rs/discussions/422), the [tokio discord](https://discord.gg/tokio), or the straight [issues](https://github.com/clux/kube-rs/issues), and take care ✨🤗
+Check our [discussions](https://github.com/clux/kube-rs/discussions/422), the [tokio discord](https://discord.gg/tokio), or the [issues](https://github.com/clux/kube-rs/issues) if interested. Take care ✨🤗
