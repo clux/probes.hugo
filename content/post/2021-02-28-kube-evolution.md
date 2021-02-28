@@ -93,7 +93,7 @@ Websockets is using `tokio-tungstenite`, a dependency so light-weight it's [only
 
 Of course, supporting multiple protocols, tls stacks, and certs from kubeconfigs means that there's considerable tls handling in kube. Fortunately, we have mostly managed to confine it to [one cursed file](https://github.com/clux/kube-rs/blob/11f60c7c5e793a6badc6f8bf3792c0a4e80a500d/kube/src/service/tls.rs).
 
-And if websockets support were not enough:
+..And if websocket support was not enough:
 
 > Every api call now goes through [Client::send](https://docs.rs/kube/0.51.0/src/kube/client/mod.rs.html#70-91)'s new Service, rather than `reqwest::send`, and we no longer depend on `reqwest`.
 
@@ -118,18 +118,16 @@ For now, however, the end result is a more light-weight http client: **[hyper](h
 ### Credits
 If you looked at the [contributors graph](https://github.com/clux/kube-rs/graphs/contributors), you'll see we have a new maintainer.
 
-How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts so quickly, and also have time to [land 20+ more prs since january](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk).
+How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts _so quickly+, and still managing to [merge 20+ more prs since january](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk) 🤯
 
-Having mostly project-managered this ship the past two months, it's important to point [credit](https://github.com/clux/kube-rs/pull/411#issuecomment-777086158) to where it is due, and stop to appreciate how far we've come. Huge thanks to [kazk](https://github.com/kazk).
+_...So_, having mostly _project-managered_ the ship the past **two months**, it's important to give due [credit](https://github.com/clux/kube-rs/pull/411#issuecomment-777086158) while we appreciate how far we've come. Huge thanks to [kazk](https://github.com/kazk).
 
 In fact, from the [client capabilities document](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities), we are [almost](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold) at <img style="display:inline" alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8"/>.
 
 ## End
-So that's one slice into kube.
+TL;DR: A lot has happened. We have dissected parts of `kube`.
 
-As a sort of _quasi-conclusion_, I would just like to note __how much easier__ these complex problems are to tackle in rust now thanks to **[tokio.rs](https://tokio.rs/#tk-lib-tokio)**. The ecosystem is fantastic now.
-
-_Thanks for reading this far!_
+As a kind of __conclusion__, I would just like to note __how much easier__ these complex problems are to tackle in rust now thanks to **[tokio.rs](https://tokio.rs/#tk-lib-tokio)**. The ecosystem is fantastic now.
 
 ## Future Addendum
 Some key kube related issues that I personally hope will be resolved in 2021:
@@ -144,4 +142,4 @@ Without being able to give any guarantees. Volunteer work, you know.
 
 Speaking of; **[help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental** for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
 
-Get in touch with [discussions](https://github.com/clux/kube-rs/discussions/422), the [tokio discord](https://discord.gg/tokio), or just straight [issues](https://github.com/clux/kube-rs/issues). Take care ✨🤗
+Check our [discussions](https://github.com/clux/kube-rs/discussions/422), the [tokio discord](https://discord.gg/tokio), or the straight [issues](https://github.com/clux/kube-rs/issues), and take care ✨🤗
