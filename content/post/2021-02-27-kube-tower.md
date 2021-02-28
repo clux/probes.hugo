@@ -6,7 +6,7 @@ tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
 
-After a quarter year of extensive improvements to [kube](https://github.com/clux/kube-rs), it's time to take a birds-eye view of what we got, and showcase some of the improvements we have. After all, it's been about [40 kube releases](https://github.com/clux/kube-rs/releases), one major version of [tokio](https://github.com/tokio-rs/tokio), and one [kubecon talk](https://www.youtube.com/watch?v=JmwnRcc2m2A) since my (very outdated) [last blog post](/post/2019-06-04-towards-a-generic-kube-client).
+After a quarter year of extensive improvements to [kube](https://github.com/clux/kube-rs), it's time to take a birds-eye view of what we got, and showcase some of the improvements we have. After all, it's been about [40 kube releases](https://github.com/clux/kube-rs/releases), one major version of [tokio](https://github.com/tokio-rs/tokio), one [extremely prolific new contributor](https://github.com/clux/kube-rs/graphs/contributors), and one [kubecon talk](https://www.youtube.com/watch?v=JmwnRcc2m2A) since my (very outdated) [last blog post](/post/2019-06-04-towards-a-generic-kube-client).
 
 <!--more-->
 
@@ -114,11 +114,26 @@ It's not hard to find benefits to standardising this abstraction: you can alread
 
 For now, however, the end result is a more light-weight http client: `hyper` over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` is the main start point).
 
+### Credits
+If you looked at the [contributors graph](https://github.com/clux/kube-rs/graphs/contributors), you'll see we have a new maintainer.
 
-## Help
+How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts so quickly, and also have time to [do so much more](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk).
 
-[Help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) always appreciated, even if you are just fixing [docs](https://docs.rs/kube/0.50.1/kube/) or [examples](https://github.com/clux/kube-rs/tree/master/examples)
-[discussions](https://github.com/clux/kube-rs/discussions/422)
+Having mostly project-managered this ship the past two months, it's important to point [credit](https://github.com/clux/kube-rs/pull/411#issuecomment-777086158) to where it is due, and stop to appreciate how far we've come. Huge thanks to [kazk](https://github.com/kazk).
 
+In fact, from the [client capabilities document](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities), we are [almost](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold) at <img style="display:inline" alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8"/>.
 
-</🐂💈>
+## Future
+So that's the current state of kube.
+
+Some issues that we want to dedicate more time to as more and more users arrive at the library:
+
+- [ergonomics / utils](https://github.com/clux/kube-rs/issues/428)
+- [testing / mocking](https://github.com/clux/kube-rs/issues/429)
+- dyn api [improvements](https://github.com/clux/kube-rs/pull/385)
+
+A lot of these interplay with `kube-runtime` + `kube-derive` which was not covered by this post. Stay tuned.
+
+As always, [help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
+
+To get in touch, we have [github discussions](https://github.com/clux/kube-rs/discussions/422) as a more informal alternative to issues, and we are also on the [tokio discord](https://discord.gg/tokio), you are very welcome to join in.
