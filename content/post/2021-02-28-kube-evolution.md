@@ -113,12 +113,12 @@ __Why this abstraction?__ Well, primarily, less entangling business logic with I
 
 There's also code-reuse of [common service layers](https://docs.rs/tower/0.4.6/tower/#modules) (effectively middleware), as well as the ability to [mock services out of the box](https://docs.rs/tower-test/0.4.0/tower_test/macro.assert_request_eq.html), something that will help create a [better mocking setup](https://github.com/clux/kube-rs/issues/429#issuecomment-782957601) down the line.
 
-For now, however, the end result is a more light-weight http client: **[hyper](https://github.com/hyperium/hyper#hyper)** over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` is the main start point).
+For now, however, the end result is a more light-weight http client: **[hyper](https://github.com/hyperium/hyper#hyper)** over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` as the main start point).
 
 ### Credits
 If you looked at the [contributors graph](https://github.com/clux/kube-rs/graphs/contributors), you'll see we have a new maintainer.
 
-How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts _so quickly+, and still managing to [merge 20+ more prs since january](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk) 🤯
+How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts _so quickly_, and still managing to [merge 20+ more prs since january](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk) 🤯
 
 _...So_, having mostly _project-managered_ the ship the past **two months**, it's important to give due [credit](https://github.com/clux/kube-rs/pull/411#issuecomment-777086158) while we appreciate how far we've come. Huge thanks to [kazk](https://github.com/kazk).
 
