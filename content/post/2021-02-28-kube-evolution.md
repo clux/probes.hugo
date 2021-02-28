@@ -109,25 +109,30 @@ The `Service` creates a series of ordered [__layers__](https://docs.rs/kube/0.51
 
 The connector for `hyper` deals with TLS stack selection + Timeouts + [proxying](https://github.com/clux/kube-rs/pull/438)
 
-__Why this abstraction?__ Well, primarily, less entangling business logic with IO ([Sans-IO](https://sans-io.readthedocs.io/) goals), and [tower::Service](https://docs.rs/tower-service/0.3.1/tower_service/trait.Service.html) provides a robust way to move in that direction.
+__Why this abstraction?__ Well, primarily, less entangling business logic with IO ([Sans-IO](https://sans-io.readthedocs.io/) goals), and **[tower](https://docs.rs/tower-service/0.3.1/tower_service/trait.Service.html)** provides a robust way to move in that direction.
 
 There's also code-reuse of [common service layers](https://docs.rs/tower/0.4.6/tower/#modules) (effectively middleware), as well as the ability to [mock services out of the box](https://docs.rs/tower-test/0.4.0/tower_test/macro.assert_request_eq.html), something that will help create a [better mocking setup](https://github.com/clux/kube-rs/issues/429#issuecomment-782957601) down the line.
 
-For now, however, the end result is a more light-weight http client: `hyper` over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` is the main start point).
+For now, however, the end result is a more light-weight http client: **[hyper](https://github.com/hyperium/hyper#hyper)** over `reqwest`, and without changing the core api boundaries (inserting `Service` between `Client` and `Config` will not affect the vast majority of users who use `Client::try_default` is the main start point).
 
 ### Credits
 If you looked at the [contributors graph](https://github.com/clux/kube-rs/graphs/contributors), you'll see we have a new maintainer.
 
-How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts so quickly, and also have time to [do so much more](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk).
+How did their contributions spike so quickly? Well, check out the prs for [tower + hyper rearchitecture](https://github.com/clux/kube-rs/pull/394), and [websocket support](https://github.com/clux/kube-rs/pull/360). Imagine landing those hugely ambitious beasts so quickly, and also have time to [land 20+ more prs since january](https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk).
 
 Having mostly project-managered this ship the past two months, it's important to point [credit](https://github.com/clux/kube-rs/pull/411#issuecomment-777086158) to where it is due, and stop to appreciate how far we've come. Huge thanks to [kazk](https://github.com/kazk).
 
 In fact, from the [client capabilities document](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities), we are [almost](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold) at <img style="display:inline" alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8"/>.
 
-## Future
-So that's one slice into kube, and we've not even touched on the runtime / derive.
+## End
+So that's one slice into kube.
 
-Some key issues that I personally hope will be resolved in 2021:
+As a sort of _quasi-conclusion_, I would just like to note __how much easier__ these complex problems are to tackle in rust now thanks to **[tokio.rs](https://tokio.rs/#tk-lib-tokio)**. The ecosystem is fantastic now.
+
+_Thanks for reading this far!_
+
+## Future Addendum
+Some key kube related issues that I personally hope will be resolved in 2021:
 
 - [ergonomics / utils](https://github.com/clux/kube-rs/issues/428)
 - [testing / mocking](https://github.com/clux/kube-rs/issues/429)
@@ -135,8 +140,8 @@ Some key issues that I personally hope will be resolved in 2021:
 - dyn api [improvements](https://github.com/clux/kube-rs/pull/385)
 - [less Options in generated types](https://github.com/Arnavion/k8s-openapi/issues/72)
 
-We will see how far we get.
+Without being able to give any guarantees. Volunteer work, you know.
 
-As always, [help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
+Speaking of; **[help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental** for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
 
-To get in touch, we have [github discussions](https://github.com/clux/kube-rs/discussions/422) as a more informal alternative to issues, and we are also on the [tokio discord](https://discord.gg/tokio), you are very welcome to join in.
+Get in touch with [discussions](https://github.com/clux/kube-rs/discussions/422), the [tokio discord](https://discord.gg/tokio), or just straight [issues](https://github.com/clux/kube-rs/issues). Take care ✨🤗
