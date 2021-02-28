@@ -12,6 +12,11 @@ With the last `0.10.0` release, it's now clear that the generic setup extends qu
 
 <!--more-->
 
+## Update from 2021
+**This post is old and many details herein are severely outdated**.
+A few `EDIT:` markers have been highlighted to point out the biggest changes, but the rest of the post is left unedited for historical reasons.
+Consider checking for a more recent [#kubernetes](/tags/kubernetes/) post.
+
 ## Overview
 The reason this library even works at all, is the amount of homebrew generics present in the kubernetes API.
 
@@ -181,6 +186,8 @@ Here `json!` really shines. The macro is actually also so context-aware, that yo
 ## Higher level abstractions
 With the core api abstractions in place, an easy abstraction is `Reflector<K>`: an automatic resource cache for a `K` which - through sustained `watch` calls - ensures its cache reflect the `etcd` state. We have [talked about Reflectors earlier](/post/2019-04-29-rust-on-kubernetes); so let's cover Informers.
 
+**EDIT**: Informers and Reflectors were deprecated as of 2020 in  favour of the `kube-runtime` crate.
+
 ### Informers
 An informer for a resource is an event notifier for that resource. It calls `watch` when you ask it to, and it informs you of new events. In go, you [attach event handler functions](https://engineering.bitnami.com/articles/a-deep-dive-into-kubernetes-controllers.html) to it. In rust, we just pattern match our `WatchEvent` enum directly for a similar effect:
 
@@ -268,6 +275,8 @@ Yeah.. `#![allow(non_snake_case)]`. It's arguably more helpful to be able to eas
 
 That said, we currently rely on `k8s-openapi` (and that crate maps cases..). Do people have strong feelings about this?
 
+**EDIT**: This stopped being true in 2020.
+
 ### Delete returns an Either
 The `delete` verb akwardly gives you a `Status` object (sometimes..), so we have to maintain logic to conditionally parse those `kind` values (where we expect them) into an [Either enum](https://docs.rs/either/1.5.2/either/enum.Either.html). This means users have to `map_left` to deal with the "it's not done yet" case, or `map_right` for the "it's done" case ([crd example](https://github.com/clux/kube-rs/blob/3d1562d5f3e1d06dc599b05cbf6dc44176d710e0/examples/crd_openapi.rs#L40-L52)). Maybe there's a better way to do this. Maybe we need a more semantically correct enum.
 
@@ -280,6 +289,8 @@ This is probably solveable with some blunt `generic_verb_noun` hammer on `RawApi
 
 It clearly breaks the generic model somewhat, but thankfully only in the areas you'd expect it to break.
 
+**EDIT**: This stopped being a problem in 2020.
+
 ### Not everything follows the Spec + Status model
 You might think these exceptions make up a short and insignificant list of legacy objects, but look at this subset:
 
@@ -291,6 +302,8 @@ You might think these exceptions make up a short and insignificant list of legac
 - [ServiceAccount](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.14/#serviceaccount-v1-core) - `secrets` vector + misc fields
 
 And that was only like 20 minutes in the API docs. Long story short, [we eventually](https://github.com/clux/kube-rs/issues/35) stopped relying on `Object<P, U>` everywhere in favour of `KubeObject`. This meant we could deal with these special objects in [mod snowflake](https://github.com/clux/kube-rs/blob/0b0ed4d2f035cf9e455f1ad8ae346cf87fc20cac/src/api/snowflake.rs#L15-L62), without feeling too dirty about it..
+
+**EDIT**: This stopped being a problem in 2020.
 
 ### Remaining toil
 While many of the remaining tasks are not too difficult, there are quite a few of them:

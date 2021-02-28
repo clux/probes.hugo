@@ -24,11 +24,11 @@ Big projects I've been heavily involved in include:
 
 There are also numerous smaller projects under my [github account](https://github.com/clux?tab=repositories) that solve some problems. In particular:
 
-- [muslrust](https://github.com/clux/muslrust) - a canonical `x86_64-unknown-linux-musl` rust build image for the cloud
-- [kube](https://github.com/clux/kube) - a kubernetes client for rust
+- [kube](https://github.com/clux/kube) - a kubernetes api client and controller runtime for rust
+- [muslrust](https://github.com/clux/muslrust) - a `x86_64-unknown-linux-musl` build image for the cloud
 - [tournament](https://github.com/clux/tournament) - a suite of modules for managing state and lifecycles of competitions
 
-Last four years have had heavy usage of [rust](https://www.rust-lang.org/) due to its safety guarantees and great libraries. But [I also like to dabble](https://github.com/clux/magic-forest).
+Last [five](https://github.com/cisco/lal-build-manager/commit/5247fb2755cf936a81ed9e82ff6b7bbc0af8a03a) years have had heavy usage of [rust](https://www.rust-lang.org/) due to its safety guarantees and great libraries. But [I also like to dabble](https://github.com/clux/magic-forest).
 
 ### Mathematics
 There exists a dusty, but laminated piece of paper with my name +  `Master of Mathematics` on it. While no one has ever asked to look at it, it keeps being featured on my [resume](http://clux.github.io/vitae/) every `n` years.
