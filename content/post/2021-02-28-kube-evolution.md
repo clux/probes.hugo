@@ -1,7 +1,7 @@
 ---
-title: State of Kube 2021
+title: Evolution of kube
 subtitle: Tower, Hyper, Websockets.
-date: 2021-02-27
+date: 2021-02-28
 tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
@@ -37,7 +37,7 @@ We make this generic by making **two assumptions about kubernetes**:
 
 We won't cover this now, but you can watch the talk from [KubeCon2020: The Hidden Generics in Kubernetes' API](https://www.youtube.com/watch?v=JmwnRcc2m2A) (or [read the slides](https://clux.github.io/kubecon2020)).
 
-The `Api` has been remarkably stable over the past two years, despite the internals being restructured heavily.
+The `Api` has been remarkably stable over the past year, despite the internals being restructured heavily.
 
 One improvement is to the ergonomics of patching, which now has a [typed Patch enum](https://docs.rs/kube/0.50.1/kube/api/enum.Patch.html) for selecting the patch type.
 
@@ -124,15 +124,14 @@ Having mostly project-managered this ship the past two months, it's important to
 In fact, from the [client capabilities document](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities), we are [almost](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold) at <img style="display:inline" alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8"/>.
 
 ## Future
-So that's the current state of kube.
+So that's the current state of kube, and we've not even touched on the runtime / derive.
 
-Some issues that we want to dedicate more time to as more and more users arrive at the library:
+Some key issues that we hope will be resolved:
 
 - [ergonomics / utils](https://github.com/clux/kube-rs/issues/428)
 - [testing / mocking](https://github.com/clux/kube-rs/issues/429)
 - dyn api [improvements](https://github.com/clux/kube-rs/pull/385)
-
-A lot of these interplay with `kube-runtime` + `kube-derive` which was not covered by this post. Stay tuned.
+- [less Options in generated types](https://github.com/Arnavion/k8s-openapi/issues/72)
 
 As always, [help](https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) is instrumental for moving things forward, and always appreciated. Even if you are just fixing [docs](https://docs.rs/kube/latest/kube/) / [examples](https://github.com/clux/kube-rs/tree/master/examples) or asking questions.
 

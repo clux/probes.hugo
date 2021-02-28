@@ -15,7 +15,7 @@ With the last `0.10.0` release, it's now clear that the generic setup extends qu
 ## Update from 2021
 **This post is old and many details herein are severely outdated**.
 A few `EDIT:` markers have been highlighted to point out the biggest changes, but the rest of the post is left unedited for historical reasons.
-Consider checking for a more recent [#kubernetes]([/post/2021-02-27-kube-tower](https://clux.github.io/probes/tags/kubernetes/) post.
+Consider checking for a more recent [#kubernetes](/tags/kubernetes/) post.
 
 ## Overview
 The reason this library even works at all, is the amount of homebrew generics present in the kubernetes API.

@@ -13,7 +13,7 @@ While these are good, non-controversial choices, the advancement of client libra
 <!--more-->
 
 ## Update from 2021
-**This post is old and many details herein are severely outdated**. Please see a more recent [#kubernetes]([/post/2021-02-27-kube-tower](https://clux.github.io/probes//tags/kubernetes/) post.
+**This post is old and many details herein are severely outdated**. Please see a more recent [#kubernetes](/tags/kubernetes/) post.
 The rest of the post is left unedited for historical reasons.
 
 ## ..couldn't we have done this for ages?
