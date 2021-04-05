@@ -197,8 +197,10 @@ to avoid availability disgraces,
 or debugging in mazes.
 ```
 
-## End
+## Future
 This is a young ecosystem, but the pieces are there. You can pin your versions as you upgrade, and have metrics, logs, traces, and multiple ways to move between them on Grafana.
-For the complete example operator from this post, see [controller-rs](https://github.com/clux/controller-rs), which will quickly have more up to date code than this post. Hope this has been useful!
+For the complete example operator from this post, see [controller-rs](https://github.com/clux/controller-rs), which will quickly have more up to date code than this post.
 
-Note that compared to a full microservice cloud, this is a pretty simplified, toy demo. For the more complete microservice experience, keep an eye on future [TrueLayer Enineering blog posts](https://truelayer.com/blog/category/engineering), as we are looking to embrace Tempo in our Rust native, and heavily prometheus instrumented cloud.
+Hope this has been useful ✨🤗
+
+**NB**: compared to a full microservice cloud, this is a pretty simplified, toy demo. For the more complete microservice experience, keep an eye on future [TrueLayer Enineering blog posts](https://truelayer.com/blog/category/engineering), as we are looking to embrace Tempo in our Rust native, and heavily prometheus instrumented cloud.
