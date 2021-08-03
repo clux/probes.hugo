@@ -118,10 +118,10 @@ opentelemetry = { version = "0.13.0", features = ["trace", "rt-tokio"] }
 opentelemetry-otlp = { version = "0.6.0", features = ["tokio"] }
 ```
 
-With this final setup, we can now see our `traceId` field in the logs, which we can copy-paste into tempo and step away from our application for a bit.
+With this final setup, we can now see our `trace_id` field in the logs, which we can copy-paste into tempo and step away from our application for a bit.
 
 ### Loki Configuration
-To avoid manual steps of going from logs to traces, we add a [Derived Field](https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields) in our configured logs data source, to regex our json logs for our `traceId`, and turn that into an internal link for Grafana to step into our Tempo data source.
+To avoid manual steps of going from logs to traces, we add a [Derived Field](https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields) in our configured logs data source, to regex our json logs for our `trace_id`, and turn that into an internal link for Grafana to step into our Tempo data source.
 
 TODO: image of the click split.
 
