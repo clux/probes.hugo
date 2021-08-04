@@ -1,4 +1,4 @@
-HUGO_VERSION=0.52-ubuntu-onbuild
+HUGO_VERSION=0.87.0-ubuntu-onbuild
 
 serve:
 	docker run --rm -it --name hugoprobes \

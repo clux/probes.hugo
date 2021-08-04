@@ -8,9 +8,11 @@ pygmentsCodeFences = true
 pygmentsUseClasses = false
 pygmentsStyle = "dracula"
 
+[markup.goldmark.renderer]
+  unsafe = true
+
 [Params]
   useHLJS = false
-  useKatex = false # custom loading it
   #commit = "https://github.com/clux/probes/tree"
   showRelatedPosts = true
   #readingTime = true
