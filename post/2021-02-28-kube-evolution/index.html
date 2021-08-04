@@ -1,18 +1,149 @@
-<!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><title>Evolution of kube - probes</title><meta property=og:title content="Evolution of kube"><meta name=twitter:title content="Evolution of kube"><meta name=description content="Tower, Hyper, Websockets."><meta property=og:description content="Tower, Hyper, Websockets."><meta name=twitter:description content="Tower, Hyper, Websockets."><meta name=author content=clux><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https://clux.github.io/probes/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https://clux.github.io/probes/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://clux.github.io/probes/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https://clux.github.io/probes/post/2021-02-28-kube-evolution/","name":"Evolution of kube"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Evolution of kube","description":"After a quarter year of extensive improvements to kube, it&amp;rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it&amp;rsquo;s been about 40 kube releases, one major version of tokio, one extremely prolific new contributor, and one kubecon talk since my (very outdated) last blog post.
-","inLanguage":"en","wordCount":1088,"datePublished":"2021-02-28T00:00:00","dateModified":"2021-02-28T00:00:00","image":"https://clux.github.io/probes/","keywords":["rust, kubernetes"],"mainEntityOfPage":"https://clux.github.io/probes/post/2021-02-28-kube-evolution/","publisher":{"@type":"Organization","name":"https://clux.github.io/probes/","logo":{"@type":"ImageObject","url":"https://clux.github.io/probes/","height":60,"width":60}}}</script><meta property=og:title content="Evolution of kube"><meta property=og:description content="Tower, Hyper, Websockets."><meta property=og:url content=https://clux.github.io/post/2021-02-28-kube-evolution/><meta property=og:type content=website><meta property=og:site_name content=probes><meta name=twitter:title content="Evolution of kube"><meta name=twitter:description content="Tower, Hyper, Websockets."><meta name=twitter:card content=summary><meta name=twitter:site content=@sszynrae><meta name=twitter:creator content=@sszynrae><meta name=twitter:card content=summary><meta name=twitter:site content=@sszynrae><meta name=twitter:creator content=@sszynrae><meta property=og:url content=https://clux.github.io/post/2021-02-28-kube-evolution/><meta property=og:type content=website><meta property=og:site_name content=probes><meta name=generator content="Hugo 0.52"><link rel=alternate href=https://clux.github.io/probes/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous><link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous><link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.github.io/probes/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.github.io/probes/css/syntax.css><link rel=stylesheet href=https://clux.github.io/probes/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class=container-fluid><div class=navbar-header><button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
+<!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Evolution of kube - probes</title>
+<meta name=description content="Tower, Hyper, Websockets.">
+<meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.github.io\/probes\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.github.io\/probes\/"}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.github.io\/probes\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.github.io\/probes\/post\/2021-02-28-kube-evolution\/","name":"Evolution of kube"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Evolution of kube","description":"After a quarter year of extensive improvements to kube, it\u0026rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it\u0026rsquo;s been about 40 kube releases, one major version of tokio, one extremely prolific new contributor, and one kubecon talk since my (very outdated) last blog post.\n","inLanguage":"en","wordCount":1088,"datePublished":"2021-02-28T00:00:00","dateModified":"2021-02-28T00:00:00","image":"https:\/\/clux.github.io\/probes\/","keywords":["rust, kubernetes"],"mainEntityOfPage":"https:\/\/clux.github.io\/probes\/post\/2021-02-28-kube-evolution\/","publisher":{"@type":"Organization","name":"https:\/\/clux.github.io\/probes\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.github.io\/probes\/","height":60,"width":60}}}</script>
+<meta property="og:title" content="Evolution of kube">
+<meta property="og:description" content="Tower, Hyper, Websockets.">
+<meta property="og:url" content="https://clux.github.io/probes/post/2021-02-28-kube-evolution/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="probes">
+<meta name=twitter:title content="Evolution of kube">
+<meta name=twitter:description content="Tower, Hyper, Websockets.">
+<meta name=twitter:card content="summary">
+<meta name=twitter:site content="@sszynrae">
+<meta name=twitter:creator content="@sszynrae">
+<meta name=generator content="Hugo 0.87.0">
+<link rel=alternate href=https://clux.github.io/probes/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
+<link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous>
+<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.github.io/probes/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.github.io/probes/css/syntax.css><link rel=stylesheet href=https://clux.github.io/probes/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+<div class=container-fluid>
+<div class=navbar-header>
+<button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
 <span class=sr-only>Toggle navigation</span>
-<span class=icon-bar></span><span class=icon-bar></span><span class=icon-bar></span></button>
-<a class=navbar-brand href=https://clux.github.io/probes/>probes</a></div><div class="collapse navbar-collapse" id=main-navbar><ul class="nav navbar-nav navbar-right"><li><a title=Blog href=https://clux.github.io/probes/>Blog</a></li><li><a title=About href=https://clux.github.io/probes/page/about/>About</a></li><li><a title=Tags href=https://clux.github.io/probes/tags>Tags</a></li></ul></div></div></nav><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+</button>
+<a class=navbar-brand href=https://clux.github.io/probes/>probes</a>
+</div>
+<div class="collapse navbar-collapse" id=main-navbar>
+<ul class="nav navbar-nav navbar-right">
+<li>
+<a title=Blog href=https://clux.github.io/probes/>Blog</a>
+</li>
+<li>
+<a title=About href=https://clux.github.io/probes/page/about/>About</a>
+</li>
+<li>
+<a title=Tags href=https://clux.github.io/probes/tags>Tags</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
 <button class="pswp__button pswp__button--share" title=Share></button>
 <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><header class=header-section><div class="intro-header no-img"><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class=post-heading><h1>Evolution of kube</h1><h2 class=post-subheading>Tower, Hyper, Websockets.</h2><span class=post-meta><i class="fas fa-calendar"></i>&nbsp;Posted on February 28, 2021
-&nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux</span></div></div></div></div></div></header><div class=container role=main><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role=main class=blog-post><p>After a quarter year of extensive improvements to <a href=https://github.com/clux/kube-rs>kube</a>, it&rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it&rsquo;s been about <a href=https://github.com/clux/kube-rs/releases>40 kube releases</a>, one major version of <a href=https://tokio.rs/>tokio</a>, one <a href=https://github.com/clux/kube-rs/graphs/contributors>extremely prolific new contributor</a>, and one <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">kubecon talk</a> since my (very outdated) <a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client>last blog post</a>.</p><h2 id=crates>Crates</h2><p>As of <code>0.51.0</code>, With modules and crates now delineated better, there&rsquo;s now multiple crates in the repository:</p><ul><li><strong>kube</strong>: <code>Api</code> types, and <code>Client</code> library with from a <code>Config</code></li><li><strong>kube-derive</strong>: proc-macro to derive <code>CustomResource</code> necessities from a struct</li><li><strong>kube-runtime</strong>: stream based controller runtime</li></ul><p>Today, we will focus on <code>kube</code>.</p><h3 id=kube-api>kube::Api</h3><p>Let&rsquo;s start with the basic feature you&rsquo;d expect from a client library, the <strong><a href=https://docs.rs/kube/latest/kube/struct.Api.html>Api</a></strong>.</p><p>Its goals:</p><ul><li>allow interaction with any kubernetes resource</li><li>stay compatible with any struct from <a href=https://arnavion.github.io/k8s-openapi/v0.11.x/k8s_openapi/api/index.html>k8s-openapi</a></li><li>defer IO handling to the injected <code>Client</code></li><li>map <code>Client</code> output through <code>serde</code></li></ul><p>We make this generic by making <strong>two assumptions about kubernetes</strong>:</p><ul><li>all objects have metadata from <a href=https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go>apimachinery/meta/types</a></li><li><code>client-go</code> api generation is generics in disguise (<a href=https://github.com/kubernetes/client-go/tree/6a251876df7908e387143b57eb15bcbd0d6886e0/kubernetes/typed>generated api</a>)</li></ul><p>We won&rsquo;t cover this now, but you can watch the talk from <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">KubeCon2020: The Hidden Generics in Kubernetes&rsquo; API</a> (or <a href=https://clux.github.io/kubecon2020>read the slides</a>).</p><p>Our <code>Api</code> has been remarkably stable over the past year, despite the internals being restructured heavily.</p><p>One improvement is to the ergonomics of patching, which now has a <a href=https://docs.rs/kube/0.51.0/kube/api/enum.Patch.html>typed Patch enum</a> for selecting the patch type.</p><p>Despite full support, we always advocate for <a href=https://kubernetes.io/blog/2020/04/01/kubernetes-1.18-feature-server-side-apply-beta-2/>server-side apply</a> everywhere as a lot of the awkward issues with local patching are generally <a href=https://github.com/kubernetes/kubernetes/issues/58414>swept under the rug</a> with the clearly superior patch mode present in newer versions of kubernetes.</p><p>Here&rsquo;s how patching looks today:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#ff79c6>#[tokio::main]</span>
-async <span style=color:#ff79c6>fn</span> <span style=color:#50fa7b>main</span>() -&gt; <span style=color:#50fa7b>anyhow</span>::<span style=color:#8be9fd;font-style:italic>Result</span><span style=color:#ff79c6>&lt;</span>()<span style=color:#ff79c6>&gt;</span> {
-    <span style=color:#8be9fd;font-style:italic>let</span> client <span style=color:#ff79c6>=</span> Client::try_default().await<span style=color:#ff79c6>?</span>;
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div>
+<header class=header-section>
+<div class="intro-header no-img">
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<div class=post-heading>
+<h1>Evolution of kube</h1>
+<h2 class=post-subheading>Tower, Hyper, Websockets.</h2>
+<span class=post-meta>
+<i class="fas fa-calendar"></i>&nbsp;Posted on February 28, 2021
+&nbsp;(Last modified on August 4, 2021)
+&nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class=container role=main>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<article role=main class=blog-post>
+<p>After a quarter year of extensive improvements to <a href=https://github.com/clux/kube-rs>kube</a>, it&rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it&rsquo;s been about <a href=https://github.com/clux/kube-rs/releases>40 kube releases</a>, one major version of <a href=https://tokio.rs/>tokio</a>, one <a href=https://github.com/clux/kube-rs/graphs/contributors>extremely prolific new contributor</a>, and one <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">kubecon talk</a> since my (very outdated) <a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client>last blog post</a>.</p>
+<h2 id=crates>Crates</h2>
+<p>As of <code>0.51.0</code>, With modules and crates now delineated better, there&rsquo;s now multiple crates in the repository:</p>
+<ul>
+<li><strong>kube</strong>: <code>Api</code> types, and <code>Client</code> library with from a <code>Config</code></li>
+<li><strong>kube-derive</strong>: proc-macro to derive <code>CustomResource</code> necessities from a struct</li>
+<li><strong>kube-runtime</strong>: stream based controller runtime</li>
+</ul>
+<p>Today, we will focus on <code>kube</code>.</p>
+<h3 id=kubeapi>kube::Api</h3>
+<p>Let&rsquo;s start with the basic feature you&rsquo;d expect from a client library, the <strong><a href=https://docs.rs/kube/latest/kube/struct.Api.html>Api</a></strong>.</p>
+<p>Its goals:</p>
+<ul>
+<li>allow interaction with any kubernetes resource</li>
+<li>stay compatible with any struct from <a href=https://arnavion.github.io/k8s-openapi/v0.11.x/k8s_openapi/api/index.html>k8s-openapi</a></li>
+<li>defer IO handling to the injected <code>Client</code></li>
+<li>map <code>Client</code> output through <code>serde</code></li>
+</ul>
+<p>We make this generic by making <strong>two assumptions about kubernetes</strong>:</p>
+<ul>
+<li>all objects have metadata from <a href=https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go>apimachinery/meta/types</a></li>
+<li><code>client-go</code> api generation is generics in disguise (<a href=https://github.com/kubernetes/client-go/tree/6a251876df7908e387143b57eb15bcbd0d6886e0/kubernetes/typed>generated api</a>)</li>
+</ul>
+<p>We won&rsquo;t cover this now, but you can watch the talk from <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">KubeCon2020: The Hidden Generics in Kubernetes' API</a> (or <a href=https://clux.github.io/kubecon2020>read the slides</a>).</p>
+<p>Our <code>Api</code> has been remarkably stable over the past year, despite the internals being restructured heavily.</p>
+<p>One improvement is to the ergonomics of patching, which now has a <a href=https://docs.rs/kube/0.51.0/kube/api/enum.Patch.html>typed Patch enum</a> for selecting the patch type.</p>
+<p>Despite full support, we always advocate for <a href=https://kubernetes.io/blog/2020/04/01/kubernetes-1.18-feature-server-side-apply-beta-2/>server-side apply</a> everywhere as a lot of the awkward issues with local patching are generally <a href=https://github.com/kubernetes/kubernetes/issues/58414>swept under the rug</a> with the clearly superior patch mode present in newer versions of kubernetes.</p>
+<p>Here&rsquo;s how patching looks today:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#ff79c6>#[tokio::main]</span>
+<span style=color:#ff79c6>async</span> <span style=color:#ff79c6>fn</span> <span style=color:#50fa7b>main</span>() -&gt; <span style=color:#50fa7b>anyhow</span>::<span style=color:#8be9fd;font-style:italic>Result</span><span style=color:#ff79c6>&lt;</span>()<span style=color:#ff79c6>&gt;</span> {
+    <span style=color:#8be9fd;font-style:italic>let</span> client <span style=color:#ff79c6>=</span> Client::try_default().<span style=color:#ff79c6>await</span><span style=color:#ff79c6>?</span>;
     <span style=color:#8be9fd;font-style:italic>let</span> foos: <span style=color:#50fa7b>Api</span><span style=color:#ff79c6>&lt;</span>Foo<span style=color:#ff79c6>&gt;</span> <span style=color:#ff79c6>=</span> Api::namespaced(client, <span style=color:#f1fa8c>&#34;default&#34;</span>);
 
-    <span style=color:#8be9fd;font-style:italic>let</span> ss_apply <span style=color:#ff79c6>=</span> PatchParams::apply(<span style=color:#f1fa8c>&#34;kube&#34;</span>).force()
+    <span style=color:#8be9fd;font-style:italic>let</span> ss_apply <span style=color:#ff79c6>=</span> PatchParams::apply(<span style=color:#f1fa8c>&#34;kube&#34;</span>).force();
     <span style=color:#8be9fd;font-style:italic>let</span> patch <span style=color:#ff79c6>=</span> serde_json::json<span style=color:#ff79c6>!</span>({
         <span style=color:#f1fa8c>&#34;apiVersion&#34;</span>: <span style=color:#f1fa8c>&#34;clux.dev/v1&#34;</span>,
         <span style=color:#f1fa8c>&#34;kind&#34;</span>: <span style=color:#f1fa8c>&#34;Foo&#34;</span>,
@@ -21,13 +152,169 @@ async <span style=color:#ff79c6>fn</span> <span style=color:#50fa7b>main</span>(
             <span style=color:#f1fa8c>&#34;replicas&#34;</span>: <span style=color:#bd93f9>2</span>
         }
     });
-    foos.patch(<span style=color:#f1fa8c>&#34;myfoo&#34;</span>, <span style=color:#ff79c6>&amp;</span>ss_apply, <span style=color:#ff79c6>&amp;</span>Patch::Apply(patch)).await<span style=color:#ff79c6>?</span>;
+    foos.patch(<span style=color:#f1fa8c>&#34;myfoo&#34;</span>, <span style=color:#ff79c6>&amp;</span>ss_apply, <span style=color:#ff79c6>&amp;</span>Patch::Apply(patch)).<span style=color:#ff79c6>await</span><span style=color:#ff79c6>?</span>;
     <span style=color:#8be9fd;font-style:italic>Ok</span>(())
 }
-</code></pre></div><p>The biggest <code>Api</code> improvement recently was the inclusion of the most complicated <a href=https://github.com/clux/kube-rs/blob/master/kube/src/api/subresource.rs>subresources</a>: <code>Api::exec</code> and <code>Api::attach</code>, and these actually uses a different protocol; <a href=https://github.com/clux/kube-rs/issues/229>websockets</a>.</p><p>Despite the complexities, these details have ended up being generally invisible to the user; you can hit <a href=https://docs.rs/kube/0.51.0/kube/struct.Api.html#method.exec>Api::exec</a> like any other method, and you&rsquo;ll get the expected streams you can pipe from and pipe to:</p><p><blockquote class=twitter-tweet><p lang=en dir=ltr>kube master: optional websocket support for exec/attach with <a href="https://twitter.com/tokio_rs?ref_src=twsrc%5Etfw">@tokio_rs</a> 1.0. Pipe streams to/from k8s pods. <a href=https://t.co/WhSFlPmm60>pic.twitter.com/WhSFlPmm60</a></p>&mdash; eirik ᐸ&#39;aᐳ (@sszynrae) <a href="https://twitter.com/sszynrae/status/1346122892707319810?ref_src=twsrc%5Etfw">January 4, 2021</a></blockquote><script async src=https://platform.twitter.com/widgets.js></script></p><h3 id=kube-config>kube::Config</h3><p>Not to be confused with the file in your home directory, our <a href=https://docs.rs/kube/latest/kube/struct.Config.html>Config</a> is actually just the relevant parameters we extract from the <a href=https://docs.rs/kube/latest/kube/config/struct.Kubeconfig.html>kubeconfig file</a> (or <a href=https://docs.rs/kube/latest/kube/struct.Config.html#method.from_cluster_env>cluster evars</a> when in-cluster), to help us create a <code>Client</code>.</p><p>You generally won&rsquo;t need to instantiate any of these though, nor do you need a <code>Config</code> (as shown above), because <a href=https://docs.rs/kube/0.51.0/kube/struct.Client.html#method.try_default>Client::try_default</a> will infer the correct one.</p><p>Recent updates to stay compatible with the different config variants which <code>kubectl</code> supports, means we now support <a href=https://github.com/clux/kube-rs/issues/132>stacked kubeconfigs</a>, and <a href=https://github.com/clux/kube-rs/issues/440>multi-document kubeconfigs</a>.</p><h3 id=kube-client>kube::Client</h3><p>One of the most updated parts of <code>kube</code> this year, the <a href=https://docs.rs/kube/latest/kube/struct.Client.html><code>Client</code></a> has undergone significant surgery.
-It is now entirely concerned with the <strong>protocol</strong>, and handles the serialization plumbing between the <code>Api</code> and the apiserver.</p><p>Many improvements are only really appreciable internally;</p><ul><li><p><strong>watch</strong> buffering is now using a <a href=https://docs.rs/tokio-util/0.6.3/tokio_util/codec/index.html>tokio codec</a> to give us a much more readable <a href=https://docs.rs/kube/0.51.0/src/kube/client/mod.rs.html#204-272>streaming event parser</a>, while still returning a <code>TryStream&lt;Item = Result&lt;WatchEvent&lt;T&gt;&gt;&gt;</code> for <code>Api::watch</code></p></li><li><p><a href=https://docs.rs/kube/0.51.0/kube/struct.Client.html#method.connect>Client::connect</a> added to give a way to <a href=https://docs.rs/hyper/0.14.4/hyper/upgrade/index.html>hyper::upgrade</a> an existing <code>http</code> connection (<a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Upgrade>wtf is upgrading?</a>) to grant a streaming websocket connection from the existing http library. This is the secret sauce behind <code>Api::exec</code>.</p></li></ul><p>Websockets is using <code>tokio-tungstenite</code>, a dependency so light-weight it&rsquo;s <a href=https://github.com/snapview/tokio-tungstenite/blob/master/Cargo.toml>only pulling</a> in <code>tungstenite</code> without its <a href=https://github.com/snapview/tungstenite-rs/blob/master/Cargo.toml>default-features</a>. Crucially, this lets us avoid having yet another way to specify tls stacks and cause a corresponding explosion of features (<a href=https://github.com/rust-lang/cargo/issues/8832>weak-dep-features</a> plz).</p><p>Of course, supporting multiple protocols, tls stacks, and certs from kubeconfigs means that there&rsquo;s considerable tls handling in kube. Fortunately, we have mostly managed to confine it to <a href=https://github.com/clux/kube-rs/blob/11f60c7c5e793a6badc6f8bf3792c0a4e80a500d/kube/src/service/tls.rs>one cursed file</a>.</p><p>..And if websocket support was not enough:</p><blockquote><p>Every api call now goes through <a href=https://docs.rs/kube/0.51.0/src/kube/client/mod.rs.html#70-91>Client::send</a>&rsquo;s new Service, rather than <code>reqwest::send</code>, and we no longer depend on <code>reqwest</code>.</p></blockquote><h3 id=kube-service>kube::Service</h3><p>The new <a href=https://docs.rs/kube/0.51.0/kube/struct.Service.html>Service</a> - injected into the <code>Client</code>, and constructed from an <a href=https://docs.rs/kube/0.51.0/src/kube/config/mod.rs.html#51-62>arbitrary</a> <code>Config</code> - is what actually deals with the processing of the request call to turn it into a response.</p><p>The <code>Service</code> creates a series of ordered <a href=https://docs.rs/kube/0.51.0/src/kube/service/mod.rs.html#71-125><strong>layers</strong></a> to be executed for each request:</p><ol><li>Authentication (extracting tokens, possibly talking to auth providers)</li><li>Url + header mapping from Config to http request</li><li>Dealing with optional compression</li><li>Send it to a <code>HyperClient</code> configured with a <code>Connector</code></li></ol><p>The connector for <code>hyper</code> deals with TLS stack selection + Timeouts + <a href=https://github.com/clux/kube-rs/pull/438>proxying</a></p><p><strong>Why this abstraction?</strong> Well, primarily, less entangling business logic with IO (<a href=https://sans-io.readthedocs.io/>Sans-IO</a> goals), and <strong><a href=https://docs.rs/tower-service/0.3.1/tower_service/trait.Service.html>tower</a></strong> provides a robust way to move in that direction.</p><p>There&rsquo;s also code-reuse of <a href=https://docs.rs/tower/0.4.6/tower/#modules>common service layers</a> (effectively middleware), as well as the ability to <a href=https://docs.rs/tower-test/0.4.0/tower_test/macro.assert_request_eq.html>mock services out of the box</a>, something that will help create a <a href=https://github.com/clux/kube-rs/issues/429#issuecomment-782957601>better mocking setup</a> down the line.</p><p>For now, however, the end result is a more light-weight http client: <strong><a href=https://github.com/hyperium/hyper#hyper>hyper</a></strong> over <code>reqwest</code>, and without changing the core api boundaries (inserting <code>Service</code> between <code>Client</code> and <code>Config</code> will not affect the vast majority of users who use <code>Client::try_default</code> as the main start point).</p><h3 id=credits>Credits</h3><p>If you looked at the <a href=https://github.com/clux/kube-rs/graphs/contributors>contributors graph</a>, you&rsquo;ll see we have a new maintainer.</p><p>How did their contributions spike so quickly? Well, check out the prs for <a href=https://github.com/clux/kube-rs/pull/394>tower + hyper rearchitecture</a>, and <a href=https://github.com/clux/kube-rs/pull/360>websocket support</a>. Imagine landing those hugely ambitious beasts <em>so quickly</em>, and still managing to <a href="https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk">merge 20+ more prs since january</a> 🤯</p><p><em>&hellip;So</em>, having mostly <em>project-managered</em> the ship the past <strong>two months</strong>, it&rsquo;s important to give due <a href=https://github.com/clux/kube-rs/pull/411#issuecomment-777086158>credit</a> while we appreciate how far we&rsquo;ve come. Huge thanks to <a href=https://github.com/kazk>kazk</a>.</p><p>In fact, from the <a href=https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities>client capabilities document</a>, we are <a href="https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold">almost</a> at <img style=display:inline alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8">.</p><h2 id=end>End</h2><p>TL;DR: A lot has happened. We have dissected parts of <code>kube</code>.</p><p>As a kind of <strong>conclusion</strong>, I would just like to note <strong>how much easier</strong> these complex problems are to tackle in rust now thanks to <strong><a href=https://tokio.rs/#tk-lib-tokio>tokio.rs</a></strong>. The ecosystem is fantastic now.</p><h2 id=future-addendum>Future Addendum</h2><p>Some key kube related issues that I personally hope will be resolved in 2021:</p><ul><li><a href=https://github.com/clux/kube-rs/issues/428>ergonomics / utils</a></li><li><a href=https://github.com/clux/kube-rs/issues/429>testing / mocking</a></li><li><a href=https://github.com/clux/kube-rs/discussions/423>tracing story</a></li><li>dyn api <a href=https://github.com/clux/kube-rs/pull/385>improvements</a></li><li><a href=https://github.com/Arnavion/k8s-openapi/issues/72>less Options in generated types</a></li></ul><p>Without being able to give any guarantees. Volunteer work, you know.</p><p>Speaking of; <strong><a href="https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22">help</a> is instrumental</strong> for moving things forward, and always appreciated. Even if you are just fixing <a href=https://docs.rs/kube/latest/kube/>docs</a> / <a href=https://github.com/clux/kube-rs/tree/master/examples>examples</a> or asking questions.</p><p>Check our <a href=https://github.com/clux/kube-rs/discussions/422>discussions</a>, the <a href=https://discord.gg/tokio>tokio discord</a>, or the <a href=https://github.com/clux/kube-rs/issues>issues</a> if interested. Take care ✨🤗</p><div class=blog-tags><a href=https://clux.github.io/probes//tags/rust/>rust</a>&nbsp;
-<a href=https://clux.github.io/probes//tags/kubernetes/>kubernetes</a>&nbsp;</div><h4 class=see-also>See also</h4><ul><li><a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client/>A generic kubernetes client</a></li><li><a href=https://clux.github.io/probes/post/2019-04-29-rust-on-kubernetes/>Kubernetes operators in rust</a></li><li><a href=https://clux.github.io/probes/post/2018-12-15-config-management-in-rust/>Config management in rust</a></li></ul></article><ul class="pager blog-pager"><li class=previous><a href=https://clux.github.io/probes/post/2020-10-04-antimagic-revisited/ data-toggle=tooltip data-placement=top title="Antimagic and Force Cubes">&larr; Previous Post</a></li></ul></div></div></div><footer><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a href=mailto:sszynrae@gmail.com title="Email me"><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-envelope fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://github.com/clux title=GitHub><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-github fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://twitter.com/sszynrae title=Twitter><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-twitter fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://reddit.com/u/clux title=Reddit><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-reddit-alien fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://linkedin.com/in/%f0%9f%97%91-eirik-albrigtsen-b279863a title=LinkedIn><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-linkedin fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://www.youtube.com/channel/UCLpykMxkxuPUR9CciheipZg title=Youtube><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-youtube fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://www.strava.com/athletes/49770219 title=strava><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fab fa-strava fa-stack-1x fa-inverse"></i></span></a></li></ul><p class="credits copyright text-muted">clux
+</code></pre></div><p>The biggest <code>Api</code> improvement recently was the inclusion of the most complicated <a href=https://github.com/clux/kube-rs/blob/master/kube/src/api/subresource.rs>subresources</a>: <code>Api::exec</code> and <code>Api::attach</code>, and these actually uses a different protocol; <a href=https://github.com/clux/kube-rs/issues/229>websockets</a>.</p>
+<p>Despite the complexities, these details have ended up being generally invisible to the user; you can hit <a href=https://docs.rs/kube/0.51.0/kube/struct.Api.html#method.exec>Api::exec</a> like any other method, and you&rsquo;ll get the expected streams you can pipe from and pipe to:</p>
+<blockquote class=twitter-tweet><p lang=en dir=ltr>kube master: optional websocket support for exec/attach with <a href="https://twitter.com/tokio_rs?ref_src=twsrc%5Etfw">@tokio_rs</a> 1.0. Pipe streams to/from k8s pods. <a href=https://t.co/WhSFlPmm60>pic.twitter.com/WhSFlPmm60</a></p>&mdash; eirik ᐸ'aᐳ (@sszynrae) <a href="https://twitter.com/sszynrae/status/1346122892707319810?ref_src=twsrc%5Etfw">January 4, 2021</a></blockquote> <script async src=https://platform.twitter.com/widgets.js></script>
+<h3 id=kubeconfig>kube::Config</h3>
+<p>Not to be confused with the file in your home directory, our <a href=https://docs.rs/kube/latest/kube/struct.Config.html>Config</a> is actually just the relevant parameters we extract from the <a href=https://docs.rs/kube/latest/kube/config/struct.Kubeconfig.html>kubeconfig file</a> (or <a href=https://docs.rs/kube/latest/kube/struct.Config.html#method.from_cluster_env>cluster evars</a> when in-cluster), to help us create a <code>Client</code>.</p>
+<p>You generally won&rsquo;t need to instantiate any of these though, nor do you need a <code>Config</code> (as shown above), because <a href=https://docs.rs/kube/0.51.0/kube/struct.Client.html#method.try_default>Client::try_default</a> will infer the correct one.</p>
+<p>Recent updates to stay compatible with the different config variants which <code>kubectl</code> supports, means we now support <a href=https://github.com/clux/kube-rs/issues/132>stacked kubeconfigs</a>, and <a href=https://github.com/clux/kube-rs/issues/440>multi-document kubeconfigs</a>.</p>
+<h3 id=kubeclient>kube::Client</h3>
+<p>One of the most updated parts of <code>kube</code> this year, the <a href=https://docs.rs/kube/latest/kube/struct.Client.html><code>Client</code></a> has undergone significant surgery.
+It is now entirely concerned with the <strong>protocol</strong>, and handles the serialization plumbing between the <code>Api</code> and the apiserver.</p>
+<p>Many improvements are only really appreciable internally;</p>
+<ul>
+<li>
+<p><strong>watch</strong> buffering is now using a <a href=https://docs.rs/tokio-util/0.6.3/tokio_util/codec/index.html>tokio codec</a> to give us a much more readable <a href=https://docs.rs/kube/0.51.0/src/kube/client/mod.rs.html#204-272>streaming event parser</a>, while still returning a <code>TryStream&lt;Item = Result&lt;WatchEvent&lt;T>>></code> for <code>Api::watch</code></p>
+</li>
+<li>
+<p><a href=https://docs.rs/kube/0.51.0/kube/struct.Client.html#method.connect>Client::connect</a> added to give a way to <a href=https://docs.rs/hyper/0.14.4/hyper/upgrade/index.html>hyper::upgrade</a> an existing <code>http</code> connection (<a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Upgrade>wtf is upgrading?</a>) to grant a streaming websocket connection from the existing http library. This is the secret sauce behind <code>Api::exec</code>.</p>
+</li>
+</ul>
+<p>Websockets is using <code>tokio-tungstenite</code>, a dependency so light-weight it&rsquo;s <a href=https://github.com/snapview/tokio-tungstenite/blob/master/Cargo.toml>only pulling</a> in <code>tungstenite</code> without its <a href=https://github.com/snapview/tungstenite-rs/blob/master/Cargo.toml>default-features</a>. Crucially, this lets us avoid having yet another way to specify tls stacks and cause a corresponding explosion of features (<a href=https://github.com/rust-lang/cargo/issues/8832>weak-dep-features</a> plz).</p>
+<p>Of course, supporting multiple protocols, tls stacks, and certs from kubeconfigs means that there&rsquo;s considerable tls handling in kube. Fortunately, we have mostly managed to confine it to <a href=https://github.com/clux/kube-rs/blob/11f60c7c5e793a6badc6f8bf3792c0a4e80a500d/kube/src/service/tls.rs>one cursed file</a>.</p>
+<p>..And if websocket support was not enough:</p>
+<blockquote>
+<p>Every api call now goes through <a href=https://docs.rs/kube/0.51.0/src/kube/client/mod.rs.html#70-91>Client::send</a>&rsquo;s new Service, rather than <code>reqwest::send</code>, and we no longer depend on <code>reqwest</code>.</p>
+</blockquote>
+<h3 id=kubeservice>kube::Service</h3>
+<p>The new <a href=https://docs.rs/kube/0.51.0/kube/struct.Service.html>Service</a> - injected into the <code>Client</code>, and constructed from an <a href=https://docs.rs/kube/0.51.0/src/kube/config/mod.rs.html#51-62>arbitrary</a> <code>Config</code> - is what actually deals with the processing of the request call to turn it into a response.</p>
+<p>The <code>Service</code> creates a series of ordered <a href=https://docs.rs/kube/0.51.0/src/kube/service/mod.rs.html#71-125><strong>layers</strong></a> to be executed for each request:</p>
+<ol>
+<li>Authentication (extracting tokens, possibly talking to auth providers)</li>
+<li>Url + header mapping from Config to http request</li>
+<li>Dealing with optional compression</li>
+<li>Send it to a <code>HyperClient</code> configured with a <code>Connector</code></li>
+</ol>
+<p>The connector for <code>hyper</code> deals with TLS stack selection + Timeouts + <a href=https://github.com/clux/kube-rs/pull/438>proxying</a></p>
+<p><strong>Why this abstraction?</strong> Well, primarily, less entangling business logic with IO (<a href=https://sans-io.readthedocs.io/>Sans-IO</a> goals), and <strong><a href=https://docs.rs/tower-service/0.3.1/tower_service/trait.Service.html>tower</a></strong> provides a robust way to move in that direction.</p>
+<p>There&rsquo;s also code-reuse of <a href=https://docs.rs/tower/0.4.6/tower/#modules>common service layers</a> (effectively middleware), as well as the ability to <a href=https://docs.rs/tower-test/0.4.0/tower_test/macro.assert_request_eq.html>mock services out of the box</a>, something that will help create a <a href=https://github.com/clux/kube-rs/issues/429#issuecomment-782957601>better mocking setup</a> down the line.</p>
+<p>For now, however, the end result is a more light-weight http client: <strong><a href=https://github.com/hyperium/hyper#hyper>hyper</a></strong> over <code>reqwest</code>, and without changing the core api boundaries (inserting <code>Service</code> between <code>Client</code> and <code>Config</code> will not affect the vast majority of users who use <code>Client::try_default</code> as the main start point).</p>
+<h3 id=credits>Credits</h3>
+<p>If you looked at the <a href=https://github.com/clux/kube-rs/graphs/contributors>contributors graph</a>, you&rsquo;ll see we have a new maintainer.</p>
+<p>How did their contributions spike so quickly? Well, check out the prs for <a href=https://github.com/clux/kube-rs/pull/394>tower + hyper rearchitecture</a>, and <a href=https://github.com/clux/kube-rs/pull/360>websocket support</a>. Imagine landing those hugely ambitious beasts <em>so quickly</em>, and still managing to <a href="https://github.com/clux/kube-rs/pulls?q=is%3Apr+is%3Aclosed+author%3Akazk">merge 20+ more prs since january</a> 🤯</p>
+<p><em>&mldr;So</em>, having mostly <em>project-managered</em> the ship the past <strong>two months</strong>, it&rsquo;s important to give due <a href=https://github.com/clux/kube-rs/pull/411#issuecomment-777086158>credit</a> while we appreciate how far we&rsquo;ve come. Huge thanks to <a href=https://github.com/kazk>kazk</a>.</p>
+<p>In fact, from the <a href=https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/csi-new-client-library-procedure.md#client-capabilities>client capabilities document</a>, we are <a href="https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3Aclient-gold">almost</a> at <img style=display:inline alt="client gold" src="https://img.shields.io/badge/Kubernetes%20client-Gold-blue.svg?style=plastic&colorB=FFD700&colorA=306CE8">.</p>
+<h2 id=end>End</h2>
+<p>TL;DR: A lot has happened. We have dissected parts of <code>kube</code>.</p>
+<p>As a kind of <strong>conclusion</strong>, I would just like to note <strong>how much easier</strong> these complex problems are to tackle in rust now thanks to <strong><a href=https://tokio.rs/#tk-lib-tokio>tokio.rs</a></strong>. The ecosystem is fantastic now.</p>
+<h2 id=future-addendum>Future Addendum</h2>
+<p>Some key kube related issues that I personally hope will be resolved in 2021:</p>
+<ul>
+<li><a href=https://github.com/clux/kube-rs/issues/428>ergonomics / utils</a></li>
+<li><a href=https://github.com/clux/kube-rs/issues/429>testing / mocking</a></li>
+<li><a href=https://github.com/clux/kube-rs/discussions/423>tracing story</a></li>
+<li>dyn api <a href=https://github.com/clux/kube-rs/pull/385>improvements</a></li>
+<li><a href=https://github.com/Arnavion/k8s-openapi/issues/72>less Options in generated types</a></li>
+</ul>
+<p>Without being able to give any guarantees. Volunteer work, you know.</p>
+<p>Speaking of; <strong><a href="https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22">help</a> is instrumental</strong> for moving things forward, and always appreciated. Even if you are just fixing <a href=https://docs.rs/kube/latest/kube/>docs</a> / <a href=https://github.com/clux/kube-rs/tree/master/examples>examples</a> or asking questions.</p>
+<p>Check our <a href=https://github.com/clux/kube-rs/discussions/422>discussions</a>, the <a href=https://discord.gg/tokio>tokio discord</a>, or the <a href=https://github.com/clux/kube-rs/issues>issues</a> if interested. Take care ✨🤗</p>
+<div class=blog-tags>
+<a href=https://clux.github.io/probes//tags/rust/>rust</a>&nbsp;
+<a href=https://clux.github.io/probes//tags/kubernetes/>kubernetes</a>&nbsp;
+</div>
+<h4 class=see-also>See also</h4>
+<ul>
+<li><a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client/>A generic kubernetes client</a></li>
+<li><a href=https://clux.github.io/probes/post/2019-04-29-rust-on-kubernetes/>Kubernetes operators in rust</a></li>
+<li><a href=https://clux.github.io/probes/post/2019-03-31-impersonating-kube-accounts/>Impersonating kube service accounts</a></li>
+<li><a href=https://clux.github.io/probes/post/2018-12-15-config-management-in-rust/>Config management in rust</a></li>
+</ul>
+</article>
+<ul class="pager blog-pager">
+<li class=previous>
+<a href=https://clux.github.io/probes/post/2020-10-04-antimagic-revisited/ data-toggle=tooltip data-placement=top title="Antimagic and Force Cubes">&larr; Previous Post</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<footer>
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<ul class="list-inline text-center footer-links">
+<li>
+<a href=mailto:sszynrae@gmail.com title="Email me">
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://github.com/clux title=GitHub>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-github fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://twitter.com/sszynrae title=Twitter>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://reddit.com/u/clux title=Reddit>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-reddit-alien fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://linkedin.com/in/%f0%9f%97%91-eirik-albrigtsen-b279863a title=LinkedIn>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://www.youtube.com/channel/UCLpykMxkxuPUR9CciheipZg title=Youtube>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://www.strava.com/athletes/49770219 title=strava>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-strava fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+</ul>
+<p class="credits copyright text-muted">
+clux
 &nbsp;&bull;&nbsp;&copy;
 2021
 &nbsp;&bull;&nbsp;
-<a href=https://clux.github.io/probes/>probes</a></p><p class="credits theme-by text-muted"><a href=http://gohugo.io>Hugo v0.52</a> powered &nbsp;&bull;&nbsp; Theme by <a href=http://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a> adapted to <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a></p></div></div></div></footer><script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script><script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script><script src=https://clux.github.io/probes/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.github.io/probes/js/load-photoswipe.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script><script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script><script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false},]})</script></body></html>
+<a href=https://clux.github.io/probes/>probes</a>
+</p>
+<p class="credits theme-by text-muted">
+<a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
+&nbsp;&bull;&nbsp;[<a href=98cd2df4e97c2f9f55459bf5cfb7c8ef72fe5ca9>98cd2df4</a>]
+</p>
+</div>
+</div>
+</div>
+</footer><script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script>
+<script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script>
+<script src=https://clux.github.io/probes/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.github.io/probes/js/load-photoswipe.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script>
+<script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})</script>
+</body>
+</html>
