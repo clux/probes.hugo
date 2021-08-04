@@ -1,5 +1,5 @@
 # probes
-[![build status](https://secure.travis-ci.org/clux/probes.svg)](http://travis-ci.org/clux/probes)
+[![pages](https://github.com/clux/probes/actions/workflows/pages.yml/badge.svg)](https://github.com/clux/probes/actions/workflows/pages.yml)
 
 An infrequently updated blog wherein I try to clarify my opinions and thoughts.
 
