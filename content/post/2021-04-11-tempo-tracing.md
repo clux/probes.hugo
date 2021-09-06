@@ -1,35 +1,51 @@
 ---
-title: Improving the observability of kube-rs controllers with Tempo, Loki and Prometheus
-subtitle: Tempo, Loki, Prometheus
-date: 2021-02-28
+title: Writing rust kubernetes controllers with full observability
+subtitle: Hooking into Prometheus, Loki & Tempo
+date: 2021-08-28
 tags: ["rust", "kubernetes"]
 categories: ["software"]
 ---
 
-Instrumentation of rust software for Tempo, Loki, and Prometheus integration.
+There has been lots of improvements to how observability tools fit together these days, and as part of an earlier `tracing` library integration with `kube`, we started putting a demo controller on CI with full rust instrumentation as part of our releases. This post will explore how to use this type of instrumentation yourself, and what software you need externally to take advantage of the instrumentation.
+
+We will be targetting the Grafana suite of Prometheus, Loki, and Tempo, in this general purpose guide to making rust microservices observable on kubernetes (but with a focus on kube controllers).
+
+TODO: dependencies of this post
+- 1. fix tracing issue
+- 2. tempo setup on broxy
+- 3. o11y-bootstrap-k3d repo to link to from controller-rs
+- 4. better failure metrics in controller-rs
+- 5. runbook.md in controller.rs
 
 <!--more-->
 
-> Eirik Albrigtsen is a core-maintainer on [kube-rs](https://github.com/clux/kube-rs), the rust kubernetes client library and async controller runtime, and an SRE at [TrueLayer](https://truelayer.com/). In this guest blog post, he explains how to instrument a rust controller for Loki, Tempo, and Prometheus.
+<!-- > Eirik Albrigtsen is a core-maintainer on [kube-rs](https://github.com/clux/kube-rs), the rust kubernetes client library and async controller runtime, and an SRE at [TrueLayer](https://truelayer.com/). In this guest blog post, he explains how to instrument a rust controller for Loki, Tempo, and Prometheus. -->
 
 ## Background
 Writing [kubernetes controllers](https://kubernetes.io/docs/concepts/architecture/controller/) can seem like a [daunting task](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#custom-controllers). You need to deal with streaming kubernetes watch events that pertain to your object type as they come in, and based on those updates, you must manage your own custom resource based on declarative information. You must also do this in an error-relient, self-healing, and idempotent manner.
 
-A lot of the patterns for writing controllers have converged a lot over the years with tools such as kubebuilder, operator framework (both in go) - and our own rust runtime crate [kube_runtime](https://docs.rs/kube-runtime/0.52.0/kube_runtime/controller/struct.Controller.html) - so they now end up looking very similar, with varying degrees of boilerplate. The difficulty of writing them has gone down, but if left uninstrumented, they can still be very difficult to debug.
+A lot of the patterns for writing controllers have converged a lot over the years with tools such as kubebuilder, operator framework (both in go) - and our rust runtime crate [kube_runtime](https://docs.rs/kube-runtime/*/kube_runtime/controller/struct.Controller.html) - so they now end up looking very similar, with varying degrees of boilerplate. The difficulty of writing them has gone down, but without some basic instrumentation, they can be difficult to debug.
 
 By default, the standard kubernetes debugging pattern is `kubectl logs` with `grep`, and having to `kubectl port-forward` to the service if it presents an http api, and then interrogating that with `curl`. It takes a lot of context switching, and you are never sure whether you are going to get results.
 
-So in this post, we will [continue from a tweet](https://twitter.com/sszynrae/status/1369405372222603264) to explain the current state of affairs of observability in rust using Prometheus (for metrics), Loki (for logs), and Tempo (for traces). We are going gloss over the infrastrucute setup here and use the [Grafana Agent](https://github.com/grafana/agent) to ship all the data to Grafana Cloud.
+So in this post, we will [continue from a tweet](https://twitter.com/sszynrae/status/1369405372222603264) to explain the current state of affairs of observability in rust using Prometheus (for metrics), Loki (for logs), and Tempo (for traces).
 
-TODO: embed tweet?
+TODO: embed tweet
+
+**NB**: The advice herein should mostly apply to rust microservices, rather than rust controllers - as we are talking here mostly about the instrumentation - but some exceptions will be mentioned as we go along. 
+
+## Required Tooling
+The infrastructure installation for the required tools is a bit complicated. There is an [o11y-bootstrap] demo repo with helm chart pins for [kube-prometheus-stack], [tempo] and [loki], but that is the expert approach.
+
+If you just want to test things out, the free Grafana cloud account setup, and installing [Grafana Agent](https://github.com/grafana/agent) is the easiest thing to get you going if you want to understand as much as possible (without having to take a month+ long learning detour into prometheus configuration), and configure the few extras in a GUI.
 
 ## Tracing and Logs
 Let's start with tracing and [tracing crate](https://crates.io/crates/tracing), as tracing interplays heavily with logs in rust.
 
-The `tracing` crate provides instrumentation macros (like `trace!` and `error!`) that can be used at various layers in your codebase (often at IO points or places things can go wrong). They create [`Event`s](https://docs.rs/tracing/0.1.25/tracing/event/struct.Event.html) which exist within the context of a [span](https://docs.rs/tracing/0.1.25/tracing/span/index.html). These spans are what you ship. Typically, you ship them as part of complete traces to your opentelemetry collector, but you can also ship them as log lines to stdout. It all depends on the type of [subscribers](https://crates.io/crates/tracing-subscriber) you use.
+The `tracing` crate provides instrumentation macros (like `trace!` and `error!`) that can be used at various layers in your codebase (often at IO points or places things can go wrong). They create [`Event`s](https://docs.rs/tracing/0.1.25/tracing/event/struct.Event.html) which exist within the context of a [span](https://docs.rs/tracing/0.1.25/tracing/span/index.html). These spans are what you ship. Typically, you ship them as part of complete traces to your opentelemetry collector, but you can also just dump them to stdout. It all depends on the type of [subscribers](https://crates.io/crates/tracing-subscriber) you use.
 
 ### Subscriber Setup
-The subscribers we are going to use, is going to be `tracing-subscriber`'s json [formatter](https://docs.rs/tracing-subscriber/0.2.17/tracing_subscriber/fmt/index.html), and [`tracing-opentelemetry`](https://crates.io/crates/tracing-opentelemetry). The latter will ship to Tempo, and the former to Loki. We can also use the standard `RUST_LOG` evar to filter out unwanted modules via an [`EnvFilter`](https://docs.rs/tracing-subscriber/0.2.17/tracing_subscriber/struct.EnvFilter.html). The total setup is:
+We are going to use `tracing-subscriber`'s json [formatter](https://docs.rs/tracing-subscriber/0.2.17/tracing_subscriber/fmt/index.html), and [`tracing-opentelemetry`](https://crates.io/crates/tracing-opentelemetry). The latter will ship to Tempo, and the former to Loki. We can also use the standard `RUST_LOG` evar to filter out unwanted modules via an [`EnvFilter`](https://docs.rs/tracing-subscriber/0.2.17/tracing_subscriber/struct.EnvFilter.html). The total setup is:
 
 ```rust
 let telemetry = tracing_opentelemetry::layer().with_tracer(otel_tracer);
@@ -47,7 +63,7 @@ let collector = Registry::default()
 tracing::subscriber::set_global_default(collector)?;
 ```
 
-Now, notice that we haven't defined our `otel_tracer` yet. That's because `tracing-opentelemetry` does not contain everything we need for opentelemetry; only enough to get it working with the `tracing` ecosystem. For the rest, we have to venture fully into [rust-opentelemetry land](https://github.com/open-telemetry/opentelemetry-rust) where we will pick the [opentelemetry-otlp crate](https://github.com/open-telemetry/opentelemetry-rust/tree/main/opentelemetry-otlp) for the grpc transport layer using [tonic](https://github.com/hyperium/tonic). Many other opentelemetry crates will work here such as the familiar Jaeger, but we going with the newest and shiniest - plus non-proprietary - setup here.
+Now, notice that we haven't defined our `otel_tracer` yet. That's because `tracing-opentelemetry` does not contain everything we need for opentelemetry; only enough to get it working with the `tracing` ecosystem. For the rest, we have to venture fully into [rust-opentelemetry land](https://github.com/open-telemetry/opentelemetry-rust) where we will pick the [opentelemetry-otlp crate](https://github.com/open-telemetry/opentelemetry-rust/tree/main/opentelemetry-otlp) for the grpc transport layer (using [tonic](https://github.com/hyperium/tonic) internally). Many other opentelemetry crates will work here such as the familiar Jaeger, but we going with the newest and shiniest - free - setup here.
 
 With this crate the `otel_tracer` can be created with:
 
@@ -79,11 +95,12 @@ async fn reconcile(foo: Foo, ctx: Context<Data>) -> Result<ReconcilerAction, Err
 }
 ```
 
-This will add our `foo` custom object to the span, but not the context, because that is merely a compile-time static object that's not very interesting to send and see in every trace.
 
-As nothing else lower down towards `main` has instrumentation, each reconcile creates its own root span, and gets its own unique id. This instrumentation and this unique id is enough to get traces sent to `Tempo`, and we can verify this by checking the `tempo_receiver_accepted_spans` metric from the grafana agent.
+In `kube_runtime` land, this will add our `foo` custom object to the span, but not the context, because that is merely a compile-time static object that's not very interesting to send and see in every trace. For controllers, nothing else up the stack towards `main` has instrumentation, each reconcile creates its own root span, and gets its own unique id. This instrumentation and this unique id is enough to get traces sent to `Tempo`, and we can verify this by checking the `tempo_receiver_accepted_spans` metric from the grafana agent.
 
-However, we don't have any way of finding these spans yet. We need trace discoverability.
+In standard rust microservices you probably want to use the `actix-web-tracing` crate to pass on tracing headers automatically, but here we are actually creating the origin spans ourselves (reconcile happening is the [root event](LINKTODOC EXPLAINING HOW TO FIGURE OUT RECONCILE REASON)).
+
+This will be enough to **ship** traces, but not to **find** them. We need trace discoverability.
 
 ### Log Instrumentation.
 For us to actually discover traces, we want to put our trace ids in logs. We modify our instrumentation to tell it we are going to record an extra field.
@@ -119,6 +136,8 @@ opentelemetry-otlp = { version = "0.6.0", features = ["tokio"] }
 ```
 
 With this final setup, we can now see our `trace_id` field in the logs, which we can copy-paste into tempo and step away from our application for a bit.
+
+TODO: picture here!
 
 ### Loki Configuration
 To avoid manual steps of going from logs to traces, we add a [Derived Field](https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields) in our configured logs data source, to regex our json logs for our `trace_id`, and turn that into an internal link for Grafana to step into our Tempo data source.
@@ -188,14 +207,18 @@ We are now fully instrumented. So what's the general plan to track these signals
 
 With these general directions we __hope__ that we will be able to easily tackle problems as they occur in the future. Granted, you deal with them to a lesser degree than in most other languages thanks to the many [memory safety](https://hacks.mozilla.org/2019/01/fearless-security-memory-safety/) and [security guarantees](https://msrc-blog.microsoft.com/2019/07/22/why-rust-for-safe-systems-programming/) from the language, but we still program for big distributed systems.
 
-```
-Should we encounter races,
-we can step to the traces
-via the metric and logs; the places,
-that diagnosed the relevant cases,
-to avoid availability disgraces,
-or debugging in mazes.
-```
+## TODO: runbook
+perhaps integrate this with the signals paragraph...
+
+Our metrics should be our first entrypoint into how debugging. If you are using the `kube-prometheus-stack` chart, be sure to enable the default `kube-state-metrics` alerts to give you alerts if your pods are in crashloops, or running near capacity.
+
+For application specifics, we have a small runbook of the demo controller. It only tracks one alert: SOMETHINGSOMETHING_RECONCILE_FAILURES, and it alerts if the reconciliation successrate has been low over the last `8h` period. Note that our controller is mostly idle, if your controller is super busy, you might want to check over a smaller time region, like `15m` if you think that won't cause false positives (users might be shipping invalid crds and that's not your fault as a controller operator - but you do want to know if nothing works).
+
+TODO: maybe distinguish between user errors and api errors on the controller side?
+
+Once an alert is triggered, you should get a message in slack (if you configured your alertmanager as such), this should take you to the provided dashboard. From there you can drop into log view for that time window, and click through to some of the traces via logs or metric exemplars in the histogram.
+
+TODO: picture of first setup, link up to above debug experience for logs -> traces
 
 ## Future
 This is a young ecosystem, but the pieces are there. You can pin your versions as you upgrade, and have metrics, logs, traces, and multiple ways to move between them on Grafana.
