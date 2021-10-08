@@ -5,11 +5,11 @@
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Evolution of kube - probes</title>
 <meta name=description content="Tower, Hyper, Websockets.">
-<meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.github.io\/probes\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.github.io\/probes\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.github.io\/probes\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.github.io\/probes\/post\/2021-02-28-kube-evolution\/","name":"Evolution of kube"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Evolution of kube","description":"After a quarter year of extensive improvements to kube, it\u0026rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it\u0026rsquo;s been about 40 kube releases, one major version of tokio, one extremely prolific new contributor, and one kubecon talk since my (very outdated) last blog post.\n","inLanguage":"en","wordCount":1088,"datePublished":"2021-02-28T00:00:00","dateModified":"2021-02-28T00:00:00","image":"https:\/\/clux.github.io\/probes\/","keywords":["rust, kubernetes"],"mainEntityOfPage":"https:\/\/clux.github.io\/probes\/post\/2021-02-28-kube-evolution\/","publisher":{"@type":"Organization","name":"https:\/\/clux.github.io\/probes\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.github.io\/probes\/","height":60,"width":60}}}</script>
+<meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2021-02-28-kube-evolution\/","name":"Evolution of kube"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Evolution of kube","description":"After a quarter year of extensive improvements to kube, it\u0026rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it\u0026rsquo;s been about 40 kube releases, one major version of tokio, one extremely prolific new contributor, and one kubecon talk since my (very outdated) last blog post.\n","inLanguage":"en","wordCount":1088,"datePublished":"2021-02-28T00:00:00","dateModified":"2021-02-28T00:00:00","image":"https:\/\/clux.dev\/","keywords":["rust, kubernetes"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2021-02-28-kube-evolution\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
 <meta property="og:title" content="Evolution of kube">
 <meta property="og:description" content="Tower, Hyper, Websockets.">
-<meta property="og:url" content="https://clux.github.io/probes/post/2021-02-28-kube-evolution/">
+<meta property="og:url" content="https://clux.dev/post/2021-02-28-kube-evolution/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="probes">
 <meta name=twitter:title content="Evolution of kube">
@@ -18,10 +18,10 @@
 <meta name=twitter:site content="@sszynrae">
 <meta name=twitter:creator content="@sszynrae">
 <meta name=generator content="Hugo 0.87.0">
-<link rel=alternate href=https://clux.github.io/probes/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
+<link rel=alternate href=https://clux.dev/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
 <link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous>
-<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.github.io/probes/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
-<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.github.io/probes/css/syntax.css><link rel=stylesheet href=https://clux.github.io/probes/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
+<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.dev/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.dev/css/syntax.css><link rel=stylesheet href=https://clux.dev/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous>
 </head>
 <body>
@@ -34,18 +34,18 @@
 <span class=icon-bar></span>
 <span class=icon-bar></span>
 </button>
-<a class=navbar-brand href=https://clux.github.io/probes/>probes</a>
+<a class=navbar-brand href=https://clux.dev/>probes</a>
 </div>
 <div class="collapse navbar-collapse" id=main-navbar>
 <ul class="nav navbar-nav navbar-right">
 <li>
-<a title=Blog href=https://clux.github.io/probes/>Blog</a>
+<a title=Blog href=https://clux.dev/>Blog</a>
 </li>
 <li>
-<a title=About href=https://clux.github.io/probes/page/about/>About</a>
+<a title=About href=https://clux.dev/page/about/>About</a>
 </li>
 <li>
-<a title=Tags href=https://clux.github.io/probes/tags>Tags</a>
+<a title=Tags href=https://clux.dev/tags>Tags</a>
 </li>
 </ul>
 </div>
@@ -110,7 +110,7 @@
 <div class=row>
 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 <article role=main class=blog-post>
-<p>After a quarter year of extensive improvements to <a href=https://github.com/clux/kube-rs>kube</a>, it&rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it&rsquo;s been about <a href=https://github.com/clux/kube-rs/releases>40 kube releases</a>, one major version of <a href=https://tokio.rs/>tokio</a>, one <a href=https://github.com/clux/kube-rs/graphs/contributors>extremely prolific new contributor</a>, and one <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">kubecon talk</a> since my (very outdated) <a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client>last blog post</a>.</p>
+<p>After a quarter year of extensive improvements to <a href=https://github.com/clux/kube-rs>kube</a>, it&rsquo;s time to take a birds-eye view of what we got, and showcase some of the recent improvements. After all, it&rsquo;s been about <a href=https://github.com/clux/kube-rs/releases>40 kube releases</a>, one major version of <a href=https://tokio.rs/>tokio</a>, one <a href=https://github.com/clux/kube-rs/graphs/contributors>extremely prolific new contributor</a>, and one <a href="https://www.youtube.com/watch?v=JmwnRcc2m2A">kubecon talk</a> since my (very outdated) <a href=https://clux.dev/post/2019-06-04-towards-a-generic-kube-client>last blog post</a>.</p>
 <h2 id=crates>Crates</h2>
 <p>As of <code>0.51.0</code>, With modules and crates now delineated better, there&rsquo;s now multiple crates in the repository:</p>
 <ul>
@@ -214,20 +214,20 @@ It is now entirely concerned with the <strong>protocol</strong>, and handles the
 <p>Speaking of; <strong><a href="https://github.com/clux/kube-rs/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22">help</a> is instrumental</strong> for moving things forward, and always appreciated. Even if you are just fixing <a href=https://docs.rs/kube/latest/kube/>docs</a> / <a href=https://github.com/clux/kube-rs/tree/master/examples>examples</a> or asking questions.</p>
 <p>Check our <a href=https://github.com/clux/kube-rs/discussions/422>discussions</a>, the <a href=https://discord.gg/tokio>tokio discord</a>, or the <a href=https://github.com/clux/kube-rs/issues>issues</a> if interested. Take care ✨🤗</p>
 <div class=blog-tags>
-<a href=https://clux.github.io/probes//tags/rust/>rust</a>&nbsp;
-<a href=https://clux.github.io/probes//tags/kubernetes/>kubernetes</a>&nbsp;
+<a href=https://clux.dev//tags/rust/>rust</a>&nbsp;
+<a href=https://clux.dev//tags/kubernetes/>kubernetes</a>&nbsp;
 </div>
 <h4 class=see-also>See also</h4>
 <ul>
-<li><a href=https://clux.github.io/probes/post/2019-06-04-towards-a-generic-kube-client/>A generic kubernetes client</a></li>
-<li><a href=https://clux.github.io/probes/post/2019-04-29-rust-on-kubernetes/>Kubernetes operators in rust</a></li>
-<li><a href=https://clux.github.io/probes/post/2019-03-31-impersonating-kube-accounts/>Impersonating kube service accounts</a></li>
-<li><a href=https://clux.github.io/probes/post/2018-12-15-config-management-in-rust/>Config management in rust</a></li>
+<li><a href=https://clux.dev/post/2019-06-04-towards-a-generic-kube-client/>A generic kubernetes client</a></li>
+<li><a href=https://clux.dev/post/2019-04-29-rust-on-kubernetes/>Kubernetes operators in rust</a></li>
+<li><a href=https://clux.dev/post/2019-03-31-impersonating-kube-accounts/>Impersonating kube service accounts</a></li>
+<li><a href=https://clux.dev/post/2018-12-15-config-management-in-rust/>Config management in rust</a></li>
 </ul>
 </article>
 <ul class="pager blog-pager">
 <li class=previous>
-<a href=https://clux.github.io/probes/post/2020-10-04-antimagic-revisited/ data-toggle=tooltip data-placement=top title="Antimagic and Force Cubes">&larr; Previous Post</a>
+<a href=https://clux.dev/post/2020-10-04-antimagic-revisited/ data-toggle=tooltip data-placement=top title="Antimagic and Force Cubes">&larr; Previous Post</a>
 </li>
 </ul>
 </div>
@@ -300,7 +300,7 @@ clux
 &nbsp;&bull;&nbsp;&copy;
 2021
 &nbsp;&bull;&nbsp;
-<a href=https://clux.github.io/probes/>probes</a>
+<a href=https://clux.dev/>probes</a>
 </p>
 <p class="credits theme-by text-muted">
 <a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
@@ -311,8 +311,8 @@ clux
 </div>
 </footer><script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script>
 <script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script>
-<script src=https://clux.github.io/probes/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.github.io/probes/js/load-photoswipe.js></script>
+<script src=https://clux.dev/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.dev/js/load-photoswipe.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script>
 <script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})</script>
