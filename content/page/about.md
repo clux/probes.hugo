@@ -43,7 +43,7 @@ This esoteric + deteriorating knowledge is mostly used to overexcitedly tell peo
 ### Roleplaying
 A group uncommonly known as the `Face Maulers` continues meet near-weekly online to tolerate my awkward DM antics/improv after several years. This started out as an after work thing - after having spent a christmas sick binging Critical Role - but in pandemic times it has migrated to a private `D&D` discord in pandemic times, and this setup is very nice. Occasionally, [posts occur in this category](/categories/roleplaying/).
 
-The big 3.5 year campaign just ended, and at some point, my [campaign repo](https://github.com/clux/campaign) will be public.
+The big 3.5 year [campaign](https://github.com/clux/campaign) just ended, and [all my docs for it are public](https://clux.github.io/campaign/). Players can now enjoy the plethora of TODOs and solid amount of one-liner prep sections, that turned into hours of speculation. There is also close to a week's worth of unlisted youtube content.
 
 ### Music
 Bought a [piano](https://uk.yamaha.com/en/products/musical_instruments/pianos/p_series/index.html) in 2017 after having fully recovered from violin trauma. It is very soothing and meditative to play something mindlessly from classical sheet music when you need a break. It also helps satisfies my habit of committing useless chunks of finger movement to muscle memory.
