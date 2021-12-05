@@ -160,4 +160,4 @@ Considering the standard open source software tradeoff is generally between:
 
 Foam does not really deviate from this spectrum. It's **good**, and it **can become great**.
 
-<small>_.. that or obsidian becomes super popular._</small>
+<small>_.. and there is always obsidian_</small>
