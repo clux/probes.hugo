@@ -1,6 +1,6 @@
 ---
 title: Campaign Conclusion & Brain Dump
-subtitle: ..and more reasons not to pay for Notion
+subtitle: ..and more reasons (not) to pay for Notion
 date: 2021-12-05
 tags: ["foam"]
 categories: ["roleplaying"]
