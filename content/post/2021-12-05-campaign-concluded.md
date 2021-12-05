@@ -154,10 +154,10 @@ That said, I **would probably carry on** with this setup for **any similar ttrpg
 
 However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development.
 
-Considering the standard open source software tradeoff is generally between:
+Considering the standard open source software tradeoff is often between:
 
 > free + a bit janky <------------> costly + vendor-locked
 
-Foam does not really deviate from this spectrum. It's **good**, and it **can become great**.
+[Foam](https://foambubble.github.io/) does not deviate too far from this. It's **good**, and it **can become great**.
 
-<small>_.. and there is always obsidian_</small>
+<small>_..and you have VS Code on your side to help tilt the tradeoff_</small>
