@@ -138,7 +138,7 @@ This meant we basically had to take the folder contents and [manually arrange th
 
 ### Purging World Secrets
 
-If you want to release a brain of your campaing, you are more or less saying that this world is probably over. This was ok for us, it's been almost 4 years, and it's not particularly original (forgotten realms, and stolen content everywhere). If you wanted to do a [Mercer style](https://www.youtube.com/watch?v=i-p9lWIhcLQ&list=PL1tiwbzkOjQz7D0l_eLJGAISVtcL7oRu_) campaign procession where each campaign is set in the same world (but maybe a different contintent), then this process becomes difficult.
+If you want to release a brain of your campaing, you are more or less saying that this world is probably over. This was ok for us, it's been almost 4 years, and it's not particularly original (forgotten realms, and stolen content everywhere). If you wanted to do a [Mercer style](https://www.youtube.com/watch?v=i-p9lWIhcLQ&list=PL1tiwbzkOjQz7D0l_eLJGAISVtcL7oRu_) campaign procession where each season is set in the same world different area, then this process becomes difficult.
 
 But then again, if you have their level of viewers or players dedicated enough to basically write a wiki for your campaign, you are probably writing a book about it instead and have other problems.
 
