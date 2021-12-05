@@ -128,7 +128,7 @@ Foam still struggles with [doing file renames](https://github.com/foambubble/foa
 
 You are really dissuaded from renaming files either way (because of the work it leads to), and it basically precludes doing bigger refactors at the moment.
 
-It's probably™ implementable on their side _"without too much work"©_ (because you can probably work around this with a script + `sed` if you are masochistic enough). Ultimately, **someone** has to actually do it, and who knows what complexity exist within vs code plugins.
+It's probably™ implementable on their side _"without too much work"©_ (because you can probably work around this with a script + `sed` if you are masochistic enough), but ultimately, **someone** has to actually do it - and who knows what complexity lurks within vs code plugins.
 
 ### Lexicographical Sort
 
