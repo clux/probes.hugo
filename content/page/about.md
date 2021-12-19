@@ -34,21 +34,21 @@ Work-wise, you might remember me from these open source projects:
 - 2018 [babylon/shipcat](https://github.com/babylonhealth/shipcat) :: a typed config management system for kubernetes microservices (pretty babylon specific, but helped us control early gitops)
 - 2016 [cisco/lal](https://github.com/cisco/lal-build-manager) :: a language agnostic build system (the [old build team](https://github.com/orgs/lalbuild/people) have a [fork](https://github.com/lalbuild/lal), but haven't needed it much since rust)
 
+### Roleplaying
+
+After having spent one christmas sick binging Critical Role, I ended up DMing a near 4 year D&D campaign with an IRL friend group we dubbed `Face Maulers` after work.
+
+In pandemic times, this recently [concluded](/post/2021-12-05-campaign-concluded/), and am for now absolved from further dubious plot juggling and a campaign related [TODOs](https://github.com/clux/campaign/search?q=TODO). Further [roleplaying](/categories/roleplaying/) shenanigans is likely for 2022, if we can continue defeating the BBEG named `scheduling`.
 
 ### Education
 There exists a dusty, but laminated piece of paper with my name +  `Master of Mathematics` on it. While no one has ever asked to look at it, it keeps being featured on my [resume](http://clux.github.io/vitae/) every `n` years.
 
-This esoteric + deteriorating knowledge is mostly used to overexcitedly tell people about infinities and the importance of good abstractions, but I also solve basic arithmetic at work. All in all, a solid use of `4` years.
-
-### Roleplaying
-A group uncommonly known as the `Face Maulers` continues meet near-weekly online to tolerate my awkward DM antics/improv after several years. This started out as an after work thing - after having spent a christmas sick binging Critical Role - but in pandemic times it has migrated to a private `D&D` discord in pandemic times, and this setup is very nice. Occasionally, [posts occur in this category](/categories/roleplaying/).
-
-The big 3.5 year [campaign](https://github.com/clux/campaign) just ended, and [all my docs for it are public](https://clux.github.io/campaign/). Players can now enjoy the plethora of TODOs and solid amount of one-liner prep sections, that turned into hours of speculation. There is also close to a week's worth of unlisted youtube content.
+This esoteric + deteriorating knowledge is mostly used to overexcitedly tell people about group theory, and the importance of good abstractions, but I also solve basic arithmetic at work. All in all; a solid use of `4` years.
 
 ### Music
-Bought a [piano](https://uk.yamaha.com/en/products/musical_instruments/pianos/p_series/index.html) in 2017 after having fully recovered from violin trauma. It is very soothing and meditative to play something mindlessly from classical sheet music when you need a break. It also helps satisfies my habit of committing useless chunks of finger movement to muscle memory.
+Bought a [piano](https://uk.yamaha.com/en/products/musical_instruments/pianos/p_series/index.html) in 2017 after having recovered from teen violin trauma. It is very soothing and meditative to play something mindlessly from classical sheet music when you need a break. It also helps satisfies my habit of committing useless chunks of finger movement to muscle memory.
 
-If you are considering buying a violin for yourself/someone. Buy an `otamatone` first to see if you think you can [handle](https://www.stoppingpoints.com/devils-dictionary/fiddle.html) listening to someone wrangling with a fretless, non-linear interface for years. The instrument UX is terrible. You deserve better.
+If you are considering buying a violin for yourself/someone. Buy an `otamatone` first to see if you think you can [handle](https://www.stoppingpoints.com/devils-dictionary/fiddle.html) listening to someone wrangling with a fretless, non-linear interface for years. <small>(The instrument UX is terrible. You deserve better.)</small>
 
 ### Gaming
 Well designed game mechanics that require some type of dexterous mastery have often drawn me in. Here's some stuff I spent time on over the years..
@@ -73,7 +73,7 @@ Well designed game mechanics that require some type of dexterous mastery have of
 - [`Trine`](https://store.steampowered.com/app/35700/Trine_Enchanted_Edition/) [segmented NG+ speedrun](http://speeddemosarchive.com/Trine.html) ([playlist](https://www.youtube.com/watch?v=45T7-Avb5vQ&list=PLDCA837F2416D427B)) in 2010
 - [`N`](http://www.metanetsoftware.com/games/n) tons of former WRs; `70-0` won [run of the year](http://n.wikia.com/wiki/The_Dronies) in 2007 ([n.wikia/clux](http://n.wikia.com/wiki/Clux))
 - [`TrackMania United`](https://store.steampowered.com/app/7200/Trackmania_United_Forever_Star_Edition/) handful of former stunt/platform mode WRs in [tmx replays](https://united.tm-exchange.com/main.aspx?action=tracksearch&mode=7&id=1273332)
-- [`Minesweeper`](http://www.minesweeper.info/downloads/MinesweeperClone.html) [rank #3 Norway](https://minesweepergame.com/country-rankings.php?country=132): [`53s` expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) in 2007
+- [`Minesweeper`](http://www.minesweeper.info/downloads/MinesweeperClone.html) [rank #3 Norway Time](https://minesweepergame.com/country-rankings.php?country=132): [`53s` expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) in 2007
 
 #### Current
 These days it's generally tabletop, but some **cooperative** gaming and platformers remain fun. [Steam profile](https://steamcommunity.com/id/sszynrae). [Linux only](https://store.steampowered.com/linux), but with [Proton](https://github.com/ValveSoftware/Proton).
