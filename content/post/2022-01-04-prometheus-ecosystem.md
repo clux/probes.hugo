@@ -393,25 +393,35 @@ Think of `compactor` as a cronjob (but with [good alerts](https://monitoring.mix
 
 ## Part 3: Metrics API Integrations
 
-The final set of components belong in the void outside the two big standard charts.
+The final components reside in the void outside the two big standard charts and it's the implementors of the various [metrics apis](https://github.com/kubernetes/metrics#apis)
 
-Here we find extra metric sources, and components necessary to take full advantage of Kubernetes' `HorizontalPodAutoscaler` (HPA).
-
+These are components necessary to take full advantage of Kubernetes' `HorizontalPodAutoscaler` (HPA), but one has more features than the other.
 
 ### metrics-server
 
-The first is a kubernetes standard component; the [metrics-server](https://github.com/kubernetes-sigs/metrics-server). It is the core piece that allows `kubectl top` and HPAs to work out of the box, and thus enables you scale on cpu and memory by the values extracted through `kubelet`. This component works without prometheus or any of the components visualised herein, it's even installed on `k3d` by default.
-It's important to highlight that it implements the TOOD: name api spec, and will be your main internal metric source for HPA. If you need to scale on prometheus metrics, you will need another component:
+The first is a kubernetes standard component; the [metrics-server](https://github.com/kubernetes-sigs/metrics-server).
+
+It only implements the resource metrics api, and thus only enables you scale on cpu and memory by the values extracted through `kubelet`.
+
+But because it can extract these values from the `kubelet`, it's the core piece that allows `kubectl top` and HPAs to work out of the box - without prometheus or any of the other components visualised herein - it's even installed on `k3d` by default.
+
+**If** you need to scale on **prometheus metrics**, you will **need** another **component**:
 
 ### prometheus-adapter
 
-The adapter funnels metrics from `prometheus` into the HPA universe. It implements the TODO: external api name spec, and allows HPAs to specify external metrics as their scale ref.
+The adapter funnels metrics from `prometheus` into the HPA universe, so you can scale on **arbitrary** metrics.
+
+It implements the resource metrics, custom metrics, and external metrics APIs. The underlying setup for this has [stable docs from k8s 1.23](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-on-custom-metrics), and in essence this allows you to scale on __custom metrics__ (related to the scaling object) or __external metrics__ (unrelated to the scaling object).
+
+The [syntax needed for this component](https://github.com/kubernetes-sigs/prometheus-adapter/blob/c9e69613d3e1ccf4a5828aba25de613d84694779/docs/sample-config.yaml) definitely leaves a lot **to be desired**. The only way we have managed to get somewhere with this is with principal engineers and a lot of trial and error. Thankfully, there are [some helpful resources](https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/walkthrough.md).
+
+
 
 You can only have one of these external api name spec things (but it's likely going to be this). TODO: link flo's muxer.
 
-The syntax of this component definitely leaves a lot to be desired. The only way we have managed to get somewhere with this is with principal engineers and a lot of trial and error.
 
 arcane, badly documented syntax, template hell.
+TODO: maintainers.
 
 It does have its own `prometheus-community` maintained chart, which is of high quality, but you will need to do a lot of the configuration parts yourself.
 
