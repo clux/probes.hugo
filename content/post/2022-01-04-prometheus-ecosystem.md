@@ -393,19 +393,23 @@ Think of `compactor` as a cronjob (but with [good alerts](https://monitoring.mix
 
 ## Part 3: Metrics API Integrations
 
-The final components reside in the void outside the two big standard charts and it's the implementors of the various [metrics apis](https://github.com/kubernetes/metrics#apis)
+The final components reside in the void outside the two big standard charts and contains the implementors of the various [metrics apis](https://github.com/kubernetes/metrics#apis):
 
-These are components necessary to take full advantage of Kubernetes' `HorizontalPodAutoscaler` (HPA), but one has more features than the other.
+- **resource metrics** api (cpu/memory for pods)
+- **custom metrics** api (cmetrics related to a scalable object)
+- **external metrics** api (metrics unrelated to a scalable object)
+
+These are apis that allow Kubernetes to `scale` your workloads (with varying degrees of intelligence) through HPAs, but you need something to implement them.
+
+I mention these different underlying apis explicitly because [currently](https://github.com/kubernetes-sigs/custom-metrics-apiserver/issues/70) you can **only** have **one implementor** of each api, and if you have more than one thing that provides custom metrics (like say cloudwatch metrics + prometheus adapter), then you are better served by using [KEDA](https://keda.sh/) than what is described herein.
 
 ### metrics-server
 
 The first is a kubernetes standard component; the [metrics-server](https://github.com/kubernetes-sigs/metrics-server).
 
-It only implements the resource metrics api, and thus only enables you scale on cpu and memory by the values extracted through `kubelet`.
+It only implements the **resource metrics** api, and thus only enables you scale on cpu and memory.
 
-But because it can extract these values from the `kubelet`, it's the core piece that allows `kubectl top` and HPAs to work out of the box - without prometheus or any of the other components visualised herein - it's even installed on `k3d` by default.
-
-**If** you need to scale on **prometheus metrics**, you will **need** another **component**:
+It extracts cpu/memory values values via `kubelet`, and as such allows `kubectl top` + HPAs to work out of the box - without prometheus or any of the other components visualised herein. It's even installed on `k3d` by default.
 
 ### prometheus-adapter
 
@@ -413,21 +417,15 @@ The adapter funnels metrics from `prometheus` into the HPA universe, so you can 
 
 It implements the resource metrics, custom metrics, and external metrics APIs. The underlying setup for this has [stable docs from k8s 1.23](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-on-custom-metrics), and in essence this allows you to scale on __custom metrics__ (related to the scaling object) or __external metrics__ (unrelated to the scaling object).
 
-The [syntax needed for this component](https://github.com/kubernetes-sigs/prometheus-adapter/blob/c9e69613d3e1ccf4a5828aba25de613d84694779/docs/sample-config.yaml) definitely leaves a lot **to be desired**. The only way we have managed to get somewhere with this is with principal engineers and a lot of trial and error. Thankfully, there are [some helpful resources](https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/walkthrough.md).
+The [syntax needed for this component](https://github.com/kubernetes-sigs/prometheus-adapter/blob/c9e69613d3e1ccf4a5828aba25de613d84694779/docs/sample-config.yaml) definitely leaves a lot **to be desired**. The only way we have managed to get somewhere with this is with principal engineers and a lot of trial and error. Thankfully, there are [some helpful resources](https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/walkthrough.md), this is still not easy.
 
+The repository for [prometheus-adapter](https://github.com/kubernetes-sigs/prometheus-adapter) is also not receiving a whole of attention: [almost half](https://github.com/kubernetes-sigs/prometheus-adapter/issues?q=is%3Aissue+is%3Aclosed+label%3Alifecycle%2Frotten) of their closed issues looks like they were closed by kubernetes org's auto-closer bot. You can say many sensible things about this closing practice - on the importance of funding and triagers for open source software - but it ultimately sends a message:
 
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Unpopular opinion: I think solving issue triage by letting robots auto close issues that were never responded to is a *horrible* way to manage your project and tells users you don&#39;t give a crap about their effort filing bugs :(</p>&mdash; Benjamin Elder (@BenTheElder) <a href="https://twitter.com/BenTheElder/status/1407774856033181696?ref_src=twsrc%5Etfw">June 23, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-You can only have one of these external api name spec things (but it's likely going to be this). TODO: link flo's muxer.
+It does have its own [prometheus-community maintained chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter), which is of high quality, but you will need to figure out the templated promql yourself.
 
-
-arcane, badly documented syntax, template hell.
-TODO: maintainers.
-
-It does have its own `prometheus-community` maintained chart, which is of high quality, but you will need to do a lot of the configuration parts yourself.
-
-### exporters
-
-
+Without having much experience with [KEDA](https://keda.sh/), I would recommend looking into using [KEDA's prometheus scaler directly instead](https://keda.sh/docs/2.5/scalers/prometheus/) of using the arcane template magic from `prometheus-adapter`.
 
 ## Happy new year
 
