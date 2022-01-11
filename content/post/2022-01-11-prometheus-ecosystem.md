@@ -1,7 +1,7 @@
 ---
 title: Prometheus Stack Review
-subtitle: Operating the stateful metrics system on kubernetes
-date: 2022-01-01
+subtitle: operating the stateful metrics system on kubernetes
+date: 2022-01-11
 tags: ["kubernetes", "observability"]
 categories: ["software"]
 ---
@@ -12,7 +12,7 @@ As part of my work life in the past year, a chunk of my day-to-day life has cons
 
 ## Disclaimer
 
-1. Information here is based on my own learnings. Some details **might** be wrong. Please submit an [issue](https://github.com/clux/probes/issues) / [fix](https://github.com/clux/probes/edit/master/content/post/2022-01-04-prometheus-ecosystem.md) if you see anything glaring.
+1. Information here is based on my own learnings. Some details **might** be wrong. Please submit an [issue](https://github.com/clux/probes/issues) / [fix](https://github.com/clux/probes/edit/master/content/post/2022-01-11-prometheus-ecosystem.md) if you see anything glaring.
 2. This post uses the classical open source `prometheus` setup with HA pairs and `thanos` on top. There are other promising setups such as agent mode with remote write.
 3. We are following the most-standard `helm` approach and using charts directly (i.e. [avoiding direct use of jsonnet](https://github.com/prometheus-operator/kube-prometheus/))
 
@@ -26,7 +26,7 @@ The TL;DR image. Open it up in a new tab, and cycle between if you want to read 
 
 **Legend**:
 
-- **user** components and user **read path** is <i style="color:green">green</i>
+- **user** components and the user **read path** is <i style="color:green">green</i>
 - prometheus/thanos write path is <i style="color:red">red</i>.
 - `helm charts` are denoted with **thick dashed lines**
 - arrows flow **from** the instigator of the verb **to** the object acted upon
@@ -37,7 +37,7 @@ A **user** / developer on a kubernetes cluster with the prometheus stack install
 
 - **develop applications with hpas** and have them **scraped** by prometheus for metrics
 - **create dashboards** in grafana and save them as `ConfigMap` entries
-- **create alerting rules** to be triggered when metrics exceed thresholds (or tweak existing mixins if experienced)
+- **create alerting rules** to be triggered when metrics exceed thresholds (and maybe even tweak existing mixins)
 - **query metrics** directly on grafana's explore and thanos's queryfrontend
 
 ..and the user should not have to know too much about the complicated spaghetti setup that this diagram might give a scary impression of.
@@ -57,13 +57,13 @@ It is a [~3k LOC yaml values file](https://github.com/prometheus-community/helm-
 - kubernetes specific monitors
 - monitoring mixins
 
-24k lines here are just the absolutely massive prometheus-operator crds (that are now [too big to apply](https://github.com/prometheus-community/helm-charts/issues/1500)), but it's still an astonishing amount of yaml. Typically you'll end up with between 20-40k (excluding the crds) with a 100-500 line values file that you have to maintain <small>(you generally don't want your values file to be too large as it becomes harder and harder to keep track of the breaking changes in the stringly typed helm chart apis)</small>.
+`24k` lines here are **just** the absolutely **massive** prometheus-operator crds (that are now [too big to apply](https://github.com/prometheus-community/helm-charts/issues/1500)), but it's still an astonishing amount of yaml. Typically you'll end up with between `20-40k` (excluding the crds) with a 100-500 line values file that you have to maintain <small>(you generally don't want your values file to be too large as it becomes harder and harder to keep track of the breaking changes in the stringly typed helm chart apis)</small>.
 
 ### prometheus
 
-The octopus at the base of our architecture. Prometheus scrapes the metrics endpoints of virtually every application you have, stores the data in a low-retention (a week or two) time series database that you can query. (The grey scrape arrows are illustrative, whereas they would usually hit everything, and also hit it from every prometheus pod in the statefulset for redundancy).
+The octopus at the base of our architecture. Prometheus **scrapes** the metrics endpoints of virtually **every** application you have, **stores** the data **locally** in a low-retention (a week or two) time series database that you can query. <small>(The grey scrape arrows are illustrative, whereas they would usually hit everything, and also hit it from every prometheus pod in the statefulset for redundancy).</small>
 
-It also continually computes configured evaluation rules, and raises alerts on configured metric thresholds.
+It also continually computes configured **evaluation rules**, and raises alerts on configured metric thresholds.
 
 Prometheus is [over 9 years old](https://github.com/prometheus/prometheus/commit/734d28b515026ca9f429eba0a7d09954bceb6387), and has [graduate maturity in cncf](https://www.cncf.io/projects/prometheus/).
 
@@ -101,15 +101,15 @@ Consider importing the [semi-standardised `prometheus.io/scrape`](https://github
 
 ### alertmanager
 
-Alerts (the data in `ALERTS{alertstate="firing"}`) are sent from prometheus to alertmanager.
+Alerts (the data in the special `ALERTS{alertstate="firing"}` metric) are sent from `prometheus` to `alertmanager`.
 
 ![how alerts should look](/imgs/prometheus/eva-alert.gif)
 
-At least, this is usually what happens. The communication **to** and **within** alertmanager is probably the most **annoying** parts of this entire architecture.
+At least, this is usually what happens. The communication **to** and **within** `alertmanager` is probably the most **annoying** parts of this entire architecture.
 
-A problem that keeps biting me is that [prometheus can lose track of alertmanager ips and fail to send alerts for hours](https://github.com/prometheus/prometheus/issues/7063). There are plenty of [issues related to this](https://github.com/prometheus/prometheus/search?q=%22error+sending+alert%22&type=issues).
+A problem that keeps biting me is how [prometheus can lose track of alertmanager ips, and fail to send alerts for hours](https://github.com/prometheus/prometheus/issues/7063). There are many [issues related to this](https://github.com/prometheus/prometheus/search?q=%22error+sending+alert%22&type=issues).
 
-When alerts do actually get passed to alertmanager, they go through a [pretty complicated internal architecture](https://github.com/prometheus/alertmanager/blob/main/doc/arch.svg), before ultimately being sent to configured receivers. Alertmanager contains deduplication mechanisms, and a custom gossip UDP & TCP gossip protocol (that keeps breaking in HA setups - causing [duplicate alerts](https://github.com/prometheus/alertmanager/issues?q=is%3Aissue+duplicate+alerts)).
+When alerts do actually get passed to alertmanager, they go through a [pretty complicated internal architecture](https://github.com/prometheus/alertmanager/blob/main/doc/arch.svg), before ultimately being sent to **configured receivers**. Alertmanager contains **deduplication** mechanisms, and a **custom** UDP & TCP **gossip protocol** (that keeps breaking in HA setups - causing [duplicate alerts](https://github.com/prometheus/alertmanager/issues?q=is%3Aissue+duplicate+alerts)).
 
 The built-in receivers for slack/pagerduty seem to handle deduplicating alerts themselves, so if you can get by without HA and don't need a custom webhook, you might be ok.
 
@@ -119,7 +119,7 @@ Alertmanager is [almost 9 years old](https://github.com/prometheus/alertmanager/
 
 ### prometheus-operator
 
-A system that sits on top of prometheus, and extends the configuration with the large [`monitoring.coreos.com` CRDs](https://github.com/prometheus-operator/prometheus-operator/tree/main/example/prometheus-operator-crd). This operator watches these CRDs, validates them via [admission](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/), converts them to a prometheus compatible format, and injects them into the running prometheus via a `config-reloader` sidecar on the prometheus statefulset. The main user configuration CRDs are `PrometheusRule` and `ServiceMonitor` (some other monitors are also useful).
+A system that sits on top of prometheus, and extends the configuration with the large [`monitoring.coreos.com` CRDs](https://github.com/prometheus-operator/prometheus-operator/tree/main/example/prometheus-operator-crd). This operator watches these CRDs, validates them via [admission](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/), converts them to a prometheus compatible format, and injects them into the running prometheus via a `config-reloader` sidecar on the prometheus statefulset. The most commonly used configuration CRDs are `PrometheusRule` and `ServiceMonitor`.
 
 This setup avoids you taking down prometheus when you/users write new or invalid configuration or alerts. It also provides a mechanism for referencing kubernetes `Secret` objects (avoiding encryption needs on the base configuration), and it is generally considered the standard abstraction for configuring prometheus scraping.
 
@@ -151,9 +151,9 @@ The key strength of Grafana lies in how it becomes the one-stop shop for __query
 - [elastic](https://grafana.com/blog/2021/03/04/why-were-partnering-with-elastic-to-build-the-elasticsearch-plugin-for-grafana/)
 - [sentry](https://grafana.com/blog/2021/12/16/introducing-the-sentry-data-source-plugin-for-grafana/)
 
-..plus tons more that you are less likely to run into (`cloudwatch` shown as stand-in for these in diagram). Even if you only use if it against `prometheus`, it's still a **generally painless** component to install with tons of **benefits**.
+..plus tons more that you are less likely to run into (`cloudwatch` shown as one common case). Even if you only use if it against `prometheus`, it's still a **generally painless** component to install with tons of **benefits**.
 
-Grafana is packaged as a small-ish [grafana-maintained helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana), which is **pinned** as [a subchart under kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L45-L48).
+Grafana is packaged as a small-ish [grafana-maintained helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana), which is **pinned** as a [subchart under kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L45-L48).
 
 The chart contains some nice ways of making **dashboard provisioning** automatic (dashboards as configmaps), but this comes with its own **pain points**:
 
@@ -163,6 +163,7 @@ The chart contains some nice ways of making **dashboard provisioning** automatic
 - [provisioned dashboards are incompatible with built-in alerts](https://github.com/grafana/grafana/issues/36328)
 - future [dashboard-as-code direction is very undecided](https://github.com/grafana/grafana/issues/31038)
 
+Regardless, the diagram shows how the user flow would be for this, and how it ends up being picked up by a sidecar in the grafana statefulset.
 ### Governance & Grafana Labs Sidenotes
 
 Grafana has a more [company driven governance model](https://github.com/grafana/grafana/blob/main/GOVERNANCE.md) - it's maintained almost exclusively by people employed by Grafana Labs - and the company is clearly optimizing for their own cloud offering of a parallel subset of this ecosystem; [Grafana Cloud](https://grafana.com/products/cloud/).
@@ -184,9 +185,9 @@ A default grafana/prometheus-operator installation is not going to be very helpf
 
 Common patterns for alerts/dashboards/recording rules are encapsulated in a collection of mixins that are browsable on [monitoring.mixins.dev](https://monitoring.mixins.dev/).
 
-The [`kubernetes-mixin`](https://monitoring.mixins.dev/kubernetes/) stands out in particular, providing excellent, drill-down-linked dashboards that are going to be vital for a large percentage of kubernetes related incidents.
+The [`kubernetes-mixin`](https://monitoring.mixins.dev/kubernetes/) stands out in particular, providing excellent, [high maturity](https://grafana.com/docs/grafana/latest/best-practices/dashboard-management-maturity-levels/), drill-down-linked dashboards that are going to be vital for a large percentage of kubernetes related incidents.
 
-In general, these provide a great starting point for most clusters (albeit [sometimes](https://monitoring.mixins.dev/kubernetes/#kubernetes-system-kubelet) they are [overly noisy](https://github.com/kubernetes-monitoring/kubernetes-mixin/search?q=KubeletTooManyPods&type=issues)). You likely have to re-configure some **thresholds**, and remove some of these alerts as you see fit you your production cluster, but the defaults are generally intelligent.
+In general, these provide a great starting point for most clusters (despite [sometimes](https://monitoring.mixins.dev/kubernetes/#kubernetes-system-kubelet) being [overly noisy](https://github.com/kubernetes-monitoring/kubernetes-mixin/search?q=KubeletTooManyPods&type=issues)). You likely have to re-configure some **thresholds**, and remove some of these alerts as you see fit you your production cluster, but the defaults are generally intelligent.
 
 Unfortunately, there are [many operational challenges with these mixins](https://grafana.com/blog/2021/01/14/how-prometheus-monitoring-mixins-can-make-effective-observability-strategies-accessible-to-all/#the-challenges-with-mixins). `helm` is certainly not best suited to take full advantage of them as not every option is bubbled up to the charts, and these values flow through so many layers it's [challenging](https://github.com/prometheus-operator/kube-prometheus/issues/1333) to find where they truly originate, e.g. [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/prometheus.yaml) <- [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusOperator-prometheusRule.yaml) <- [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator/blob/main/example/mixin/alerts.yaml).
 
@@ -211,7 +212,7 @@ We will briefly run through these metric sources, focusing first on the ones tha
 
 #### node-exporter
 
-The main external metric source. A [prometheus org maintained](https://github.com/prometheus/node_exporter) `DaemonSet` component that scrapes system level unix metrics. It mounts `/`, `/sys`, and `/proc` - with `hostPID` and `hostNetwork` enabled - to grab extensive information about each node.
+The main external metric source. A [prometheus org maintained](https://github.com/prometheus/node_exporter) `DaemonSet` component that scrapes system level **unix metrics**. It mounts `/`, `/sys`, and `/proc` - with `hostPID` and `hostNetwork` enabled - to grab extensive information about each node.
 
 It's a [sub-chart of kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L41-L44), and it has a slew of [configurable exporters](https://github.com/prometheus/node_exporter#collectors), which can be [configured from the chart](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/prometheus-node-exporter/values.yaml#L150-L152), but the [defaults from kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/values.yaml#L1358-L1360) are likely good enough.
 
@@ -285,7 +286,7 @@ Any additional metrics exporters are not part of the `kube-prometheus-stack` cha
 
 ## Part 2: [Thanos](https://thanos.io/)
 
-Before this step, you can have a pretty self-contained prometheus stack where grafana's default data source would point at the prometheus' `Service`, and metrics would fade out after prometheus' retention period.
+Before this step, you can have a pretty self-contained prometheus stack where grafana's default data source would point at the prometheus' `Service`, and metrics would fade out after prometheus' `retention` period.
 
 Thanos essentially **takes all the components** that's found **inside prometheus**, and allows you to deploy and **scale them separately**, while providing a **prometheus compatible API** for **long term** storage of metrics.
 
@@ -295,7 +296,7 @@ The **write paths** to the S3 bucket is **highlighted** in <i style="color:red">
 
 The various **read paths** are **highlighted** in <i style="color:green">green</i> on the diagram, and show how various types of reads propagate to various systems (grafana is the normal entrypoint, but the query-frontend is also a nice way to debug thanos specifics closer to the source).
 
-The **thanos configuration** is __"almost"__ completely contained in the thanos chart (of your choice) and marked with a dashed <i style="color:purple">purple</i> square.
+The **thanos configuration** is __"almost"__ completely contained in the thanos **chart** (of your choice) and is marked with a dashed <i style="color:purple">purple</i> square.
 
 > **"almost"**: S3 configuration is also needed in `kube-prometheus-stack` for writing
 
@@ -317,7 +318,7 @@ It's an evolving ecosystem with many components, but none of them are as complic
 
 Thanos is an [incubating cncf project](https://www.cncf.io/projects/thanos/) that is just over [4 years old](https://github.com/thanos-io/thanos/commit/3a7b2996f8574048900cfc6259561ac412bcf251). It has a healthy set of [maintainers](https://github.com/thanos-io/thanos/blob/main/MAINTAINERS.md), it [moves fast](https://thanos.devstats.cncf.io/d/74/contributions-chart?orgId=1&var-period=d7&var-metric=contributions&var-repogroup_name=All&var-country_name=All&var-company_name=All&var-company=all), and makes some of the most [well-documented](https://thanos.io/tip/thanos/getting-started.md/), high-quality [releases](https://github.com/thanos-io/thanos/releases) out there.
 
-While it's **not trivial** to maintain - the large cpu/memory usage and scaling profiles presents some challenges - it has otherwise **not** presented major problems.
+While it's **not trivial** to maintain - the large cpu/memory usage and scaling profiles presents some challenges - it has generally **not** presented major problems.
 
 A quick run-through of things worth knowing about the components follows:
 
@@ -325,11 +326,13 @@ A quick run-through of things worth knowing about the components follows:
 
 The http UI users can use. Very light-weight. The `Service` for this `Deployment` generally becomes the default user substitute way to query anything (instead of going to a prometheus service's web interface - which after installing thanos is mostly useful for debugging scrape configs).
 
-This proxies all traffic to thanos query and never breaks.
+It also looks **almost exactly** like the prometheus web interface (sans ability to debug scrape targets).
+
+This **proxies** all traffic to **thanos query** and never breaks.
 
 ### [Thanos Query](https://thanos.io/tip/components/query.md/)
 
-The big engine that fetches query data from one or more metric sources (typically thanos store + prometheus services), and computes the result of your query on the retrieved data.
+The big **fan-out engine** that fetches query data from one or more metric sources (typically thanos store + prometheus services), and computes the result of your query on the retrieved data.
 
 This component will suddenly spike in both CPU and memory when it's under heavy load (i.e. users doing big queries), so an HPA here on CPU works OK - albeit some stabilization values might be useful:
 
@@ -370,21 +373,25 @@ which lines up with the `thanos_query_concurrent_gate_queries_in_flight` metric 
 
 ### [Thanos Store](https://thanos.io/tip/components/store.md/)
 
-The read interface to long term storage. It's prometheus compatible (using the Store API), so from the querier's POV it is analogous to querying a prometheus.
+The read interface to long term storage. It's also prometheus api compatible (using the Store API), so from the querier's POV it is analogous to querying a prometheus.
 
-This component also will **also** suddenly spike in both CPU and memory when users start doing big queries on historical data (i.e. further back in time than prometheus' `retention`), so a similar HPA to thanos query to scale on CPU works well here:
+This component also will **also** suddenly spike in both CPU and memory when users start doing big queries on historical data (i.e. further back in time than prometheus' `retention`), so a similar HPA to thanos query to scale on CPU works reasonably well:
 
 [![thanos store cpu and memory usage](/imgs/prometheus/thanos-store-usage.png)](/imgs/prometheus/thanos-store-usage.png)
 
 ### [Thanos Ruler](https://thanos.io/tip/components/rule.md/)
 
-A rule evaluation analogue. A bit more niche than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).
+An **optional** rule evaluation analogue.
+
+This is a bit more **niche** than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).
 
 Can run in a stateful mode - presenting a prometheus compatible store api that the querier can hit for rule results - or statelessly; persisting rule results to s3.
 
 ### [Thanos Compactor](https://thanos.io/tip/components/compact.md/)
 
-The magic sauce that makes querying long term data practical. Raw data effectively have way too high resolution when you want to view result over the past weeks or months. The compactor will go through the S3 bucket, and create lower-res data (at `5m` averages and `1h` averages), and delete raw data (after a configurable time has passed).
+The magic sauce that makes **querying long term** data **practical** - as raw data is too resource intensive to use when you want to view result over the past weeks or months.
+
+The compactor will go through the S3 bucket, and create lower-res data (at `5m` averages and `1h` averages), and delete raw data (after a configurable time has passed).
 
 One such configuration can be:
 
@@ -418,13 +425,13 @@ I mention these different underlying apis explicitly because [currently](https:/
 
 The first is a kubernetes standard component; the [metrics-server](https://github.com/kubernetes-sigs/metrics-server).
 
-It only implements the **resource metrics** api, and thus only enables you scale on cpu and memory.
+It only implements the **resource metrics** api, and thus **only** enables you scale on cpu and memory.
 
 It extracts cpu/memory values values via `kubelet`, and as such allows `kubectl top` + HPAs to work out of the box - without prometheus or any of the other components visualised herein. It's even installed on `k3d` by default.
 
 ### prometheus-adapter
 
-The adapter funnels metrics from `prometheus` into the HPA universe, so you can scale on **arbitrary** metrics.
+This adapter funnels metrics from `prometheus` into the HPA universe, so you can scale on **arbitrary** metrics.
 
 It implements the resource metrics, custom metrics, and external metrics APIs. The underlying setup for this has [stable docs from k8s 1.23](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-on-custom-metrics), and in essence this allows you to scale on __custom metrics__ (related to the scaling object) or __external metrics__ (unrelated to the scaling object).
 
