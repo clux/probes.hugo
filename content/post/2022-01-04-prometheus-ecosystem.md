@@ -16,7 +16,7 @@ As part of my work life in the past year, a chunk of my day-to-day life has cons
 2. This post uses the classical open source `prometheus` setup with HA pairs and `thanos` on top. There are other promising setups such as agent mode with remote write.
 3. We are following the most-standard `helm` approach and using charts directly (i.e. [avoiding direct use of jsonnet](https://github.com/prometheus-operator/kube-prometheus/))
 
-You can debate the last point, but if you are optimizing for **user-editability** of the prometheus-stack, then `jsonnet` is kind of the opposite of that.
+You can debate the last point, but if you are optimizing for **user-editability** of the prometheus-stack, then `jsonnet` is kind of the opposite of that - particularly when the rest of the cloud is installed with `helm`.
 
 ## Architecture Overview
 
@@ -99,9 +99,11 @@ Consider importing the [semi-standardised `prometheus.io/scrape`](https://github
 
 [Alerting and recording rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/) are similarly configured and has same caveats (don't write them manually).
 
-#### alertmanager
+### alertmanager
 
 Alerts (the data in `ALERTS{alertstate="firing"}`) are sent from prometheus to alertmanager.
+
+![how alerts should look](/imgs/prometheus/eva-alert.gif)
 
 At least, this is usually what happens. The communication **to** and **within** alertmanager is probably the most **annoying** parts of this entire architecture.
 
@@ -149,7 +151,7 @@ The key strength of Grafana lies in how it becomes the one-stop shop for __query
 - [elastic](https://grafana.com/blog/2021/03/04/why-were-partnering-with-elastic-to-build-the-elasticsearch-plugin-for-grafana/)
 - [sentry](https://grafana.com/blog/2021/12/16/introducing-the-sentry-data-source-plugin-for-grafana/)
 
-..plus tons more that you are less likely to run into (`cloudwatch` shown as stand-in for these in diagram). Even if you only use if it against `prometheus`, it's still a generally **painless** component to install with tons of **benefits**.
+..plus tons more that you are less likely to run into (`cloudwatch` shown as stand-in for these in diagram). Even if you only use if it against `prometheus`, it's still a **generally painless** component to install with tons of **benefits**.
 
 Grafana is packaged as a small-ish [grafana-maintained helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana), which is **pinned** as [a subchart under kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L45-L48).
 
@@ -217,13 +219,13 @@ It's a [sub-chart of kube-prometheus-stack](https://github.com/prometheus-commun
 
 The second stand-alone metric exporter for kubernetes. Maintained by kubernetes itself; [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) is a **smaller deployment** that generates metrics from what it sees the state of objects are from the apiserver. It has [client-go reflectors](https://github.com/kubernetes/kube-state-metrics/blob/master/docs/design/metrics-store-performance-optimization.md#proposal) and uses the results of their long watches to populate metrics.
 
-It's a conceptually pretty simple piece; an api -> metrics transformer, but kubernetes has a lot of apis, so definitely not something you want to write yourself.
+It's a conceptually pretty simple piece; an **api -> metrics transformer**, but kubernetes has a lot of apis, so definitely not something you want to write yourself.
 
-In example terms; this component provides the base data for what you need to answer the questions like whether your:
+In example terms; this component provides the **base data** for what you need to **answer** the questions like whether your:
 
-- "Pod has been in an unhealthy state for >N minutes"
-- "Deployment has failed to complete its last rollout in N minutes"
-- "HorizontalPodAutoscaler has been maxed out for >N minutes"
+- "`Pod` has been in an unhealthy state for `>N` minutes"
+- "`Deployment` has failed to complete its last rollout in `N` minutes"
+- "`HorizontalPodAutoscaler` has been maxed out for `>N` minutes"
 
 ..stuff that you can figure out with `kubectl get -oyaml`.
 
@@ -315,7 +317,7 @@ It's an evolving ecosystem with many components, but none of them are as complic
 
 Thanos is an [incubating cncf project](https://www.cncf.io/projects/thanos/) that is just over [4 years old](https://github.com/thanos-io/thanos/commit/3a7b2996f8574048900cfc6259561ac412bcf251). It has a healthy set of [maintainers](https://github.com/thanos-io/thanos/blob/main/MAINTAINERS.md), it [moves fast](https://thanos.devstats.cncf.io/d/74/contributions-chart?orgId=1&var-period=d7&var-metric=contributions&var-repogroup_name=All&var-country_name=All&var-company_name=All&var-company=all), and makes some of the most [well-documented](https://thanos.io/tip/thanos/getting-started.md/), high-quality [releases](https://github.com/thanos-io/thanos/releases) out there.
 
-While it's **not trivial** to maintain - the large cpu/memory usage and scaling profiles presents some challenges - it has **not** presented major problems.
+While it's **not trivial** to maintain - the large cpu/memory usage and scaling profiles presents some challenges - it has otherwise **not** presented major problems.
 
 A quick run-through of things worth knowing about the components follows:
 
@@ -360,18 +362,25 @@ This component will suddenly spike in both CPU and memory when it's under heavy 
         type: Utilization
 ```
 
+The compute workload [kubernetes-mixin dashboard](https://monitoring.mixins.dev/kubernetes/#dashboards) will show roughly how this HPA reacts to changes (stacked view, colors represent pods):
+
+[![thanos query cpu and memory usage](/imgs/prometheus/thanos-query-usage.png)](/imgs/prometheus/thanos-query-usage.png)
+
+which lines up with the `thanos_query_concurrent_gate_queries_in_flight` metric reasonably well.
+
 ### [Thanos Store](https://thanos.io/tip/components/store.md/)
 
 The read interface to long term storage. It's prometheus compatible (using the Store API), so from the querier's POV it is analogous to querying a prometheus.
 
-This component also will **also** suddenly spike in both CPU and memory when users start doing big queries on historical data (further back in time than prometheus' `retention`), so a similar HPA to thanos query will be useful.
+This component also will **also** suddenly spike in both CPU and memory when users start doing big queries on historical data (i.e. further back in time than prometheus' `retention`), so a similar HPA to thanos query to scale on CPU works well here:
+
+[![thanos store cpu and memory usage](/imgs/prometheus/thanos-store-usage.png)](/imgs/prometheus/thanos-store-usage.png)
 
 ### [Thanos Ruler](https://thanos.io/tip/components/rule.md/)
 
 A rule evaluation analogue. A bit more niche than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).
 
-Can run in a stateful mode - presenting a prometheus compatible store api that the querier can hit for rule results - or statelessly - and persisting rule results to s3.
-
+Can run in a stateful mode - presenting a prometheus compatible store api that the querier can hit for rule results - or statelessly; persisting rule results to s3.
 
 ### [Thanos Compactor](https://thanos.io/tip/components/compact.md/)
 
@@ -389,7 +398,9 @@ The `compactor` will **chug along** and do these in steps (creating `5m` res fro
 
 If this is hard to visualize, then fear not, you can browse to thanos [bucket web](https://thanos.io/tip/components/tools.md/#bucket-web) to visualise the state of your `S3` bucket. It's a small service (included in the chart) that presents the view, and what resolutions are availble from various dates.
 
-Think of `compactor` as a cronjob (but with [good alerts](https://monitoring.mixins.dev/thanos/#thanos-compact)) that needs to do big data operations. If you give it enough space and memory it is usually happy.
+Think of `compactor` as a cronjob (but with [good alerts](https://monitoring.mixins.dev/thanos/#thanos-compact)) that needs to do big data operations. If you give it enough space, cpu, and memory it is usually happy. It will use these resources a bit sporadically though - some cycles are clearly visible in memory use:
+
+[![thanos compactor cpu and memory usage](/imgs/prometheus/compactor-cycles.png)](/imgs/prometheus/compactor-cycles.png)
 
 ## Part 3: Metrics API Integrations
 
