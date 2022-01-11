@@ -384,9 +384,11 @@ This component also will **also** suddenly spike in both CPU and memory when use
 
 ### [Thanos Ruler](https://thanos.io/tip/components/rule.md/)
 
-An **optional** rule evaluation analogue.
+An **optional** rule evaluation / alerting analogue.
 
-This is a bit more **niche** than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).
+This is a bit more **niche** than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to alert on / create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).
+
+If you need the alerting part, then you have another component that talks to `alertmanager` 🙃.
 
 Can run in a stateful mode - presenting a prometheus compatible store api that the querier can hit for rule results - or statelessly; persisting rule results to s3.
 
