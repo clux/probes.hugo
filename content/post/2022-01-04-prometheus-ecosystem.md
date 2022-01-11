@@ -13,7 +13,7 @@ As part of my work life in the past year, a chunk of my day-to-day life has cons
 ## Disclaimer
 
 1. Information here is based on my own learnings. Some details **might** be wrong. Please submit an [issue](https://github.com/clux/probes/issues) / [fix](https://github.com/clux/probes/edit/master/content/post/2022-01-04-prometheus-ecosystem.md) if you see anything glaring.
-2. This post uses the classical open source prometheus setup with HA pairs and thanos on top. There are other promising (less mature) setups such as agent mode with remote write and cortex with grafana cloud.
+2. This post uses the classical open source `prometheus` setup with HA pairs and `thanos` on top. There are other promising setups such as agent mode with remote write.
 3. We are following the most-standard `helm` approach and using charts directly (i.e. [avoiding direct use of jsonnet](https://github.com/prometheus-operator/kube-prometheus/))
 
 You can debate the last point, but if you are optimizing for **user-editability** of the prometheus-stack, then `jsonnet` is kind of the opposite of that.
@@ -22,7 +22,7 @@ You can debate the last point, but if you are optimizing for **user-editability*
 
 The TL;DR image. Open it up in a new tab, and cycle between if you want to read about specific components below.
 
-[![prometheus ecosystem architecture diagram](/imgs/prometheus/ecosystem-miro.png)](/imgs/prometheus/ecosystem-miro.png)
+[![prometheus ecosystem architecture diagram](/imgs/prometheus/ecosystem-miro.jpg)](/imgs/prometheus/ecosystem-miro.jpg)
 
 **Legend**:
 
@@ -209,7 +209,7 @@ We will briefly run through these metric sources, focusing first on the ones tha
 
 #### node-exporter
 
-The main external metric source. A [prometheus org maintained](https://github.com/prometheus/node_exporter) **deamonset** component that scrapes system level unix metrics. It mounts `/`, `/sys`, and `/proc` - with `hostPID` and `hostNetwork` enabled - to grab extensive information about each node.
+The main external metric source. A [prometheus org maintained](https://github.com/prometheus/node_exporter) `DaemonSet` component that scrapes system level unix metrics. It mounts `/`, `/sys`, and `/proc` - with `hostPID` and `hostNetwork` enabled - to grab extensive information about each node.
 
 It's a [sub-chart of kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L41-L44), and it has a slew of [configurable exporters](https://github.com/prometheus/node_exporter#collectors), which can be [configured from the chart](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/prometheus-node-exporter/values.yaml#L150-L152), but the [defaults from kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/values.yaml#L1358-L1360) are likely good enough.
 
