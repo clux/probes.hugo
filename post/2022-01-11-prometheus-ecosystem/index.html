@@ -1,0 +1,517 @@
+<!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Prometheus Stack Review - probes</title>
+<meta name=description content="operating the stateful metrics system on kubernetes">
+<meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","name":"Prometheus stack review"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Prometheus Stack Review","description":"As part of my work life in the past year, a chunk of my day-to-day life has consisted of maintaining a prometheus installation on top of a sizable kubernetes cluster. My original feeling was \u0026ldquo;this is not that bad with kube-prometheus-stack\u0026rdquo;, but this sentiment has worsened somewhat with the realisation that more and more customizations and pieces were needed for large scale use. Half a year later (and 6\u002b charts deep), I thought I\u0026rsquo;d collect my thoughts on the ecosystem - from an operational perspective - with a rough architecture overview post.\n","inLanguage":"en","wordCount":3970,"datePublished":"2022-01-11T00:00:00","dateModified":"2022-01-11T00:00:00","image":"https:\/\/clux.dev\/","keywords":["kubernetes, observability"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
+<meta property="og:title" content="Prometheus Stack Review">
+<meta property="og:description" content="operating the stateful metrics system on kubernetes">
+<meta property="og:url" content="https://clux.dev/post/2022-01-11-prometheus-ecosystem/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="probes">
+<meta name=twitter:title content="Prometheus Stack Review">
+<meta name=twitter:description content="operating the stateful metrics system on kubernetes">
+<meta name=twitter:card content="summary">
+<meta name=twitter:site content="@sszynrae">
+<meta name=twitter:creator content="@sszynrae">
+<meta name=generator content="Hugo 0.87.0">
+<link rel=alternate href=https://clux.dev/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
+<link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous>
+<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.dev/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.dev/css/syntax.css><link rel=stylesheet href=https://clux.dev/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+<div class=container-fluid>
+<div class=navbar-header>
+<button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
+<span class=sr-only>Toggle navigation</span>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+</button>
+<a class=navbar-brand href=https://clux.dev/>probes</a>
+</div>
+<div class="collapse navbar-collapse" id=main-navbar>
+<ul class="nav navbar-nav navbar-right">
+<li>
+<a title=Blog href=https://clux.dev/>Blog</a>
+</li>
+<li>
+<a title=About href=https://clux.dev/page/about/>About</a>
+</li>
+<li>
+<a title=Tags href=https://clux.dev/tags>Tags</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div>
+<header class=header-section>
+<div class="intro-header no-img">
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<div class=post-heading>
+<h1>Prometheus Stack Review</h1>
+<h2 class=post-subheading>operating the stateful metrics system on kubernetes</h2>
+<span class=post-meta>
+<i class="fas fa-calendar"></i>&nbsp;Posted on January 11, 2022
+&nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class=container role=main>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<article role=main class=blog-post>
+<p>As part of my work life in the past year, a chunk of my day-to-day life has consisted of maintaining a <code>prometheus</code> installation on top of a sizable kubernetes cluster. My original feeling was &ldquo;this is not that bad with <code>kube-prometheus-stack</code>&rdquo;, but this sentiment has worsened somewhat with the realisation that more and more customizations and pieces were needed for large scale use. Half a year later (and 6+ charts deep), I thought I&rsquo;d collect my thoughts on the ecosystem - from an operational perspective - with a rough architecture overview post.</p>
+<h2 id=disclaimer>Disclaimer</h2>
+<ol>
+<li>Information here is based on my own learnings. Some details <strong>might</strong> be wrong. Please submit an <a href=https://github.com/clux/probes/issues>issue</a> / <a href=https://github.com/clux/probes/edit/master/content/post/2022-01-11-prometheus-ecosystem.md>fix</a> if you see anything glaring.</li>
+<li>This post uses the classical open source <code>prometheus</code> setup with HA pairs and <code>thanos</code> on top. There are other promising setups such as agent mode with remote write.</li>
+<li>We are following the most-standard <code>helm</code> approach and using charts directly (i.e. <a href=https://github.com/prometheus-operator/kube-prometheus/>avoiding direct use of jsonnet</a>)</li>
+</ol>
+<p>You can debate the last point, but if you are optimizing for <strong>user-editability</strong> of the prometheus-stack, then <code>jsonnet</code> is kind of the opposite of that - particularly when the rest of the cloud is installed with <code>helm</code>.</p>
+<h2 id=architecture-overview>Architecture Overview</h2>
+<p>The TL;DR image. Open it up in a new tab, and cycle between if you want to read about specific components below.</p>
+<p><a href=https://clux.dev/imgs/prometheus/ecosystem-miro.jpg><img src=https://clux.dev/imgs/prometheus/ecosystem-miro.jpg alt="prometheus ecosystem architecture diagram"></a></p>
+<p><strong>Legend</strong>:</p>
+<ul>
+<li><strong>user</strong> components and the user <strong>read path</strong> is <i style=color:green>green</i></li>
+<li>prometheus/thanos write path is <i style=color:red>red</i>.</li>
+<li><code>helm charts</code> are denoted with <strong>thick dashed lines</strong></li>
+<li>arrows flow <strong>from</strong> the instigator of the verb <strong>to</strong> the object acted upon</li>
+</ul>
+<h2 id=developer-interaction>Developer Interaction</h2>
+<p>A <strong>user</strong> / developer on a kubernetes cluster with the prometheus stack installed can be expected to:</p>
+<ul>
+<li><strong>develop applications with hpas</strong> and have them <strong>scraped</strong> by prometheus for metrics</li>
+<li><strong>create dashboards</strong> in grafana and save them as <code>ConfigMap</code> entries</li>
+<li><strong>create alerting rules</strong> to be triggered when metrics exceed thresholds (and maybe even tweak existing mixins)</li>
+<li><strong>query metrics</strong> directly on grafana&rsquo;s explore and thanos&rsquo;s queryfrontend</li>
+</ul>
+<p>..and the user should not have to know too much about the complicated spaghetti setup that this diagram might give a scary impression of.</p>
+<h2 id=part-1-kube-prometheus-stack>Part 1: kube-prometheus-stack</h2>
+<p>The blue dashed line represents a set of components that are commonly deployed together on kubernetes due to their interdependence, and these are managed together in the <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack>kube-prometheus-stack</a> helm chart.</p>
+<p>It is a <a href=https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml>~3k LOC yaml values file</a> with a further 71k LOC of yaml in that chart folder alone (what could go wrong), and it configures the following components:</p>
+<ul>
+<li>prometheus</li>
+<li>alertmanager</li>
+<li>prometheus-operator</li>
+<li>grafana</li>
+<li>kube-state-metrics</li>
+<li>node-exporter</li>
+<li>kubernetes specific monitors</li>
+<li>monitoring mixins</li>
+</ul>
+<p><code>24k</code> lines here are <strong>just</strong> the absolutely <strong>massive</strong> prometheus-operator crds (that are now <a href=https://github.com/prometheus-community/helm-charts/issues/1500>too big to apply</a>), but it&rsquo;s still an astonishing amount of yaml. Typically you&rsquo;ll end up with between <code>20-40k</code> (excluding the crds) with a 100-500 line values file that you have to maintain <small>(you generally don&rsquo;t want your values file to be too large as it becomes harder and harder to keep track of the breaking changes in the stringly typed helm chart apis)</small>.</p>
+<h3 id=prometheus>prometheus</h3>
+<p>The octopus at the base of our architecture. Prometheus <strong>scrapes</strong> the metrics endpoints of virtually <strong>every</strong> application you have, <strong>stores</strong> the data <strong>locally</strong> in a low-retention (a week or two) time series database that you can query. <small>(The grey scrape arrows are illustrative, whereas they would usually hit everything, and also hit it from every prometheus pod in the statefulset for redundancy).</small></p>
+<p>It also continually computes configured <strong>evaluation rules</strong>, and raises alerts on configured metric thresholds.</p>
+<p>Prometheus is <a href=https://github.com/prometheus/prometheus/commit/734d28b515026ca9f429eba0a7d09954bceb6387>over 9 years old</a>, and has <a href=https://www.cncf.io/projects/prometheus/>graduate maturity in cncf</a>.</p>
+<p>In theory, you can run it directly, tell it to scrape this-and-this and be done, but that will lead to downtime quickly. You are going to need at least two replicas for failover, and these are going to need mounted volumes to store their data. A <a href=https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/><code>StatefulSet</code></a> in kubernetes.</p>
+<p>For configuration; how to scrape metrics can be tweaked through a mounted <code>scrape_config</code> (a <a href=https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config>pretty complicated yaml DSL</a> using <code>snake_case</code>). If you get the syntax wrong, prometheus hates your config and won&rsquo;t boot. <code>promtool</code> can validate it.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>relabel_configs</span>:
+- <span style=color:#ff79c6>source_labels</span>: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+  <span style=color:#ff79c6>action</span>: keep
+  <span style=color:#ff79c6>regex</span>: <span style=color:#ff79c6>true</span>
+- <span style=color:#ff79c6>source_labels</span>: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+  <span style=color:#ff79c6>action</span>: replace
+  <span style=color:#ff79c6>target_label</span>: __scheme__
+  <span style=color:#ff79c6>regex</span>: (https?)
+- <span style=color:#ff79c6>source_labels</span>: [__meta_kubernetes_service_annotation_prometheus_io_path]
+  <span style=color:#ff79c6>action</span>: replace
+  <span style=color:#ff79c6>target_label</span>: __metrics_path__
+  <span style=color:#ff79c6>regex</span>: (.+)
+- <span style=color:#ff79c6>source_labels</span>: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+  <span style=color:#ff79c6>action</span>: replace
+  <span style=color:#ff79c6>target_label</span>: __address__
+  <span style=color:#ff79c6>regex</span>: ([^:]+)(?::\d+)?;(\d+)
+  <span style=color:#ff79c6>replacement</span>: $1:$2
+- <span style=color:#ff79c6>action</span>: labelmap
+  <span style=color:#ff79c6>regex</span>: __meta_kubernetes_service_label_(.+)
+</code></pre></div><p>This config is pretty awful to write and debug manually, so imo, you should probably avoid writing it yourself (see the operator below).</p>
+<p>Consider importing the <a href=https://github.com/prometheus-community/helm-charts/blob/970e1334813f90348b849f0a3850262a61f82797/charts/prometheus/values.yaml#L1516-L1759>semi-standardised <code>prometheus.io/scrape</code></a> ones from the main prometheus chart if you wish (they slightly clash with the root chart), but those should be it. Scrape config also needs you to inline secrets, so not great from a security perspective.</p>
+<p><a href=https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/>Alerting and recording rules</a> are similarly configured and has same caveats (don&rsquo;t write them manually).</p>
+<h3 id=alertmanager>alertmanager</h3>
+<p>Alerts (the data in the special <code>ALERTS{alertstate="firing"}</code> metric) are sent from <code>prometheus</code> to <code>alertmanager</code>.</p>
+<p><img src=https://clux.dev/imgs/prometheus/eva-alert.gif alt="how alerts should look"></p>
+<p>At least, this is usually what happens. The communication <strong>to</strong> and <strong>within</strong> <code>alertmanager</code> is probably the most <strong>annoying</strong> parts of this entire architecture.</p>
+<p>A problem that keeps biting me is how <a href=https://github.com/prometheus/prometheus/issues/7063>prometheus can lose track of alertmanager ips, and fail to send alerts for hours</a>. There are many <a href="https://github.com/prometheus/prometheus/search?q=%22error+sending+alert%22&type=issues">issues related to this</a>.</p>
+<p>When alerts do actually get passed to alertmanager, they go through a <a href=https://github.com/prometheus/alertmanager/blob/main/doc/arch.svg>pretty complicated internal architecture</a>, before ultimately being sent to <strong>configured receivers</strong>. Alertmanager contains <strong>deduplication</strong> mechanisms, and a <strong>custom</strong> UDP & TCP <strong>gossip protocol</strong> (that keeps breaking in HA setups - causing <a href="https://github.com/prometheus/alertmanager/issues?q=is%3Aissue+duplicate+alerts">duplicate alerts</a>).</p>
+<p>The built-in receivers for slack/pagerduty seem to handle deduplicating alerts themselves, so if you can get by without HA and don&rsquo;t need a custom webhook, you might be ok.</p>
+<p>Still, <strong>your mileage will definitely vary</strong> with this component.</p>
+<p>Alertmanager is <a href=https://github.com/prometheus/alertmanager/commit/f86966a0e75dfa52f068d3a085753518bd4aea74>almost 9 years old</a>, has <a href=https://github.com/prometheus/alertmanager/blob/main/MAINTAINERS.md>2 maintainers</a>, and is a sub-project of the prometheus org.</p>
+<h3 id=prometheus-operator>prometheus-operator</h3>
+<p>A system that sits on top of prometheus, and extends the configuration with the large <a href=https://github.com/prometheus-operator/prometheus-operator/tree/main/example/prometheus-operator-crd><code>monitoring.coreos.com</code> CRDs</a>. This operator watches these CRDs, validates them via <a href=https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/>admission</a>, converts them to a prometheus compatible format, and injects them into the running prometheus via a <code>config-reloader</code> sidecar on the prometheus statefulset. The most commonly used configuration CRDs are <code>PrometheusRule</code> and <code>ServiceMonitor</code>.</p>
+<p>This setup avoids you taking down prometheus when you/users write new or invalid configuration or alerts. It also provides a mechanism for referencing kubernetes <code>Secret</code> objects (avoiding encryption needs on the base configuration), and it is generally considered the standard abstraction for configuring prometheus scraping.</p>
+<p>A minor, but debatable choice they have made, is to re-map the <code>scrape_config</code> keys to <code>camelCase</code> forcing you have to write half of your <code>ServiceMonitor</code> in <code>camelCase</code> (the keys), and the other half in <code>snake_case</code> (the values):</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>    - <span style=color:#ff79c6>relabelings</span>:
+      - <span style=color:#ff79c6>action</span>: replace
+        <span style=color:#ff79c6>sourceLabels</span>:
+         - __meta_kubernetes_namespace
+         <span style=color:#ff79c6>targetLabel</span>: kubernetes_namespace
+</code></pre></div><p>The operator <strong>configures</strong> <code>prometheus</code>, <code>alertmanager</code>, and optionally also thanos <code>ruler</code>.</p>
+<p>It is over 5 years old and considered <code>beta</code>. It&rsquo;s <a href=https://github.com/prometheus-operator/prometheus-operator/blob/main/MAINTAINERS.md>maintained by</a> people who are mostly disjoint from the the <a href=https://github.com/prometheus/prometheus/blob/main/MAINTAINERS.md>prometheus maintainers</a>. I.e. while this is not a first-class supported thing from prometheus, everyone uses it - and it is <a href=https://prometheus-operator.dev/docs/prologue/introduction/>well-documented</a>.</p>
+<h3 id=grafana>grafana</h3>
+<p>While prometheus does have sufficient querying functionality built in, it does not let you save these queries other than by a long-ass url, so realistically, users will want Grafana for dashboards and cool panel customization.</p>
+<p>The key strength of Grafana lies in how it becomes the one-stop shop for <strong>querying & visualising anything</strong> when you buy into the ecosystem, and the huge amount of data sources they have available:</p>
+<ul>
+<li><a href=https://grafana.com/docs/grafana/latest/datasources/prometheus/#prometheus-api>anything prometheus-like</a></li>
+<li><a href=https://grafana.com/grafana/plugins/cloudwatch/>cloudwatch</a></li>
+<li><a href=https://grafana.com/blog/2021/08/30/introducing-the-honeycomb-plugin-for-grafana/>honeycomb</a></li>
+<li><a href=https://grafana.com/docs/tempo/latest/getting-started/tempo-in-grafana/>tempo</a></li>
+<li><a href=https://grafana.com/docs/loki/latest/getting-started/grafana/>loki</a></li>
+<li><a href=https://grafana.com/blog/2021/03/04/why-were-partnering-with-elastic-to-build-the-elasticsearch-plugin-for-grafana/>elastic</a></li>
+<li><a href=https://grafana.com/blog/2021/12/16/introducing-the-sentry-data-source-plugin-for-grafana/>sentry</a></li>
+</ul>
+<p>..plus tons more that you are less likely to run into (<code>cloudwatch</code> shown as one common case). Even if you only use if it against <code>prometheus</code>, it&rsquo;s still a <strong>generally painless</strong> component to install with tons of <strong>benefits</strong>.</p>
+<p>Grafana is packaged as a small-ish <a href=https://github.com/grafana/helm-charts/tree/main/charts/grafana>grafana-maintained helm chart</a>, which is <strong>pinned</strong> as a <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L45-L48>subchart under kube-prometheus-stack</a>.</p>
+<p>The chart contains some nice ways of making <strong>dashboard provisioning</strong> automatic (dashboards as configmaps), but this comes with its own <strong>pain points</strong>:</p>
+<ul>
+<li>need to verify dashboard json out-of-band (validity + uid presence)</li>
+<li>dashboards incur k8s size limits - 1MB on ConfigMap, 256kB applied annotation</li>
+<li>HA setups could split brain dashboards with <a href=https://github.com/grafana/grafana/issues/37679>partial saves</a> (seems fixed now)</li>
+<li><a href=https://github.com/grafana/grafana/issues/36328>provisioned dashboards are incompatible with built-in alerts</a></li>
+<li>future <a href=https://github.com/grafana/grafana/issues/31038>dashboard-as-code direction is very undecided</a></li>
+</ul>
+<p>Regardless, the diagram shows how the user flow would be for this, and how it ends up being picked up by a sidecar in the grafana statefulset.</p>
+<h3 id=governance--grafana-labs-sidenotes>Governance & Grafana Labs Sidenotes</h3>
+<p>Grafana has a more <a href=https://github.com/grafana/grafana/blob/main/GOVERNANCE.md>company driven governance model</a> - it&rsquo;s maintained almost exclusively by people employed by Grafana Labs - and the company is clearly optimizing for their own cloud offering of a parallel subset of this ecosystem; <a href=https://grafana.com/products/cloud/>Grafana Cloud</a>.</p>
+<p>This obvious <em>conflict of interest</em> does pollute the purity of ecosystem somewhat, but at least they have <strong>financing</strong> to move at the great pace they are moving. Some examples of their recent efforts:</p>
+<ul>
+<li><a href=https://github.com/grafana/loki>loki</a> - a serious elastic contender for logs that integrates with grafana</li>
+<li><a href=https://github.com/grafana/tempo>tempo</a> - a super clean tracing backend that integrates with grafana</li>
+<li><a href=https://github.com/grafana/helm-charts/tree/main/charts>well maintained helm charts for grafana/tempo/loki</a></li>
+<li><a href=https://grafana.com/blog/2021/11/16/why-we-created-a-prometheus-agent-mode-from-the-grafana-agent/>prometheus agent mode</a></li>
+</ul>
+<p>Of course, there is the expectation that open source functionality not related to grafana cloud <strong>might</strong> be receiving <strong>less attention</strong>, but I can&rsquo;t really blame them for pursuing a sensible monetisation strategy.</p>
+<p>I do hope <a href=https://grafana.com/blog/2021/11/09/announcing-grafana-oncall/>Grafana OnCall</a> manages to get something contributed upstream (outside the grafana monolith) so we can have a better alternative to alertmanager (as alertmanager has lots of issues and can only alert on prometheus data sources).</p>
+<h3 id=monitoring-mixins>Monitoring Mixins</h3>
+<p>A default grafana/prometheus-operator installation is not going to be very helpful without some dashboards that tell you about the state of your system(s).</p>
+<p>Common patterns for alerts/dashboards/recording rules are encapsulated in a collection of mixins that are browsable on <a href=https://monitoring.mixins.dev/>monitoring.mixins.dev</a>.</p>
+<p>The <a href=https://monitoring.mixins.dev/kubernetes/><code>kubernetes-mixin</code></a> stands out in particular, providing excellent, <a href=https://grafana.com/docs/grafana/latest/best-practices/dashboard-management-maturity-levels/>high maturity</a>, drill-down-linked dashboards that are going to be vital for a large percentage of kubernetes related incidents.</p>
+<p>In general, these provide a great starting point for most clusters (despite <a href=https://monitoring.mixins.dev/kubernetes/#kubernetes-system-kubelet>sometimes</a> being <a href="https://github.com/kubernetes-monitoring/kubernetes-mixin/search?q=KubeletTooManyPods&type=issues">overly noisy</a>). You likely have to re-configure some <strong>thresholds</strong>, and remove some of these alerts as you see fit you your production cluster, but the defaults are generally intelligent.</p>
+<p>Unfortunately, there are <a href=https://grafana.com/blog/2021/01/14/how-prometheus-monitoring-mixins-can-make-effective-observability-strategies-accessible-to-all/#the-challenges-with-mixins>many operational challenges with these mixins</a>. <code>helm</code> is certainly not best suited to take full advantage of them as not every option is bubbled up to the charts, and these values flow through so many layers it&rsquo;s <a href=https://github.com/prometheus-operator/kube-prometheus/issues/1333>challenging</a> to find where they truly originate, e.g. <a href=https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14/prometheus.yaml>kube-prometheus-stack</a> &lt;- <a href=https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusOperator-prometheusRule.yaml>kube-prometheus</a> &lt;- <a href=https://github.com/prometheus-operator/prometheus-operator/blob/main/example/mixin/alerts.yaml>prometheus-operator</a>.</p>
+<p>This often caused me not wanting to bother with fixing it in the first place, which of course leads to the mixins not being as good as they could be. AFAIKT, your options are:</p>
+<ul>
+<li><strong>forking</strong> the mixins you care about and <strong>opting out</strong> of automatic upstream fixes</li>
+<li>post-template modifications of minor details with hacky solutions like sed/jq</li>
+<li>managing mixins <strong>out-of-band</strong>, aligning implicit default values with the charts, and customizing with jsonnet</li>
+<li>going through the drudgery of propagating mixin fixes through several repos</li>
+</ul>
+<p>While I advocate for trying to propagate fixes when motivation strikes, <strong>forking mixins</strong> at least makes your yaml <strong>readable</strong> in your gitops repo, so it&rsquo;s actually a decent option - particularly given how <a href=https://prometheus-operator.dev/docs/developing-prometheus-rules-and-grafana-dashboards/#adjustment>awful</a> the other solutions are.</p>
+<p>Regardless, it&rsquo;s another useful, but imperfect component that you are going to need.</p>
+<h3 id=metric-sources>Metric Sources</h3>
+<p>We move on to the components that create most of your data in prometheus.</p>
+<p>Using the mixins (or equivalent dashboards) effectively <strong>requires</strong> you having <strong>standard kubernetes metric sources</strong> configured (otherwise you will have missing values in all your mixin dashboards).</p>
+<p>We will briefly run through these metric sources, focusing first on the ones that appear in the <code>kube-prometheus-stack</code>. In general, these are pretty-well behaved and low-maintenance, so there won&rsquo;t be too much to say about these.</p>
+<h4 id=node-exporter>node-exporter</h4>
+<p>The main external metric source. A <a href=https://github.com/prometheus/node_exporter>prometheus org maintained</a> <code>DaemonSet</code> component that scrapes system level <strong>unix metrics</strong>. It mounts <code>/</code>, <code>/sys</code>, and <code>/proc</code> - with <code>hostPID</code> and <code>hostNetwork</code> enabled - to grab extensive information about each node.</p>
+<p>It&rsquo;s a <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L41-L44>sub-chart of kube-prometheus-stack</a>, and it has a slew of <a href=https://github.com/prometheus/node_exporter#collectors>configurable exporters</a>, which can be <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/prometheus-node-exporter/values.yaml#L150-L152>configured from the chart</a>, but the <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/values.yaml#L1358-L1360>defaults from kube-prometheus-stack</a> are likely good enough.</p>
+<h4 id=kube-state-metrics>kube-state-metrics</h4>
+<p>The second stand-alone metric exporter for kubernetes. Maintained by kubernetes itself; <a href=https://github.com/kubernetes/kube-state-metrics>kube-state-metrics</a> is a <strong>smaller deployment</strong> that generates metrics from what it sees the state of objects are from the apiserver. It has <a href=https://github.com/kubernetes/kube-state-metrics/blob/master/docs/design/metrics-store-performance-optimization.md#proposal>client-go reflectors</a> and uses the results of their long watches to populate metrics.</p>
+<p>It&rsquo;s a conceptually pretty simple piece; an <strong>api -> metrics transformer</strong>, but kubernetes has a lot of apis, so definitely not something you want to write yourself.</p>
+<p>In example terms; this component provides the <strong>base data</strong> for what you need to <strong>answer</strong> the questions like whether your:</p>
+<ul>
+<li>&ldquo;<code>Pod</code> has been in an unhealthy state for <code>>N</code> minutes&rdquo;</li>
+<li>&ldquo;<code>Deployment</code> has failed to complete its last rollout in <code>N</code> minutes&rdquo;</li>
+<li>&ldquo;<code>HorizontalPodAutoscaler</code> has been maxed out for <code>>N</code> minutes&rdquo;</li>
+</ul>
+<p>..stuff that you can figure out with <code>kubectl get -oyaml</code>.</p>
+<p>KSM is deployed via an <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics>in-tree subchart</a> under <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-prometheus-stack/Chart.yaml#L37-L40>kube-prometheus-stack</a>.</p>
+<p>You can configure what apis it provides metrics for <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-state-metrics/values.yaml#L155-L183>under collectors</a>.</p>
+<details><summary style=cursor:pointer;color:#0af><b>Addendum: Label configuration caveat</b></summary>
+<p>The only issue I&rsquo;ve run into with KSM is that the metric labels are often insufficient for integration with existing standard alerting setups (problem being that the generic alerts from <code>kubernetes-mixin</code> will fire, but it&rsquo;s hard to tell by the name of the deployment alone who should get that alert). This can be rectified with the <a href=https://github.com/prometheus-community/helm-charts/blob/9401be121c65e6e3332670a49c5ad6ba2aeae9c3/charts/kube-state-metrics/values.yaml#L135-L142><code>metricLabelsAllowlist</code></a> in the chart, e.g.:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>    <span style=color:#ff79c6>metricLabelsAllowlist</span>:
+    - <span style=color:#f1fa8c>&#34;deployments=[app.kubernetes.io/name,app]&#34;</span>
+    - <span style=color:#f1fa8c>&#34;jobs=[app.kubernetes.io/name,app]&#34;</span>
+    - <span style=color:#f1fa8c>&#34;horizontalpodautoscalers=[app.kubernetes.io/name,app]&#34;</span>
+</code></pre></div><p>to inject more labels (here <code>app</code>) from the root object onto metrics. Annoyingly, these only get injected into an informational <code>_labels</code> metric, so you&rsquo;d have to extend <code>kubernetes-mixin</code> with big joins to get these values exposed in the alert:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-diff data-lang=diff><span style=font-weight:700>diff --git development/rules-kubernetes-apps.yaml development/rules-kubernetes-apps.yaml
+</span><span style=font-weight:700>index e36496e..988d6a6 100644
+</span><span style=font-weight:700></span><span style=color:#f55>--- development/rules-kubernetes-apps.yaml
+</span><span style=color:#f55></span><span style=color:#50fa7b;font-weight:700>+++ development/rules-kubernetes-apps.yaml
+</span><span style=color:#50fa7b;font-weight:700></span><span style=font-weight:700>@@ -220,7 +220,9 @@ spec:
+</span><span style=font-weight:700></span><span style=color:#f55>-      expr: kube_job_spec_completions{job=&#34;kube-state-metrics&#34;, namespace=~&#34;.*&#34;} - kube_job_status_succeeded{job=&#34;kube-state-metrics&#34;, namespace=~&#34;.*&#34;}  &gt; 0
+</span><span style=color:#f55></span><span style=color:#50fa7b;font-weight:700>+      expr: |-
+</span><span style=color:#50fa7b;font-weight:700>+        (kube_job_spec_completions{job=&#34;kube-state-metrics&#34;, namespace=~&#34;.*&#34;} -
+</span><span style=color:#50fa7b;font-weight:700>+        kube_job_status_succeeded{job=&#34;kube-state-metrics&#34;, namespace=~&#34;.*&#34;}  &gt; 0) *
+</span><span style=color:#50fa7b;font-weight:700>+        on(job_name) group_left(label_app_kubernetes_io_name)
+</span><span style=color:#50fa7b;font-weight:700>+        sum by (namespace, job_name) (kube_job_labels{job=&#34;kube-state-metrics&#34;, label_app_kubernetes_io_name=~&#34;.+&#34;})
+</span></code></pre></div></details>
+<h4 id=kubernetes-internal-sources>kubernetes internal sources</h4>
+<p>For poking at the internals of kubernetes, you can enable configurable scrapers for:</p>
+<ul>
+<li>kubelet</li>
+<li>kube-apiserver</li>
+<li>kube-controller-manager</li>
+<li>kube-scheduler</li>
+<li>kube-proxy</li>
+<li>coreDns or kubeDns</li>
+<li>etcd</li>
+</ul>
+<p>There is some sparse documentation for these under <a href=https://kubernetes.io/docs/concepts/cluster-administration/system-metrics/>kubernetes/cluster-admin</a>.</p>
+<p>These are a little more optional, but you need the <a href=https://github.com/kubernetes/kubernetes/tree/ea0764452222146c47ec826977f49d7001b0ea8c/pkg/kubelet/metrics/collectors>kubelet metrics</a> (via <a href=https://github.com/google/cadvisor>cadvisor</a>), for the main kubernetes mixins, so make sure those are enabled.</p>
+<p>The more superfluous ones that come with the kube-apiserver (particularly the <a href=https://monitoring.mixins.dev/kubernetes/#kube-apiserver-burnraterules>burnrate stuff</a>) are particularly heavy evaluation rules (saw a ~6 cores reduction after removing them from one busy prometheus pair). Imo, you probably only need some of these if you are a cloud provider.</p>
+<h4 id=extra-metrics-exporters>Extra metrics exporters</h4>
+<p>Any additional metrics exporters are not part of the <code>kube-prometheus-stack</code> chart, but there are <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts>tons of exporters availble</a> supported by the same <code>prometheus-community</code>, so would expect them to be of high quality based on their commit history and repository CI, but have otherwise not enough experience here.</p>
+<h2 id=part-2-thanoshttpsthanosio>Part 2: <a href=https://thanos.io/>Thanos</a></h2>
+<p>Before this step, you can have a pretty self-contained prometheus stack where grafana&rsquo;s default data source would point at the prometheus' <code>Service</code>, and metrics would fade out after prometheus' <code>retention</code> period.</p>
+<p>Thanos essentially <strong>takes all the components</strong> that&rsquo;s found <strong>inside prometheus</strong>, and allows you to deploy and <strong>scale them separately</strong>, while providing a <strong>prometheus compatible API</strong> for <strong>long term</strong> storage of metrics.</p>
+<p>It relies on data being sent from any prometheus set - via a sidecar on prometheus (configurable via the <code>kube-prometheus-stack</code> chart) - to some provisioned object storage (here S3).</p>
+<p>The <strong>write paths</strong> to the S3 bucket is <strong>highlighted</strong> in <i style=color:red>red</i> on the diagram.</p>
+<p>The various <strong>read paths</strong> are <strong>highlighted</strong> in <i style=color:green>green</i> on the diagram, and show how various types of reads propagate to various systems (grafana is the normal entrypoint, but the query-frontend is also a nice way to debug thanos specifics closer to the source).</p>
+<p>The <strong>thanos configuration</strong> is <strong>&ldquo;almost&rdquo;</strong> completely contained in the thanos <strong>chart</strong> (of your choice) and is marked with a dashed <i style=color:purple>purple</i> square.</p>
+<blockquote>
+<p><strong>&ldquo;almost&rdquo;</strong>: S3 configuration is also needed in <code>kube-prometheus-stack</code> for writing</p>
+</blockquote>
+<p>There are several charts that are trying to package the same thing for thanos:</p>
+<ul>
+<li><a href=https://github.com/bitnami/charts/tree/master/bitnami/thanos/>bitnami/thanos</a> - most active</li>
+<li><a href=https://github.com/banzaicloud/banzai-charts/tree/master/thanos>banzai/thanos</a> - pretty inactive</li>
+<li><a href=https://github.com/thanos-community/helm-charts>thanos-community/helm-charts</a> - <a href=https://github.com/thanos-io/thanos/issues/1820>&ldquo;official&rdquo;</a>, but clearly abandoned/out-of-date</li>
+</ul>
+<p>They <strong>all have problems</strong>:</p>
+<ul>
+<li><code>bitnami</code> ties itself to its own ecosystem, and is not based on the <a href=https://github.com/thanos-io/kube-thanos>official jsonnet</a></li>
+<li><code>banzai</code> is clearly outdated</li>
+<li><code>thanos-community</code> charts lacks developers (<a href=https://github.com/thanos-io/thanos/issues/1820#issuecomment-752609815>and they see helm users as a minority</a>)</li>
+</ul>
+<p>So far, the <code>bitnami</code> chart is the most appropriate for <code>helm</code> users.</p>
+<p>It&rsquo;s an evolving ecosystem with many components, but none of them are as complicated to operate as the <code>kube-prometheus-stack</code> components (and there seems to be a lot less footguns).</p>
+<p>Thanos is an <a href=https://www.cncf.io/projects/thanos/>incubating cncf project</a> that is just over <a href=https://github.com/thanos-io/thanos/commit/3a7b2996f8574048900cfc6259561ac412bcf251>4 years old</a>. It has a healthy set of <a href=https://github.com/thanos-io/thanos/blob/main/MAINTAINERS.md>maintainers</a>, it <a href="https://thanos.devstats.cncf.io/d/74/contributions-chart?orgId=1&var-period=d7&var-metric=contributions&var-repogroup_name=All&var-country_name=All&var-company_name=All&var-company=all">moves fast</a>, and makes some of the most <a href=https://thanos.io/tip/thanos/getting-started.md/>well-documented</a>, high-quality <a href=https://github.com/thanos-io/thanos/releases>releases</a> out there.</p>
+<p>While it&rsquo;s <strong>not trivial</strong> to maintain - the large cpu/memory usage and scaling profiles presents some challenges - it has generally <strong>not</strong> presented major problems.</p>
+<p>A quick run-through of things worth knowing about the components follows:</p>
+<h3 id=thanos-query-frontendhttpsthanosiotipcomponentsquery-frontendmd><a href=https://thanos.io/tip/components/query-frontend.md/>Thanos Query Frontend</a></h3>
+<p>The http UI users can use. Very light-weight. The <code>Service</code> for this <code>Deployment</code> generally becomes the default user substitute way to query anything (instead of going to a prometheus service&rsquo;s web interface - which after installing thanos is mostly useful for debugging scrape configs).</p>
+<p>It also looks <strong>almost exactly</strong> like the prometheus web interface (sans ability to debug scrape targets).</p>
+<p>This <strong>proxies</strong> all traffic to <strong>thanos query</strong> and never breaks.</p>
+<h3 id=thanos-queryhttpsthanosiotipcomponentsquerymd><a href=https://thanos.io/tip/components/query.md/>Thanos Query</a></h3>
+<p>The big <strong>fan-out engine</strong> that fetches query data from one or more metric sources (typically thanos store + prometheus services), and computes the result of your query on the retrieved data.</p>
+<p>This component will suddenly spike in both CPU and memory when it&rsquo;s under heavy load (i.e. users doing big queries), so an HPA here on CPU works OK - albeit some stabilization values might be useful:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>  <span style=color:#ff79c6>scaleTargetRef</span>:
+    <span style=color:#ff79c6>apiVersion</span>: apps/v1
+    <span style=color:#ff79c6>kind</span>: Deployment
+    <span style=color:#ff79c6>name</span>: prometheus-stack-thanos-query
+  <span style=color:#ff79c6>minReplicas</span>: <span style=color:#bd93f9>2</span>
+  <span style=color:#ff79c6>maxReplicas</span>: <span style=color:#bd93f9>10</span>
+  <span style=color:#6272a4># Slow down scaleDown behavior as thanos query has very sporadic usage</span>
+  <span style=color:#ff79c6>behavior</span>:
+    <span style=color:#ff79c6>scaleDown</span>:
+      <span style=color:#ff79c6>stabilizationWindowSeconds</span>: <span style=color:#bd93f9>100</span>
+      <span style=color:#ff79c6>policies</span>:
+      - <span style=color:#ff79c6>type</span>: Percent
+        <span style=color:#ff79c6>value</span>: <span style=color:#bd93f9>10</span>
+        <span style=color:#ff79c6>periodSeconds</span>: <span style=color:#bd93f9>60</span>
+    <span style=color:#ff79c6>scaleUp</span>:
+      <span style=color:#ff79c6>policies</span>:
+      - <span style=color:#ff79c6>type</span>: Percent
+        <span style=color:#ff79c6>value</span>: <span style=color:#bd93f9>20</span>
+        <span style=color:#ff79c6>periodSeconds</span>: <span style=color:#bd93f9>15</span>
+  <span style=color:#ff79c6>metrics</span>:
+  - <span style=color:#ff79c6>type</span>: Resource
+    <span style=color:#ff79c6>resource</span>:
+      <span style=color:#ff79c6>name</span>: cpu
+      <span style=color:#ff79c6>target</span>:
+        <span style=color:#ff79c6>averageUtilization</span>: <span style=color:#bd93f9>70</span>
+        <span style=color:#ff79c6>type</span>: Utilization
+</code></pre></div><p>The compute workload <a href=https://monitoring.mixins.dev/kubernetes/#dashboards>kubernetes-mixin dashboard</a> will show roughly how this HPA reacts to changes (stacked view, colors represent pods):</p>
+<p><a href=https://clux.dev/imgs/prometheus/thanos-query-usage.png><img src=https://clux.dev/imgs/prometheus/thanos-query-usage.png alt="thanos query cpu and memory usage"></a></p>
+<p>which lines up with the <code>thanos_query_concurrent_gate_queries_in_flight</code> metric reasonably well.</p>
+<h3 id=thanos-storehttpsthanosiotipcomponentsstoremd><a href=https://thanos.io/tip/components/store.md/>Thanos Store</a></h3>
+<p>The read interface to long term storage. It&rsquo;s also prometheus api compatible (using the Store API), so from the querier&rsquo;s POV it is analogous to querying a prometheus.</p>
+<p>This component also will <strong>also</strong> suddenly spike in both CPU and memory when users start doing big queries on historical data (i.e. further back in time than prometheus' <code>retention</code>), so a similar HPA to thanos query to scale on CPU works reasonably well:</p>
+<p><a href=https://clux.dev/imgs/prometheus/thanos-store-usage.png><img src=https://clux.dev/imgs/prometheus/thanos-store-usage.png alt="thanos store cpu and memory usage"></a></p>
+<h3 id=thanos-rulerhttpsthanosiotipcomponentsrulemd><a href=https://thanos.io/tip/components/rule.md/>Thanos Ruler</a></h3>
+<p>An <strong>optional</strong> rule evaluation analogue.</p>
+<p>This is a bit more <strong>niche</strong> than the rule evaluation in prometheus itself, because rule evalution on the prometheus side essentially gets stored as metrics in the long term storage. The only reason you need this is if you need to create evaluation rules on a federated level (e.g. to answer whether you have a high error rate across all production clusters / prometheus sets).</p>
+<p>Can run in a stateful mode - presenting a prometheus compatible store api that the querier can hit for rule results - or statelessly; persisting rule results to s3.</p>
+<h3 id=thanos-compactorhttpsthanosiotipcomponentscompactmd><a href=https://thanos.io/tip/components/compact.md/>Thanos Compactor</a></h3>
+<p>The magic sauce that makes <strong>querying long term</strong> data <strong>practical</strong> - as raw data is too resource intensive to use when you want to view result over the past weeks or months.</p>
+<p>The compactor will go through the S3 bucket, and create lower-res data (at <code>5m</code> averages and <code>1h</code> averages), and delete raw data (after a configurable time has passed).</p>
+<p>One such configuration can be:</p>
+<ul>
+<li>Maintain <code>raw</code> resolution for <code>7d</code></li>
+<li>Create <code>5m</code> resolution chunks that are kept for <code>30d</code></li>
+<li>Create <code>1h</code> resolution chunks that are kept for <code>1y</code></li>
+</ul>
+<p>The <code>compactor</code> will <strong>chug along</strong> and do these in steps (creating <code>5m</code> res from raw, then creating <code>1h</code> res from <code>5m</code> res), as the chunks become available.</p>
+<p><strong>Long-term</strong>, the lower res data is <strong>more practical</strong> to both <strong>query</strong> and <strong>store</strong>, but you end up with multiple variants of the data in the first 7 to 30 days.</p>
+<p>If this is hard to visualize, then fear not, you can browse to thanos <a href=https://thanos.io/tip/components/tools.md/#bucket-web>bucket web</a> to visualise the state of your <code>S3</code> bucket. It&rsquo;s a small service (included in the chart) that presents the view, and what resolutions are availble from various dates.</p>
+<p>Think of <code>compactor</code> as a cronjob (but with <a href=https://monitoring.mixins.dev/thanos/#thanos-compact>good alerts</a>) that needs to do big data operations. If you give it enough space, cpu, and memory it is usually happy. It will use these resources a bit sporadically though - some cycles are clearly visible in memory use:</p>
+<p><a href=https://clux.dev/imgs/prometheus/compactor-cycles.png><img src=https://clux.dev/imgs/prometheus/compactor-cycles.png alt="thanos compactor cpu and memory usage"></a></p>
+<h2 id=part-3-metrics-api-integrations>Part 3: Metrics API Integrations</h2>
+<p>The final components reside in the void outside the two big standard charts and contains the implementors of the various <a href=https://github.com/kubernetes/metrics#apis>metrics apis</a>:</p>
+<ul>
+<li><strong>resource metrics</strong> api (cpu/memory for pods)</li>
+<li><strong>custom metrics</strong> api (cmetrics related to a scalable object)</li>
+<li><strong>external metrics</strong> api (metrics unrelated to a scalable object)</li>
+</ul>
+<p>These are apis that allow Kubernetes to <code>scale</code> your workloads (with varying degrees of intelligence) through HPAs, but you need something to implement them.</p>
+<p>I mention these different underlying apis explicitly because <a href=https://github.com/kubernetes-sigs/custom-metrics-apiserver/issues/70>currently</a> you can <strong>only</strong> have <strong>one implementor</strong> of each api, and if you have more than one thing that provides custom metrics (like say cloudwatch metrics + prometheus adapter), then you are better served by using <a href=https://keda.sh/>KEDA</a> than what is described herein.</p>
+<h3 id=metrics-server>metrics-server</h3>
+<p>The first is a kubernetes standard component; the <a href=https://github.com/kubernetes-sigs/metrics-server>metrics-server</a>.</p>
+<p>It only implements the <strong>resource metrics</strong> api, and thus <strong>only</strong> enables you scale on cpu and memory.</p>
+<p>It extracts cpu/memory values values via <code>kubelet</code>, and as such allows <code>kubectl top</code> + HPAs to work out of the box - without prometheus or any of the other components visualised herein. It&rsquo;s even installed on <code>k3d</code> by default.</p>
+<h3 id=prometheus-adapter>prometheus-adapter</h3>
+<p>This adapter funnels metrics from <code>prometheus</code> into the HPA universe, so you can scale on <strong>arbitrary</strong> metrics.</p>
+<p>It implements the resource metrics, custom metrics, and external metrics APIs. The underlying setup for this has <a href=https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-on-custom-metrics>stable docs from k8s 1.23</a>, and in essence this allows you to scale on <strong>custom metrics</strong> (related to the scaling object) or <strong>external metrics</strong> (unrelated to the scaling object).</p>
+<p>The <a href=https://github.com/kubernetes-sigs/prometheus-adapter/blob/c9e69613d3e1ccf4a5828aba25de613d84694779/docs/sample-config.yaml>syntax needed for this component</a> definitely leaves a lot <strong>to be desired</strong>. The only way we have managed to get somewhere with this is with principal engineers and a lot of trial and error. Thankfully, there are <a href=https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/walkthrough.md>some helpful resources</a>, this is still not easy.</p>
+<p>The repository for <a href=https://github.com/kubernetes-sigs/prometheus-adapter>prometheus-adapter</a> is also not receiving a whole of attention: <a href="https://github.com/kubernetes-sigs/prometheus-adapter/issues?q=is%3Aissue+is%3Aclosed+label%3Alifecycle%2Frotten">almost half</a> of their closed issues looks like they were closed by kubernetes org&rsquo;s auto-closer bot. You can say many sensible things about this closing practice - on the importance of funding and triagers for open source software - but it ultimately sends a message:</p>
+<blockquote class=twitter-tweet><p lang=en dir=ltr>Unpopular opinion: I think solving issue triage by letting robots auto close issues that were never responded to is a *horrible* way to manage your project and tells users you don't give a crap about their effort filing bugs :(</p>&mdash; Benjamin Elder (@BenTheElder) <a href="https://twitter.com/BenTheElder/status/1407774856033181696?ref_src=twsrc%5Etfw">June 23, 2021</a></blockquote> <script async src=https://platform.twitter.com/widgets.js></script>
+<p>It does have its own <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter>prometheus-community maintained chart</a>, which is of high quality, but you will need to figure out the templated promql yourself.</p>
+<p>Without having much experience with <a href=https://keda.sh/>KEDA</a>, I would recommend looking into using <a href=https://keda.sh/docs/2.5/scalers/prometheus/>KEDA&rsquo;s prometheus scaler directly instead</a> of using the arcane template magic from <code>prometheus-adapter</code>.</p>
+<h2 id=happy-new-year>Happy new year</h2>
+<p>That&rsquo;s all I can bring myself to write about this archeticture for now. It took longer than I anticipated, so hopefully this was useful to someone. Regardless, best of luck maintaining prometheus in 2022.</p>
+<div class=blog-tags>
+<a href=https://clux.dev//tags/kubernetes/>kubernetes</a>&nbsp;
+<a href=https://clux.dev//tags/observability/>observability</a>&nbsp;
+</div>
+<h4 class=see-also>See also</h4>
+<ul>
+<li><a href=https://clux.dev/post/2021-11-06-kubecon-la-log/>Talk log from KubeCon LA</a></li>
+<li><a href=https://clux.dev/post/2021-02-28-kube-evolution/>Evolution of kube</a></li>
+<li><a href=https://clux.dev/post/2019-06-04-towards-a-generic-kube-client/>A generic kubernetes client</a></li>
+<li><a href=https://clux.dev/post/2019-04-29-rust-on-kubernetes/>Kubernetes operators in rust</a></li>
+<li><a href=https://clux.dev/post/2019-03-31-impersonating-kube-accounts/>Impersonating kube service accounts</a></li>
+</ul>
+</article>
+<ul class="pager blog-pager">
+<li class=previous>
+<a href=https://clux.dev/post/2021-12-05-campaign-concluded/ data-toggle=tooltip data-placement=top title="Campaign Conclusion & Brain Dump">&larr; Previous Post</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<footer>
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<ul class="list-inline text-center footer-links">
+<li>
+<a href=mailto:sszynrae@gmail.com title="Email me">
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://github.com/clux title=GitHub>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-github fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://twitter.com/sszynrae title=Twitter>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://reddit.com/u/clux title=Reddit>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-reddit-alien fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://linkedin.com/in/%f0%9f%97%91-eirik-albrigtsen-b279863a title=LinkedIn>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://www.youtube.com/channel/UCLpykMxkxuPUR9CciheipZg title=Youtube>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+<li>
+<a href=https://www.strava.com/athletes/49770219 title=strava>
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-strava fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+</ul>
+<p class="credits copyright text-muted">
+clux
+&nbsp;&bull;&nbsp;&copy;
+2022
+&nbsp;&bull;&nbsp;
+<a href=https://clux.dev/>probes</a>
+</p>
+<p class="credits theme-by text-muted">
+<a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
+&nbsp;&bull;&nbsp;[<a href=3622f4e13470b2762b9bc6a472fa474b4b06e875>3622f4e1</a>]
+</p>
+</div>
+</div>
+</div>
+</footer><script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script>
+<script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script>
+<script src=https://clux.dev/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.dev/js/load-photoswipe.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script>
+<script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})</script>
+</body>
+</html>
