@@ -164,7 +164,8 @@ The chart contains some nice ways of making **dashboard provisioning** automatic
 - future [dashboard-as-code direction is very undecided](https://github.com/grafana/grafana/issues/31038)
 
 Regardless, the diagram shows how the user flow would be for this, and how it ends up being picked up by a sidecar in the grafana statefulset.
-### Governance & Grafana Labs Sidenotes
+
+<details><summary style="cursor:pointer;color:#0af"><b>Addendum: Governance & Grafana Labs Sidenotes</b></summary>
 
 Grafana has a more [company driven governance model](https://github.com/grafana/grafana/blob/main/GOVERNANCE.md) - it's maintained almost exclusively by people employed by Grafana Labs - and the company is clearly optimizing for their own cloud offering of a parallel subset of this ecosystem; [Grafana Cloud](https://grafana.com/products/cloud/).
 
@@ -178,6 +179,8 @@ This obvious _conflict of interest_ does pollute the purity of ecosystem somewha
 Of course, there is the expectation that open source functionality not related to grafana cloud **might** be receiving **less attention**, but I can't really blame them for pursuing a sensible monetisation strategy.
 
 I do hope [Grafana OnCall](https://grafana.com/blog/2021/11/09/announcing-grafana-oncall/) manages to get something contributed upstream (outside the grafana monolith) so we can have a better alternative to alertmanager (as alertmanager has lots of issues and can only alert on prometheus data sources).
+
+</details>
 
 ### Monitoring Mixins
 
