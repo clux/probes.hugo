@@ -419,7 +419,7 @@ Think of `compactor` as a cronjob (but with [good alerts](https://monitoring.mix
 The final components reside in the void outside the two big standard charts and contains the implementors of the various [metrics apis](https://github.com/kubernetes/metrics#apis):
 
 - **resource metrics** api (cpu/memory for pods)
-- **custom metrics** api (cmetrics related to a scalable object)
+- **custom metrics** api (metrics related to a scalable object)
 - **external metrics** api (metrics unrelated to a scalable object)
 
 These are apis that allow Kubernetes to `scale` your workloads (with varying degrees of intelligence) through HPAs, but you need something to implement them.
