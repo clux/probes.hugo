@@ -6,7 +6,7 @@
 <title>Prometheus Stack Review - probes</title>
 <meta name=description content="operating the stateful metrics system on kubernetes">
 <meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","name":"Prometheus stack review"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Prometheus Stack Review","description":"As part of my work life in the past year, a chunk of my day-to-day life has consisted of maintaining a prometheus installation on top of a sizable kubernetes cluster. My original feeling was \u0026ldquo;this is not that bad with kube-prometheus-stack\u0026rdquo;, but this sentiment has worsened somewhat with the realisation that more and more customizations and pieces were needed for large scale use. Half a year later (and 6\u002b charts deep), I thought I\u0026rsquo;d collect my thoughts on the ecosystem - from an operational perspective - with a rough architecture overview post.\n","inLanguage":"en","wordCount":3970,"datePublished":"2022-01-11T00:00:00","dateModified":"2022-01-11T00:00:00","image":"https:\/\/clux.dev\/","keywords":["kubernetes, observability"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","name":"Prometheus stack review"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Prometheus Stack Review","description":"As part of my work life in the past year, a chunk of my day-to-day life has consisted of maintaining a prometheus installation on top of a sizable kubernetes cluster. My original feeling was \u0026ldquo;this is not that bad with kube-prometheus-stack\u0026rdquo;, but this sentiment has worsened somewhat with the realisation that more and more customizations and pieces were needed for large scale use. Half a year later (and 6\u002b charts deep), I thought I\u0026rsquo;d collect my thoughts on the ecosystem - from an operational perspective - with a rough architecture overview post.\n","inLanguage":"en","wordCount":3971,"datePublished":"2022-01-11T00:00:00","dateModified":"2022-01-11T00:00:00","image":"https:\/\/clux.dev\/","keywords":["kubernetes, observability"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2022-01-11-prometheus-ecosystem\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
 <meta property="og:title" content="Prometheus Stack Review">
 <meta property="og:description" content="operating the stateful metrics system on kubernetes">
 <meta property="og:url" content="https://clux.dev/post/2022-01-11-prometheus-ecosystem/">
@@ -221,7 +221,7 @@
 <li>future <a href=https://github.com/grafana/grafana/issues/31038>dashboard-as-code direction is very undecided</a></li>
 </ul>
 <p>Regardless, the diagram shows how the user flow would be for this, and how it ends up being picked up by a sidecar in the grafana statefulset.</p>
-<h3 id=governance--grafana-labs-sidenotes>Governance & Grafana Labs Sidenotes</h3>
+<details><summary style=cursor:pointer;color:#0af><b>Addendum: Governance & Grafana Labs Sidenotes</b></summary>
 <p>Grafana has a more <a href=https://github.com/grafana/grafana/blob/main/GOVERNANCE.md>company driven governance model</a> - it&rsquo;s maintained almost exclusively by people employed by Grafana Labs - and the company is clearly optimizing for their own cloud offering of a parallel subset of this ecosystem; <a href=https://grafana.com/products/cloud/>Grafana Cloud</a>.</p>
 <p>This obvious <em>conflict of interest</em> does pollute the purity of ecosystem somewhat, but at least they have <strong>financing</strong> to move at the great pace they are moving. Some examples of their recent efforts:</p>
 <ul>
@@ -232,6 +232,7 @@
 </ul>
 <p>Of course, there is the expectation that open source functionality not related to grafana cloud <strong>might</strong> be receiving <strong>less attention</strong>, but I can&rsquo;t really blame them for pursuing a sensible monetisation strategy.</p>
 <p>I do hope <a href=https://grafana.com/blog/2021/11/09/announcing-grafana-oncall/>Grafana OnCall</a> manages to get something contributed upstream (outside the grafana monolith) so we can have a better alternative to alertmanager (as alertmanager has lots of issues and can only alert on prometheus data sources).</p>
+</details>
 <h3 id=monitoring-mixins>Monitoring Mixins</h3>
 <p>A default grafana/prometheus-operator installation is not going to be very helpful without some dashboards that tell you about the state of your system(s).</p>
 <p>Common patterns for alerts/dashboards/recording rules are encapsulated in a collection of mixins that are browsable on <a href=https://monitoring.mixins.dev/>monitoring.mixins.dev</a>.</p>
@@ -501,7 +502,7 @@ clux
 </p>
 <p class="credits theme-by text-muted">
 <a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
-&nbsp;&bull;&nbsp;[<a href=3622f4e13470b2762b9bc6a472fa474b4b06e875>3622f4e1</a>]
+&nbsp;&bull;&nbsp;[<a href=a0563fa1f10aa8bfe941a00abcbced79083c64cf>a0563fa1</a>]
 </p>
 </div>
 </div>
