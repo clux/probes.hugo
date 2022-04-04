@@ -197,25 +197,22 @@ Plotly.newPlot(PROBHIST, data, layout);
 </script>
 
 
-This is how things should look on paper with vanilla rules.
+This is how things should look on paper. From the chart you can extract:
 
-How steep is the falloff? TODO: verify calculations
+- `108` would be a once in `101 trillion` ($6^{18}$) event
+- `107` would be a once in `5 trillion` event (`6^18/18`)
+- `106` would be a once in `600 billion` event (5s in two places, or 4 in one place)
+- `105` would be a once in `90 billion` event (3x5s, or 1x4 and 1x5, or 1x3)
+- `104` would be a once in `16 billion` event (4x5s, 2x5s and 1x4, 2x4s, 1x5 and 1x3, 1x2)
+- `103` would be a once in `4 billion` event (...)
+- `102` would be a once in `1 billion` event
+- `101` would be a once in `290 million` event
+- `100` would be a once in `94 million` event
+- `99` would be a once in `32 million` event
+- $\ldots$
+- `95` would be a once in `900k` event (first number with prob < 1 in a million)
 
-- `108` is a once in `101 trillion` event (`6^18`)
-- `107` is a once in `5 trillion` event (`6^18/18`)
-- `106` is a once in `300 billion` event (5s in two places + 4 in one place)
-- `105` is a once in `19 billion` event (3x5s + 1x4 and 1x5 + 1x3)
-- `104` is a once in `1 billion` event (4x5s, 2x5s and 1x4, 2x4s, 1x5 and 1x3, 1x2)
-- `103` is a once in `91 million` event (5x5s, 3x5s and 1x4, 2x5s and 1x3, 1x5 and 1x2, 2x4 and 1x5, 1x3 and 1x4, 1x1)
-- `102` is a once in `7 million` event (need at least two dice to remove 6, six routes for 2 dice 1/5+2/4+3/3, 3 routes for 3 dice 4/4/4+4/3/5+5/5/2, 2 routes for 4 dice 5/5/5/3+5/5/4/4, 1 route for 5 dice 5/5/5/5/4, 1 route for 6 dice 5/5/5/5/5 so `total ways 18*17*6 + 18*17*16*3 + 18*17*16*15*2 + 18*17*16*15*14 + 18*17*16*15*14*13`)
-
-
-
-
-
-However, is that's what is going on?
-
-> A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
+**But is this really right?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
 
 Well, let's start with the obvious. We don't see rolls below $75$:
 
@@ -303,22 +300,91 @@ Plotly.newPlot(PROBHIST, data, layout);
 
 Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
 
-This is actually pretty close to observations for various classes.
+This is actually pretty close to observations for various classes, and we will prove it.
 
+But first, we are going to need to press the `ROLL` button a lot...
+
+## Automating Rolling
+
+We will go through the tools used and a bit about how the [script we use](https://github.com/Thhethssmuz/bg2ee-stat-roll) works. If you can read the source, you can skip this section.
+
+### Tools
+
+We are playing on Linux with an `X` based window manager, so we will use a couple of obscure tools:
+
+- `scrot` - X screenshot utility
+- `xdotool` - X CLI automation tool
+- `xwininfo` - X window information utility
+
+Basic strategy;
+
+- find out where buttons are with `xwininfo`
+- press the `re-roll` button with `xdotool`
+- take screenshot of the `total` number with `scrot`
+- compare screenshot to previous rolls
+- press `store` when a new maximum is found
+
+The script also does some extra stuff to determine the strength roll, but that's not relevant here.
+
+### Initialization
+
+My brother decided to write a completely overkill thing here; taking progressive screenshots and compensating for the window manager bar height, and relying on BG2EE's consistent layout to hardcode offsets. Not going through this, it is insanity. But, assuming you are on Linux with X, it should probably work for you...
+
+The standardised approach also helps with dealing with rolls, and it let us populate a roll-table.
+
+### Roll Tables
+
+Taking screenshots is pretty easy. Use `scrot` at an `x,y` coordinate followed by `,width,height` as remaining arguments defining the square:
+
+```sh
+scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17"
+```
+
+the output of this can be piped to a `.png` and passed to `compare` (part of `imagemagick` package), to compare values based on thresholds. However, this idea is actually overkill..
+
+Because the background is static and nothing moves, the screenshots are actually completely deterministic per value and you can instead just compare them by their hashes (i.e. pipe to `md5`), and save the result in a table:
+
+```sh
+    d74939b47327e4f2c1b781d64e2ab28d*) CURRENT_ROLL=90 ;;
+    ca49ce8b4c9c0f814dab24668f7313fe*) CURRENT_ROLL=91 ;;
+    3e6f8127ac0634bb1fc20acf40c95c48*) CURRENT_ROLL=92 ;;
+    7f849edd84a4be895f5c58b4f5b20d4e*) CURRENT_ROLL=93 ;;
+    b8f90179e2a0e975fc2647bc7439d9c6*) CURRENT_ROLL=94 ;;
+    b1d3b73de16d750b265f5c63000ccd54*) CURRENT_ROLL=95 ;;
+    87413f7310bd06b0b66fb4d2e61c5c7a*) CURRENT_ROLL=96 ;;
+    b489ad2a17456f8eebe843e4b7e3e685*) CURRENT_ROLL=97 ;;
+    25112e67464791f24f9e2e99d38ef9d7*) CURRENT_ROLL=98 ;;
+    9c3720b9d3ab1d7f0d11dfb9771a1aef*) CURRENT_ROLL=99 ;;
+    3ef9bf6cd4d9946d89765870e5b21566*) CURRENT_ROLL=100 ;;
+```
+
+That's an excerpt of some of the later roll hashes from the [actual table](https://github.com/Thhethssmuz/bg2ee-stat-roll/blob/5a023de83c468224aa999b5b3c60f224aae76b97/roll.sh#L130-L159).
+
+## Clicking
+
+Clicking is pretty easy;
+
+```sh
+xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
+```
+
+Notice the `--delay=0` to override the builtin delay between clicks.
+
+It turns out BG performs internal buffering of clicks, so this allows you to blast through numbers faster than the screen can display them.
+
+This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll before another click is registered.
+
+## Showcase
+
+TODO: video
+
+On my PC we get just over **15 rolls per second**.
 
 
 
 ## Distribution
 
-We rolled a human `fighter` and `paladin` overnight with roughly `550k` rolls each (view source for details).
-
-
-
-...if we wanted the perfect paladin we would __just__ need 15 dice to be perfect to roll a `107` or a `108` (charisma is free for that), then we still would need to a `6^-15` chance roll - one in 500 billion), a 7 sigma event.
-
-Given `900 rolls per minute` with this script, that would be **1000 years of rolling**.
-
-If we rolled for a day, on the other hand (`1.3M` rolls), we are likely get a [5 sigma event](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule#Table_of_numerical_values) and a roll a `103` with paladin or `99` with fighter.
+We rolled a human `fighter` and `paladin` overnight with roughly `550k` rolls each (view source for details):
 
 <div id="rollhist" style="width:600px;height:450px;"></div>
 
@@ -333,6 +399,8 @@ var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883,
 // values paladin (75 -> 102)
 var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1].map(x => x / 555558); // divide by number of rolls
 
+window.FIGHTER_ROLLS = y1;
+window.PALADIN_ROLLS = y2;
 
 var y1legend = y1.map(x => "occurred once in " + Math.floor(1/x) + " rolls")
 var y2legend = y2.map(x => "occurred once in " + Math.floor(1/x) + " rolls")
@@ -501,64 +569,124 @@ HISTOG = document.getElementById('rollhist');
 Plotly.newPlot(HISTOG, data, layout);
 </script>
 
-Estimated sigma numbers from distribution seen from 550k rolls on either class. For the rest we need math.
+Estimated sigma numbers from distribution seen from 550k rolls on either class. TODO: remove these in favour of actual ones later?
 
-## Tools
+If we compare the fighter graph with the computed, scaled distribution, they are almost identical:
 
-We are playing on Linux with an `X` based window manager, so we will use a couple of standard tools:
+<div id="probhist4" style="width:600px;height:450px;"></div>
 
-- `scrot` - X screenshot utility
-- `xdotool` - X CLI automation tool
-- `xwininfo` - X window information utility
+<script>
+var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
+window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
 
-Basic strategy;
+var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
-- find out where buttons are with `xwininfo`
-- press the `re-roll` button with `xdotool`
-- take screenshot of the `total` number with `scrot`
-- compare screenshot to previous rolls
-- press `store` when a new maximum is found
+//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
+var trace_fighter = {
+  x: window.ALL_X.slice(75-18),
+  y: FIGHTER_ROLLS,
+  marker: {
+    color: "rgba(0, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(0, 100, 102, 1)",
+    //  width: 1
+    }
+  },
+  name: 'fighter',
+  text: y1legend,
+  opacity: 0.8,
+  type: "scatter",
+};
 
-## Initialization
+var trace_prob = {
+  x: window.ALL_X.slice(75-18),
+  y: window.SCALED_PROBS,
+  marker: {
+    color: "rgba(100, 255, 0, 0.7)",
+    line: {
+      color:  "rgba(100, 255, 0, 1)",
+    }
+  },
+  name: 'probability',
+  text: scaled_legend,
+  opacity: 0.8,
+  type: "scatter",
+};
 
-My brother decided to write a completely overkill for this, taking progressive screenshots and compensating for the window manager bar height, and relying on BG2EE's consistent layout to hardcode some offsets. Not going through this, it is insanity. It also means it probably works for everyone. Well, everyone on Linux with X..
+var data = [trace_prob, trace_fighter];
+var layout = {
+  title: "Distribution vs. Fighter",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Chance"},
+};
+PROBHIST = document.getElementById('probhist4');
+Plotly.newPlot(PROBHIST, data, layout);
+</script>
 
-The standardised approach also helps with dealing with rolls, and populating a roll-table.
+This shows that for **fighters**, the distribution is **spot on**, and we can now estaimate how long it would take us to achieve certain numbers with the script:
 
-## Roll Tables
+- `108` is a once in `5 trillion` event (10,000 years)
+- `107` is a once in `300 billion` event (600 years)
+- `106` is a once in `33 billion` event (69 years)
+- `105` is a once in `5 billion` event (10 years)
+- `104` is a once in `900 million` event (2 years)
+- `103` is a once in `200 million` event (5 months)
+- `102` is a once in `50 million` event (5 weeks)
+- `101` is a once in `16 million` event (2 weeks)
+- `100` is a once in `5 million` event (4 days)
+- `99` is a once in `2 million` event (1.5 day)
+- `98` is a once in `700k` event (12h)
+- `97` is a once in `270k` event (5h)
+- `96` is a once in `110k` event (2h)
+- `95` is a once in `50k` event (55m)
 
-Taking screenshots is pretty easy:
+So compared to the unscaled calculation, if you roll 50k times, you'll likely get a `95` and not just a `90`.
 
-```sh
-scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17"
-```
+However, what's up with the paladins and rangers?
 
-which you can pipe to a `.png` and pass to `compare` (part of `imagemagick` package), to compare values based on thresholds (which was the initial idea).
+### Class/Race Variance
 
-Turns out, doing this is overkill. The background is static, nothing moves, the screenshots are deterministic per value and you can instead just compare them by their hashes (i.e. pipe to `md5`).
+The final point here is something that's harder to account for: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
 
-TODO: link to roll table
+For some classes, these stat floors actually push their mean above the `75` cutoff even though it's 12 points above the mean of the underlying distribution. E.g. compare the floors for classes:
 
-## Clicking
+- **fighter** `STR=9`, rest `3`
+- **mage** `INT=9`, rest `3`
+- **paladin** `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `3`
+- **ranger** `CON=14`, `WIS=14`, `STR=13`, `DEX=13`, rest `3`
 
-Clicking is pretty easy;
+Meaning paladins and rangers have significantly higher rolls by default.
 
-```sh
-xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
-```
+> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
 
-Notice the `--delay=0` to override the builtin delay between clicks.
+How the __flooring__ is performed would matter to our distribution. I.e. does the game:
 
-It turns out BG performs internal buffering of clicks, so this allows you to blast through numbers faster than the screen can display them.
+- does it roll each stat, and return `min(roll, statmin)`?
+- keep rolling internally until the minimums are met?
+- generate a random number uniformly in the range rather than roll 3 dice?
+- something else?
 
-This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll.
+We can probably rule out the second option; if it just discarded rolls internally the resulting distribution would look scaled, not translated right. The third option also feels unlikely, the falloff for paladin looks similarly steep.
 
-## Showcase
 
-TODO: video
 
-On my PC we get about 15 rolls per second.
+Short of reverse engineering, it's hard to nail down the distribution exactly without recomputing the entire thing.
 
+For these uglier variant distributions, we will do the simplifying step we should probably have used at the beginning, and note that multinomial distributions [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html), and so does [most distributions with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
+
+So let's assume we are at the tail end of some normal distribution $N(μ, σ)$, where we can spot the mean, and work out [σ](https://en.wikipedia.org/wiki/Standard_deviation):
+
+<script>
+// working out standard deviation for a paladin
+// TODO: fix this, this is wrong... do i need squares of 55k results?...
+// ..I could get that... 50888*75^2
+// would need to get version of PALADIN_ROLLS before scale down, then figure out the key, square that, and times by number in element...
+let sq_sum = window.PALADIN_ROLLS.map(x => Math.pow(2, x - 78)).reduce((acc, e) => acc + e, 0);
+let std_deviation = Math.sqrt(sq_sum) / window.PALADIN_ROLLS.length;
+console.log("Paladin std_deviation:", std_deviation);
+</script>
+
+Paladin :: N(78, )
 
 ## Raw data
 
@@ -595,8 +723,6 @@ On my PC we get about 15 rolls per second.
 102: 1
 ```
 
-
-
 10 hour fighter roll (`555560` rolls in 608m)
 
 ```yaml
@@ -625,38 +751,3 @@ On my PC we get about 15 rolls per second.
 97: 2
 98: 1
 ```
-
-
-The distribution should also [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html) for this amount of dice.
-Let's stick with the precise calculation for now because we are mostly concerned with the tail end where the detail matters. (`n=18` and `s=6`)
-
-
-
-getting a number in the thirties or lower would have been as likely than getting >= 87 if it wasnt for flooring. 36 is as likely as 90..
-
-
-This is hard to see in the above graph, because it doesn't account for extraneous limits:
-
-- minimum sum of `75`
-- [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene)
-
-For some classes, these stat floors actually push their mean above the `75` cutoff even though it's 12 points above the mean of the underlying distribution:
-
-- **fighter** `STR=9`, rest `>=3`
-- **mage** `INT=9`, rest `>=3`
-- **paladin** `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `>=3`
-
-How the __flooring__ is performed would also matter to our distribution. I.e. does the engine:
-
-- roll `3d6 x 6` until it gets a sum `>=75`?
-- roll `3d6 x 6` but add bias as we go along to ensure number `>=75`?
-
-and similarly:
-
-- does it roll each stat, and return `floor(roll, statmin)`?
-- generate a random number in the range rather than roll 3 dice?
-- something different?
-
-Short of reverse engineering, it's hard to nail down the distribution exactly. However, from the graph, the frequency of extremely high rolls do seem to align, indicating that the rolls that would have exceeded the floors, follow standard multinomial data.
-
-..but that's clearly too high for a paladin. People have gotten 103s. I have gotten a 103, and regularly get 102s in a few hours. If my math above is correct, there should be `14 million` ways to roll a `102` compared to just `324` ways to roll a `106`.
