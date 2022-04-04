@@ -6,7 +6,9 @@ tags: []
 categories: ["gaming"]
 ---
 
-In a ~~brief~~ bout of escapism from the world and responsibilities, I booted up [Baldur's Gate 2](https://store.steampowered.com/app/257350/Baldurs_Gate_II_Enhanced_Edition/) with my brother. It's an amazing game, once you have figured out how to **[roll](https://old.reddit.com/r/baldursgate/search?q=roll&restrict_sr=on)** your character. Rather than telling you about the game, let's talk about and simulate the maths behind rolling a `2e` character.
+In a ~~brief~~ bout of escapism from the world and responsibilities, I booted up [Baldur's Gate 2](https://store.steampowered.com/app/257350/Baldurs_Gate_II_Enhanced_Edition/) with my brother. It's an amazing game, once you have figured out how to **[roll](https://old.reddit.com/r/baldursgate/search?q=roll&restrict_sr=on)** your character.
+
+For today's installment; rather than telling you about the game, let's talk about the **maths** behind rolling a `2e` character for `BG2`, and then running simulations with weird `X`-based linux tools.
 
 TODO: gif of roll clicking...
 TODO: maybe just a reroll button that links to the article?
@@ -21,37 +23,42 @@ Basics; D&D (2e) has:
 - `6` ability scores
 - each ability == sum of rolling `3d6`
 
-This should give you a character with an expected "10.5" points per ability (or a sum of `63` in total), but that's **not** how it works.
+This **should** give you a character with an expected "10.5" points per ability (or a sum of `63` in total), and the process looks like this:
 
 TODO: gif/video of how it looks
 
 It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment (the irony in writing this blog post is not lost on me). They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
+Still, **suppose** (as an excuse to talk about multinomials, combinatorics, and weird `X` tools) you want to **automate rolling** and figure out **how long it will take** you to receive a **good roll** without doing anything.
+
+> ..it's less time than it took to write this blogpost.
+
 ## Disclaimer
 
-Using the script used herein to achieve higher rolls than you have patience for, is on some level; **cheating**. That said; is a fairly pointless effort:
+Using the script used herein to achieve higher rolls than you have patience for, is on some level; **cheating**. That said; no-one cares, and it's a fairly pointless effort:
 
-- this is a single player game, you can reduce the difficulty
+- this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn) single player game, and you can reduce the difficulty
 - having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
 - early items nullify effects of common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence))
 - you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [bugs](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
-- some [NPCS](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) come with [gear](https://baldursgate.fandom.com/wiki/Edwin%27s_Amulet) that blows marginally better stats out of the water
+- some [NPCS](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) come with [gear](https://baldursgate.fandom.com/wiki/Edwin%27s_Amulet) that blows __marginally better stats__ out of the water
 
+So assuming you have a reason to be here despite this; let's dive in to some maths.
 
 ## Multinomials and probabilities
 
 > How many rolls would you need to get 90/95/100?
 
-Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) ($k=6$, and $p_i = 1/6$ for all $i$), and the expected value of 18 dice rolls would be $18*(7/2) = 63$. The distribution should also [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html) for this amount of dice.
+Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) ($k=6$, and $p_i = 1/6$ for all $i$), and the expected value of 18 dice rolls would be $18*(7/2) = 63$.
 
-Let's stick with the precise calculation for now because we are mostly concerned with the tail end where the detail matters. (`n=18` and `s=6`)
+We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
 
-$$P(p, 18, 6) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(p-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{p-6k-1}{17}$$
-$$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(p-6k-1)!}{(p-6k-18)!}$$
+$$P(X = x) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{x-6k-1}{17}$$
+$$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
 
-which.. when cased for $k_{max}$ (follow argument in [mathworld/Dice](https://mathworld.wolfram.com/Dice.html)) would yield 15 different sum expressions, and the ones we care about would all have 10+ expressions. So rather than trying to make this nice (hint, it's not going to eve look nice), we will [paste this into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate values for $[18, \ldots, 108]$.
+which.. when cased for $k_{max}$ would yield 15 different sum expressions, and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
 
-tabulated values:
+<!--tabulated values:
 
 ```
 18  : 1/101559956668416
@@ -146,27 +153,25 @@ tabulated values:
 107 : 1/5642219814912
 108 : 1/101559956668416
 ```
+-->
 
-Which yields the following distribution:
+This yields the following distribution:
 
 <div id="probhist" style="width:600px;height:450px;"></div>
 
 <script>
 
 // keys [18, 108]
-var x = [...Array(109).keys()].slice(18);
+window.ALL_X = [...Array(109).keys()].slice(18);
 
-// probabilities for p=18 up to p=108
-var probs = [1/101559956668416, 1/5642219814912, 19/11284439629824, 95/8463329722368, 665/11284439629824, 1463/5642219814912, 33643/33853318889472, 9605/2821109907456, 119833/11284439629824, 1552015/50779978334208, 308465/3761479876608, 97223/470184984576, 2782169/5642219814912, 1051229/940369969152, 4550747/1880739938304, 786505/156728328192, 37624655/3761479876608, 36131483/1880739938304, 1206294965/33853318889472, 20045551/313456656384, 139474379/1253826625536, 1059736685/5642219814912, 128825225/417942208512, 17143871/34828517376, 8640663457/11284439629824, 728073331/626913312768, 2155134523/1253826625536, 3942228889/1586874322944, 4949217565/1410554953728, 3417441745/705277476864, 27703245169/4231664861184, 3052981465/352638738432, 126513483013/11284439629824, 240741263447/16926659444736, 199524184055/11284439629824, 60788736553/2821109907456, 2615090074301/101559956668416, 56759069113/1880739938304, 130521904423/3761479876608, 110438453753/2821109907456, 163027882055/3761479876608, 88576807769/1880739938304, 566880747559/11284439629824, 24732579319/470184984576, 101698030955/1880739938304, 461867856157/8463329722368, 101698030955/1880739938304, 24732579319/470184984576, 566880747559/11284439629824, 88576807769/1880739938304, 163027882055/3761479876608, 110438453753/2821109907456, 130521904423/3761479876608, 56759069113/1880739938304, 2615090074301/101559956668416, 60788736553/2821109907456, 199524184055/11284439629824, 240741263447/16926659444736, 126513483013/11284439629824, 3052981465/352638738432, 27703245169/4231664861184, 3417441745/705277476864, 4949217565/1410554953728, 3942228889/1586874322944, 2155134523/1253826625536, 728073331/626913312768, 8640663457/11284439629824, 17143871/34828517376, 128825225/417942208512, 1059736685/5642219814912, 139474379/1253826625536, 20045551/313456656384, 1206294965/33853318889472, 36131483/1880739938304, 37624655/3761479876608, 786505/156728328192, 4550747/1880739938304, 1051229/940369969152, 2782169/5642219814912, 97223/470184984576, 308465/3761479876608, 1552015/50779978334208, 119833/11284439629824, 9605/2821109907456, 33643/33853318889472, 1463/5642219814912, 665/11284439629824, 95/8463329722368, 19/11284439629824, 1/5642219814912, 1/101559956668416];
+// probabilities for p=18 up to p=108 (sums to 0.9999999999999999 \o/)
+window.MAIN_PROBS = [1/101559956668416, 1/5642219814912, 19/11284439629824, 95/8463329722368, 665/11284439629824, 1463/5642219814912, 33643/33853318889472, 9605/2821109907456, 119833/11284439629824, 1552015/50779978334208, 308465/3761479876608, 97223/470184984576, 2782169/5642219814912, 1051229/940369969152, 4550747/1880739938304, 786505/156728328192, 37624655/3761479876608, 36131483/1880739938304, 1206294965/33853318889472, 20045551/313456656384, 139474379/1253826625536, 1059736685/5642219814912, 128825225/417942208512, 17143871/34828517376, 8640663457/11284439629824, 728073331/626913312768, 2155134523/1253826625536, 3942228889/1586874322944, 4949217565/1410554953728, 3417441745/705277476864, 27703245169/4231664861184, 3052981465/352638738432, 126513483013/11284439629824, 240741263447/16926659444736, 199524184055/11284439629824, 60788736553/2821109907456, 2615090074301/101559956668416, 56759069113/1880739938304, 130521904423/3761479876608, 110438453753/2821109907456, 163027882055/3761479876608, 88576807769/1880739938304, 566880747559/11284439629824, 24732579319/470184984576, 101698030955/1880739938304, 461867856157/8463329722368, 101698030955/1880739938304, 24732579319/470184984576, 566880747559/11284439629824, 88576807769/1880739938304, 163027882055/3761479876608, 110438453753/2821109907456, 130521904423/3761479876608, 56759069113/1880739938304, 2615090074301/101559956668416, 60788736553/2821109907456, 199524184055/11284439629824, 240741263447/16926659444736, 126513483013/11284439629824, 3052981465/352638738432, 27703245169/4231664861184, 3417441745/705277476864, 4949217565/1410554953728, 3942228889/1586874322944, 2155134523/1253826625536, 728073331/626913312768, 8640663457/11284439629824, 17143871/34828517376, 128825225/417942208512, 1059736685/5642219814912, 139474379/1253826625536, 20045551/313456656384, 1206294965/33853318889472, 36131483/1880739938304, 37624655/3761479876608, 786505/156728328192, 4550747/1880739938304, 1051229/940369969152, 2782169/5642219814912, 97223/470184984576, 308465/3761479876608, 1552015/50779978334208, 119833/11284439629824, 9605/2821109907456, 33643/33853318889472, 1463/5642219814912, 665/11284439629824, 95/8463329722368, 19/11284439629824, 1/5642219814912, 1/101559956668416];
 
-// TODO: do a regular plus a cumulative one
-
-
-var legend = probs.map(x => "expected once in " + Math.floor(1/x) + " rolls")
+window.MAIN_LEGEND = window.MAIN_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
 
 var trace = {
-  x: x,
-  y: probs,
+  x: window.ALL_X,
+  y: window.MAIN_PROBS,
   marker: {
     color: "rgba(255, 100, 102, 0.7)",
     line: {
@@ -174,7 +179,7 @@ var trace = {
     }
   },
   name: 'probability',
-  text: legend,
+  text: window.MAIN_LEGEND,
   opacity: 0.8,
   type: "scatter",
 };
@@ -182,56 +187,19 @@ var trace = {
 
 var data = [trace];
 var layout = {
-  title: "Precise Distribution",
+  title: "Distribution for the sum of 18d6 dice rolls",
   // TODO: annotation on cutoff
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
 PROBHIST = document.getElementById('probhist');
 Plotly.newPlot(PROBHIST, data, layout);
-// TODO: figure out probability sum less than 75
-// scale by this and see how it lines up
 </script>
 
 
-This is how things should look on paper with vanilla rules. However, is that's what is going on?
+This is how things should look on paper with vanilla rules.
 
-> Wait, you rolled a 94 on a mage after a few hundred rolls.. was that just luck, or are higher numbers more likely than this?
-
-
-thankfully, last two matches my calculations... 63 with > 5.4% chance of occurring
-this is a strong indication that the probabilities are right, but need to be adjusted for filtering out everything <75 since they are lower than what we are seeing
-
-how much chance of 18 <= p <= 74 ?
-
-getting a number in the thirties or lower would have been as likely than getting >= 87 if it wasnt for flooring. 36 is as likely as 90..
-
-
-This is hard to see in the above graph, because it doesn't account for extraneous limits:
-
-- minimum sum of `75`
-- [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene)
-
-For some classes, these stat floors actually push their mean above the `75` cutoff even though it's 12 points above the mean of the underlying distribution:
-
-- **fighter** `STR=9`, rest `>=3`
-- **mage** `INT=9`, rest `>=3`
-- **paladin** `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `>=3`
-
-How the __flooring__ is performed would also matter to our distribution. I.e. does the engine:
-
-- roll `3d6 x 6` until it gets a sum `>=75`?
-- roll `3d6 x 6` but add bias as we go along to ensure number `>=75`?
-
-and similarly:
-
-- does it roll each stat, and return `floor(roll, statmin)`?
-- generate a random number in the range rather than roll 3 dice?
-- something different?
-
-Short of reverse engineering, it's hard to nail down the distribution exactly. However, from the graph, the frequency of extremely high rolls do seem to align, indicating that the rolls that would have exceeded the floors, follow standard multinomial data.
-
-If my combinatorics is correct we should see a distribution falloff like this:
+How steep is the falloff? TODO: verify calculations
 
 - `108` is a once in `101 trillion` event (`6^18`)
 - `107` is a once in `5 trillion` event (`6^18/18`)
@@ -241,7 +209,103 @@ If my combinatorics is correct we should see a distribution falloff like this:
 - `103` is a once in `91 million` event (5x5s, 3x5s and 1x4, 2x5s and 1x3, 1x5 and 1x2, 2x4 and 1x5, 1x3 and 1x4, 1x1)
 - `102` is a once in `7 million` event (need at least two dice to remove 6, six routes for 2 dice 1/5+2/4+3/3, 3 routes for 3 dice 4/4/4+4/3/5+5/5/2, 2 routes for 4 dice 5/5/5/3+5/5/4/4, 1 route for 5 dice 5/5/5/5/4, 1 route for 6 dice 5/5/5/5/5 so `total ways 18*17*6 + 18*17*16*3 + 18*17*16*15*2 + 18*17*16*15*14 + 18*17*16*15*14*13`)
 
-..but that's clearly too high for a paladin. People have gotten 103s. I have gotten a 103, and regularly get 102s in a few hours. If my math above is correct, there should be `14 million` ways to roll a `102` compared to just `324` ways to roll a `106`.
+
+
+
+
+However, is that's what is going on?
+
+> A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
+
+Well, let's start with the obvious. We don't see rolls below $75$:
+
+<div id="probhist2" style="width:600px;height:450px;"></div>
+
+<script>
+var trace = {
+  x: window.ALL_X,
+  y: window.MAIN_PROBS,
+  marker: {
+    color: "rgba(255, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(255, 100, 102, 1)",
+    }
+  },
+  name: 'probability',
+  text: window.MAIN_LEGEND,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+var data = [trace];
+var layout = {
+  annotations: [
+   {
+     y: 1/70,
+     x: 75,
+     xref: 'x',
+     yref: 'y',
+     text: 'cutoff',
+     showarrow: true,
+     arrowhead: 7,
+     arrowcolor: "blue",
+     ax: 0,
+     ay: -40
+   },
+  ],
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+PROBHIST = document.getElementById('probhist2');
+Plotly.newPlot(PROBHIST, data, layout);
+</script>
+
+What's **left of this cutoff** actually accounts for `94%` of the distribution. If the game did not do this, you'd be as likely getting a `35` as a `91`!
+
+> Note that `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more "heroic" characters.
+
+To compensate for this, we need to **scale up** the probabilities of the latter events. Let's assume that when the game rolls internally, it just discards results below the cutoff (i.e. 94% of the distribution is never shown to the player, and the distribution is otherwise unaltered):
+
+<div id="probhist3" style="width:600px;height:450px;"></div>
+
+<script>
+var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
+window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
+
+var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
+
+//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
+
+var trace = {
+  x: window.ALL_X.slice(75-18),
+  y: window.SCALED_PROBS,
+  marker: {
+    color: "rgba(255, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(255, 100, 102, 1)",
+    }
+  },
+  name: 'probability',
+  text: scaled_legend,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+var data = [trace];
+var layout = {
+  title: "Scaled Distribution",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+PROBHIST = document.getElementById('probhist3');
+Plotly.newPlot(PROBHIST, data, layout);
+</script>
+
+Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
+
+This is actually pretty close to observations for various classes.
+
+
 
 
 ## Distribution
@@ -561,3 +625,38 @@ On my PC we get about 15 rolls per second.
 97: 2
 98: 1
 ```
+
+
+The distribution should also [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html) for this amount of dice.
+Let's stick with the precise calculation for now because we are mostly concerned with the tail end where the detail matters. (`n=18` and `s=6`)
+
+
+
+getting a number in the thirties or lower would have been as likely than getting >= 87 if it wasnt for flooring. 36 is as likely as 90..
+
+
+This is hard to see in the above graph, because it doesn't account for extraneous limits:
+
+- minimum sum of `75`
+- [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene)
+
+For some classes, these stat floors actually push their mean above the `75` cutoff even though it's 12 points above the mean of the underlying distribution:
+
+- **fighter** `STR=9`, rest `>=3`
+- **mage** `INT=9`, rest `>=3`
+- **paladin** `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `>=3`
+
+How the __flooring__ is performed would also matter to our distribution. I.e. does the engine:
+
+- roll `3d6 x 6` until it gets a sum `>=75`?
+- roll `3d6 x 6` but add bias as we go along to ensure number `>=75`?
+
+and similarly:
+
+- does it roll each stat, and return `floor(roll, statmin)`?
+- generate a random number in the range rather than roll 3 dice?
+- something different?
+
+Short of reverse engineering, it's hard to nail down the distribution exactly. However, from the graph, the frequency of extremely high rolls do seem to align, indicating that the rolls that would have exceeded the floors, follow standard multinomial data.
+
+..but that's clearly too high for a paladin. People have gotten 103s. I have gotten a 103, and regularly get 102s in a few hours. If my math above is correct, there should be `14 million` ways to roll a `102` compared to just `324` ways to roll a `106`.
