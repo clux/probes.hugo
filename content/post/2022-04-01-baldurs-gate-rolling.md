@@ -1,108 +1,55 @@
 ---
-title: Baldur's Autoroll
-subtitle: You must roll your ward before venturing forth
+title: "Baldur's Gate: Multinomial Edition"
+subtitle: Auto-rolling and getting nerd sniped before venturing forth
 date: 2022-04-01
 tags: []
 categories: ["gaming"]
 ---
 
-In a ~~brief~~ bout of escapism from the world and responsibilities, I booted up [Baldur's Gate 2](https://store.steampowered.com/app/257350/Baldurs_Gate_II_Enhanced_Edition/) with my brother. It's an amazing game, once you have figured out how to **[roll](https://old.reddit.com/r/baldursgate/search?q=roll&restrict_sr=on)** your character.
+In a ~~brief~~ bout of escapism from the world and responsibilities, I booted up [Baldur's Gate 2](https://store.steampowered.com/app/257350/Baldurs_Gate_II_Enhanced_Edition/) with my brother. It's an amazing game, once you have figured out how to **[roll](https://old.reddit.com/r/baldursgate/search?q=roll&restrict_sr=on)** your character. Rather than telling you about the game, let's talk about and simulate the maths behind rolling a `2e` character.
 
 TODO: gif of roll clicking...
 TODO: maybe just a reroll button that links to the article?
 
 <!--more-->
+<script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
 
 ## Rolling a character
 
-Basics; D&D (2e) has `6` ability scores, each the sum of rolling `3d6`.
+Basics; D&D (2e) has:
 
-In theory, you can get `6x3x6=108` points, but in practice, you get around `75` - `80` due to statistics (`75` seems to be an artificial minimum).
+- `6` ability scores
+- each ability == sum of rolling `3d6`
+
+This should give you a character with an expected "10.5" points per ability (or a sum of `63` in total), but that's **not** how it works.
 
 TODO: gif/video of how it looks
 
-It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment. They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
+It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment (the irony in writing this blog post is not lost on me). They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
 ## Disclaimer
 
-Automating this is pointless:
+Using the script used herein to achieve higher rolls than you have patience for, is on some level; **cheating**. That said; is a fairly pointless effort:
 
 - this is a single player game, you can reduce the difficulty
-- having dump stats are OK in 2e for most classes
-- early items compensate for common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence)
-- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with these items + integer underflows
-- the game sometimes gives you [clearly better](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) party members with lower stats
+- having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
+- early items nullify effects of common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence))
+- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [bugs](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
+- some [NPCS](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) come with [gear](https://baldursgate.fandom.com/wiki/Edwin%27s_Amulet) that blows marginally better stats out of the water
 
-But, it is fun. How would you do this?
-
-## Tools
-
-We are playing on Linux with an `X` based window manager, so we will use a couple of standard tools:
-
-- `scrot` - X screenshot utility
-- `xdotool` - X CLI automation tool
-- `xwininfo` - X window information utility
-
-Basic strategy;
-
-- find out where buttons are with `xwininfo`
-- press the `re-roll` button with `xdotool`
-- take screenshot of the `total` number with `scrot`
-- compare screenshot to previous rolls
-- press `store` when a new maximum is found
-
-## Initialization
-
-My brother decided to write a completely overkill for this, taking progressive screenshots and compensating for the window manager bar height, and relying on BG2EE's consistent layout to hardcode some offsets. Not going through this, it is insanity. It also means it probably works for everyone. Well, everyone on Linux with X..
-
-The standardised approach also helps with dealing with rolls, and populating a roll-table.
-
-## Roll Tables
-
-Taking screenshots is pretty easy:
-
-```sh
-scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17"
-```
-
-which you can pipe to a `.png` and pass to `compare` (part of `imagemagick` package), to compare values based on thresholds (which was the initial idea).
-
-Turns out, doing this is overkill. The background is static, nothing moves, the screenshots are deterministic per value and you can instead just compare them by their hashes (i.e. pipe to `md5`).
-
-TODO: link to roll table
-
-## Clicking
-
-Clicking is pretty easy;
-
-```sh
-xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
-```
-
-Notice the `--delay=0` to override the builtin delay between clicks.
-
-It turns out BG performs internal buffering of clicks, so this allows you to blast through numbers faster than the screen can display them.
-
-This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll.
-
-## Showcase
-
-TODO: video
-
-On my PC we get about 15 rolls per second.
 
 ## Multinomials and probabilities
 
-> How long would you need to run this to get X?
+> How many rolls would you need to get 90/95/100?
 
-Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) (`k=6`, and `p_i = 1/6` for all `i`), and the expected value of 18 dice rolls would be `18*(7/2)=63`. The distribution should also [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html) for this amount of dice.
+Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) ($k=6$, and $p_i = 1/6$ for all $i$), and the expected value of 18 dice rolls would be $18*(7/2) = 63$. The distribution should also [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html) for this amount of dice.
 
 Let's stick with the precise calculation for now because we are mostly concerned with the tail end where the detail matters. (`n=18` and `s=6`)
 
 $$P(p, 18, 6) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(p-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{p-6k-1}{17}$$
 $$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(p-6k-1)!}{(p-6k-18)!}$$
 
-which.. when cased for $k_{max}$ would yield 15 different sum expressions, and the ones we care about would all have 10+ expressions. So going to just [paste this into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D):
+which.. when cased for $k_{max}$ (follow argument in [mathworld/Dice](https://mathworld.wolfram.com/Dice.html)) would yield 15 different sum expressions, and the ones we care about would all have 10+ expressions. So rather than trying to make this nice (hint, it's not going to eve look nice), we will [paste this into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate values for $[18, \ldots, 108]$.
 
 tabulated values:
 
@@ -200,6 +147,58 @@ tabulated values:
 108 : 1/101559956668416
 ```
 
+Which yields the following distribution:
+
+<div id="probhist" style="width:600px;height:450px;"></div>
+
+<script>
+
+// keys [18, 108]
+var x = [...Array(109).keys()].slice(18);
+
+// probabilities for p=18 up to p=108
+var probs = [1/101559956668416, 1/5642219814912, 19/11284439629824, 95/8463329722368, 665/11284439629824, 1463/5642219814912, 33643/33853318889472, 9605/2821109907456, 119833/11284439629824, 1552015/50779978334208, 308465/3761479876608, 97223/470184984576, 2782169/5642219814912, 1051229/940369969152, 4550747/1880739938304, 786505/156728328192, 37624655/3761479876608, 36131483/1880739938304, 1206294965/33853318889472, 20045551/313456656384, 139474379/1253826625536, 1059736685/5642219814912, 128825225/417942208512, 17143871/34828517376, 8640663457/11284439629824, 728073331/626913312768, 2155134523/1253826625536, 3942228889/1586874322944, 4949217565/1410554953728, 3417441745/705277476864, 27703245169/4231664861184, 3052981465/352638738432, 126513483013/11284439629824, 240741263447/16926659444736, 199524184055/11284439629824, 60788736553/2821109907456, 2615090074301/101559956668416, 56759069113/1880739938304, 130521904423/3761479876608, 110438453753/2821109907456, 163027882055/3761479876608, 88576807769/1880739938304, 566880747559/11284439629824, 24732579319/470184984576, 101698030955/1880739938304, 461867856157/8463329722368, 101698030955/1880739938304, 24732579319/470184984576, 566880747559/11284439629824, 88576807769/1880739938304, 163027882055/3761479876608, 110438453753/2821109907456, 130521904423/3761479876608, 56759069113/1880739938304, 2615090074301/101559956668416, 60788736553/2821109907456, 199524184055/11284439629824, 240741263447/16926659444736, 126513483013/11284439629824, 3052981465/352638738432, 27703245169/4231664861184, 3417441745/705277476864, 4949217565/1410554953728, 3942228889/1586874322944, 2155134523/1253826625536, 728073331/626913312768, 8640663457/11284439629824, 17143871/34828517376, 128825225/417942208512, 1059736685/5642219814912, 139474379/1253826625536, 20045551/313456656384, 1206294965/33853318889472, 36131483/1880739938304, 37624655/3761479876608, 786505/156728328192, 4550747/1880739938304, 1051229/940369969152, 2782169/5642219814912, 97223/470184984576, 308465/3761479876608, 1552015/50779978334208, 119833/11284439629824, 9605/2821109907456, 33643/33853318889472, 1463/5642219814912, 665/11284439629824, 95/8463329722368, 19/11284439629824, 1/5642219814912, 1/101559956668416];
+
+// TODO: do a regular plus a cumulative one
+
+
+var legend = probs.map(x => "expected once in " + Math.floor(1/x) + " rolls")
+
+var trace = {
+  x: x,
+  y: probs,
+  marker: {
+    color: "rgba(255, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(255, 100, 102, 1)",
+    }
+  },
+  name: 'probability',
+  text: legend,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+
+var data = [trace];
+var layout = {
+  title: "Precise Distribution",
+  // TODO: annotation on cutoff
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+PROBHIST = document.getElementById('probhist');
+Plotly.newPlot(PROBHIST, data, layout);
+// TODO: figure out probability sum less than 75
+// scale by this and see how it lines up
+</script>
+
+
+This is how things should look on paper with vanilla rules. However, is that's what is going on?
+
+> Wait, you rolled a 94 on a mage after a few hundred rolls.. was that just luck, or are higher numbers more likely than this?
+
+
 thankfully, last two matches my calculations... 63 with > 5.4% chance of occurring
 this is a strong indication that the probabilities are right, but need to be adjusted for filtering out everything <75 since they are lower than what we are seeing
 
@@ -256,8 +255,6 @@ We rolled a human `fighter` and `paladin` overnight with roughly `550k` rolls ea
 Given `900 rolls per minute` with this script, that would be **1000 years of rolling**.
 
 If we rolled for a day, on the other hand (`1.3M` rolls), we are likely get a [5 sigma event](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule#Table_of_numerical_values) and a roll a `103` with paladin or `99` with fighter.
-
-<script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
 
 <div id="rollhist" style="width:600px;height:450px;"></div>
 
@@ -441,6 +438,63 @@ Plotly.newPlot(HISTOG, data, layout);
 </script>
 
 Estimated sigma numbers from distribution seen from 550k rolls on either class. For the rest we need math.
+
+## Tools
+
+We are playing on Linux with an `X` based window manager, so we will use a couple of standard tools:
+
+- `scrot` - X screenshot utility
+- `xdotool` - X CLI automation tool
+- `xwininfo` - X window information utility
+
+Basic strategy;
+
+- find out where buttons are with `xwininfo`
+- press the `re-roll` button with `xdotool`
+- take screenshot of the `total` number with `scrot`
+- compare screenshot to previous rolls
+- press `store` when a new maximum is found
+
+## Initialization
+
+My brother decided to write a completely overkill for this, taking progressive screenshots and compensating for the window manager bar height, and relying on BG2EE's consistent layout to hardcode some offsets. Not going through this, it is insanity. It also means it probably works for everyone. Well, everyone on Linux with X..
+
+The standardised approach also helps with dealing with rolls, and populating a roll-table.
+
+## Roll Tables
+
+Taking screenshots is pretty easy:
+
+```sh
+scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17"
+```
+
+which you can pipe to a `.png` and pass to `compare` (part of `imagemagick` package), to compare values based on thresholds (which was the initial idea).
+
+Turns out, doing this is overkill. The background is static, nothing moves, the screenshots are deterministic per value and you can instead just compare them by their hashes (i.e. pipe to `md5`).
+
+TODO: link to roll table
+
+## Clicking
+
+Clicking is pretty easy;
+
+```sh
+xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
+```
+
+Notice the `--delay=0` to override the builtin delay between clicks.
+
+It turns out BG performs internal buffering of clicks, so this allows you to blast through numbers faster than the screen can display them.
+
+This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll.
+
+## Showcase
+
+TODO: video
+
+On my PC we get about 15 rolls per second.
+
 
 ## Raw data
 
