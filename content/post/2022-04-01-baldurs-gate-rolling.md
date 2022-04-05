@@ -271,6 +271,7 @@ window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74);
 
 var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
+//console.log("probability of rolling gte 75", prob_over_74);
 //console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
 
 var trace = {
@@ -574,7 +575,7 @@ Short of reverse engineering, it's hard to nail down the distribution exactly wi
 
 Calculating distributions with all these restrictions is beyond the scope of what is sane here. We will do the simplifying step we should probably have used at the beginning, and note that multinomial distributions with this `n` [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html), and so does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
 
-So let's assume we are at the tail end of some normal distribution $\mathcal{N}(μ, σ)$, where we can estimate [μ & σ](https://en.wikipedia.org/wiki/Normal_distribution#Estimation_of_parameters) (view source) to find:
+So let's assume we are at the tail end of some normal distribution $\mathcal{N}(μ, σ)$, where we can estimate `μ` by inspection `σ`
 
 <script>
 // values fighter (75 -> 98)
@@ -587,33 +588,52 @@ var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 
 var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
 
 // NB: these are useless... need the underlying distribution...
-var FIGHTER_MEAN = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
-var PALADIN_MEAN = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
-var RANGER_MEAN = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
+//var FIGHTER_MEAN = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
+//var PALADIN_MEAN = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
+//var RANGER_MEAN = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
 // sum squares for variance calc later
-let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - FIGHTER_MEAN)).reduce((acc, e) => acc + e, 0);
-let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - PALADIN_MEAN)).reduce((acc, e) => acc + e, 0);
-let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - RANGER_MEAN)).reduce((acc, e) => acc + e, 0);
+//let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - FIGHTER_MEAN)).reduce((acc, e) => acc + e, 0);
+//let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - PALADIN_MEAN)).reduce((acc, e) => acc + e, 0);
+//let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - RANGER_MEAN)).reduce((acc, e) => acc + e, 0);
 // standard deviation
-var FIGHTER_STD = Math.sqrt(y1sqsum / 555560);
-var PALADIN_STD = Math.sqrt(y2sqsum / 555558);
-var RANGER_STD = Math.sqrt(y3sqsum / 500054);
-console.log("Fighter: " + FIGHTER_MEAN + ", " + FIGHTER_STD);
-console.log("Paladin: " + PALADIN_MEAN + ", " + PALADIN_STD);
-console.log("Fighter: " + RANGER_MEAN + ", " + RANGER_STD);
+//var FIGHTER_STD = Math.sqrt(y1sqsum / 555560);
+//var PALADIN_STD = Math.sqrt(y2sqsum / 555558);
+//var RANGER_STD = Math.sqrt(y3sqsum / 500054);
+//console.log("Fighter: " + FIGHTER_MEAN + ", " + FIGHTER_STD);
+//console.log("Paladin: " + PALADIN_MEAN + ", " + PALADIN_STD);
+//console.log("Fighter: " + RANGER_MEAN + ", " + RANGER_STD);
 
-// TODO: for fighter.. we could use existing computation:
+// paladin: we estimate mean as 77.6 from curve, and work out 50% prob from RHS of that
+var y2values = y2.slice();
+y2values[0] = 0; // discount 75
+y2values[1] = 0; // discount 76
+y2values[2] = Math.floor(y2[2]*0.6); // discount 40% of 77
+y2_tail = y2values.reduce((acc, e) => acc + e, 0) / 555558;
+y2_tail = Math.floor(y2_tail* 100 * 100) / 100; // 2 significant digits as percent
+console.log("Paladin is at the " + y2_tail + "% tail of a normal distribution centered at 77.6");
+
+// ranger: we estimate mean as 79.3 from curve, and work out 50% prob from RHS of that
+var y3values = y3.slice();
+y3values[0] = 0; // discount 75
+y3values[1] = 0; // discount 76
+y3values[2] = 0; // discount 77
+y3values[3] = Math.floor(y2[2]*0.3); // discount 70% of 78
+y3_tail = y3values.reduce((acc, e) => acc + e, 0) / 500054;
+y3_tail = Math.floor(y3_tail* 100 * 100) / 100; // 2 significant digits as percent
+console.log("Ranger is at the " + y3_tail + "% tail of a normal distribution centered at 79.3");
+
+// fighter.. re-use existing computation since we wouldn't know the mean easily otherwise
+// and we've already shown it's very very close.
 //- we know we are in 94% tail
 //- we know true mean (63)
 //- we can estimate true std deviation (from perfect bell curve)
+console.log("Fighter is at the 94% tail of a normal distribution centered at 63");
 
-// TODO: for paladin, we could say mean is 78, and work out 50% prob from RHS of that
-// TODO: for ranger, we could say mean is 79, and work out 50% prob from RHS of that
 </script>
 
 - $Fighter \sim$ 94th percentile tail of $\mathcal{N}(63, ?)$
-- $Paladin \sim$ Xth percentile tail of $\mathcal{N}(78.x ?)$
-- $Ranger \sim$ Yth percentile tail of $\mathcal{N}(79.y, ?)$
+- $Paladin \sim$ 77h percentile tail of $\mathcal{N}(77.6, ?)$
+- $Ranger \sim$ 71th percentile tail of $\mathcal{N}(79.3, ?)$
 
 <div id="rollhistall" style="width:600px;height:450px;"></div>
 
