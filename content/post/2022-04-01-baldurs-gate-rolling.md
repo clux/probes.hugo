@@ -214,7 +214,7 @@ This is how things should look on paper. From the chart you can extract:
 
 **But is this really right?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
 
-Well, let's start with the obvious. We don't see rolls below $75$:
+Well, let's start with the obvious. We don't see rolls below $75$. The distribution is [truncated](https://en.wikipedia.org/wiki/Truncation_(statistics)).
 
 <div id="probhist2" style="width:600px;height:450px;"></div>
 
@@ -573,9 +573,48 @@ We can probably rule out the second option; if it just discarded rolls internall
 Short of reverse engineering, it's hard to nail down the distribution exactly without recomputing the entire thing.
 -->
 
-Calculating distributions with all these restrictions is beyond the scope of what is sane here. We will do the simplifying step we should probably have used at the beginning, and note that multinomial distributions with this `n` [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html), and so does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
+Calculating distributions when more than half of the distribution is truncated would difficult, but we can do some tricks for the `paladin` and `ranger` distribution in particularly:
 
-So let's assume we are at the tail end of some normal distribution $\mathcal{N}(μ, σ)$, where we can estimate `μ` by inspection `σ`
+We will first do the simplifying step we should probably have used at the beginning; and note that multinomial distributions with this `n` [pproximate a normal distribution](https://mathworld.wolfram.com/Dice.html) very closely (as does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+
+Thus, let's assume we are at the tail end of __some__ normal distribution $\mathcal{N}(μ, σ)$, where we can estimate `μ` by inspection (in the ranger and paladin case where it exceeds the truncation point), and then we can calculate `σ` of that distribution by considering the right half we have and using symmetry.
+
+### Censoring idea
+
+...maybe we can fashion the extension methods from the [rectified normal distribution](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) because they seem easy... just not sure if they apply. the line between censoring and truncation is a bit hard to tell which is which for us. I THINK it's truncation because in most cases we don't know much outside our range. but censoring also seems to apply; values can occur outside the range of our measring instrument (these values are not shown to us).
+
+[this problem is very similar](https://www.rhayden.us/regression-model/the-censored-normal-distribution.html), but badly written...
+
+[rectified normal extension](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution#Extension_to_general_bounds) (from 2017) shows that:
+
+
+$\sigma_R^2 = \sigma^2 \sigma_t^2$ where:
+
+- $\sigma^2$ is the variance of the original (unknown distribution)
+- $\sigma_t^2$ is the variance of the new distribution (what we see and can measure)
+
+similarly:
+
+$\mu_R = \mu + \sigma \mu_t$ where:
+
+- $\mu$ is the mean of the original unknown distribution
+- $\mu_t$ is the mean of the truncated distribution (and can measure directly)
+
+We can quickly compute $\mu_t$ and $\sigma_t$ using values from our full sample.
+
+For $\mu$ and $\sigma$ from the original distribution, we would not always be able to, but we can be sneaky and extract it in the *paladin* and *ranger* case because we can see the mean and know the underlying distribution is symmetrical.
+
+<!--
+### Truncation idea
+...we can maybe use something dealing with [truncated normal distributions](https://en.wikipedia.org/wiki/Truncated_normal_distribution) but the math looks hard, and can only find an R library..
+
+if we are dealing with [one-sided truncation of lower tail](https://en.wikipedia.org/wiki/Truncated_normal_distribution#One_sided_truncation_(of_lower_tail))), and we can use some complicated looking formulae to compute $\mathcal{E}(X | X > a)$ and $Var(X | X > a)$ (where $a$ is the cutoff point) which feels like what we can misguidedly estimate.
+
+$Var(X | X > a) = \sigma^2[1 + \alpha \phi(\alpha)/Z - (\phi(\alpha)/Z)^2]$ where $Z = 1 - \Phi(\alpha)$
+
+which requires us to know $\sigma$ of the underlying distribution..
+-->
+
 
 <script>
 // values fighter (75 -> 98)
@@ -587,53 +626,81 @@ var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 
 // values ranger (75 -> 100)
 var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
 
-// NB: these are useless... need the underlying distribution...
-//var FIGHTER_MEAN = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
-//var PALADIN_MEAN = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
-//var RANGER_MEAN = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
+// 1. calculate the worthless \mu_t and \sigma_t of the truncated distribution
+var y1mean = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
+var y2mean = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
+var y3mean = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
 // sum squares for variance calc later
-//let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - FIGHTER_MEAN)).reduce((acc, e) => acc + e, 0);
-//let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - PALADIN_MEAN)).reduce((acc, e) => acc + e, 0);
-//let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - RANGER_MEAN)).reduce((acc, e) => acc + e, 0);
+let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - y1mean)).reduce((acc, e) => acc + e, 0);
+let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - y2mean)).reduce((acc, e) => acc + e, 0);
+let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - y3mean)).reduce((acc, e) => acc + e, 0);
 // standard deviation
-//var FIGHTER_STD = Math.sqrt(y1sqsum / 555560);
-//var PALADIN_STD = Math.sqrt(y2sqsum / 555558);
-//var RANGER_STD = Math.sqrt(y3sqsum / 500054);
-//console.log("Fighter: " + FIGHTER_MEAN + ", " + FIGHTER_STD);
-//console.log("Paladin: " + PALADIN_MEAN + ", " + PALADIN_STD);
-//console.log("Fighter: " + RANGER_MEAN + ", " + RANGER_STD);
+var y1stddev = Math.sqrt(y1sqsum / 555560);
+var y2stddev = Math.sqrt(y2sqsum / 555558);
+var y3stddev = Math.sqrt(y3sqsum / 500054);
+console.log("Fighter: (mu_t, sigma_t) = (" + y1mean + ", " + y1stddev + ")");
+console.log("Paladin: (mu_t, sigma_t) = (" + y2mean + ", " + y2stddev + ")");
+console.log("Ranger: (mu_t, sigma_t) = (" + y3mean + ", " + y3stddev + ")");
+// NB: these are reasonable (sigma between 7 and 12)
+
+// 2. estimate \mu and \sigma of the original distribution
+// TODO: fix this, the variance should decrease here
 
 // paladin: we estimate mean as 77.6 from curve, and work out 50% prob from RHS of that
 var y2values = y2.slice();
 y2values[0] = 0; // discount 75
 y2values[1] = 0; // discount 76
 y2values[2] = Math.floor(y2[2]*0.6); // discount 40% of 77
+// how big is our sample size at RHS now? orig minus the ones we discarded
+var y2_cut_samples = 555558 - (y2[0] + y2[1] + Math.ceil(y2[2]*0.4));
+// calculate stddev (count every sample twice for symmetry)
+var y2sqs = y2values.map((x, i) => x*2*Math.pow(2, i+75 - 77.6)).reduce((acc, e) => acc + e, 0);
+var y2stddev_t = Math.sqrt(y2sqs / (y2_cut_samples*2));
 y2_tail = y2values.reduce((acc, e) => acc + e, 0) / 555558;
 y2_tail = Math.floor(y2_tail* 100 * 100) / 100; // 2 significant digits as percent
-console.log("Paladin is at the " + y2_tail + "% tail of a normal distribution centered at 77.6");
+console.log("Paladin is at the " + y2_tail + "% tail of a normal distribution centered at 77.6 with estimated stddev_t", y2stddev_t);
 
 // ranger: we estimate mean as 79.3 from curve, and work out 50% prob from RHS of that
 var y3values = y3.slice();
 y3values[0] = 0; // discount 75
 y3values[1] = 0; // discount 76
 y3values[2] = 0; // discount 77
-y3values[3] = Math.floor(y2[2]*0.3); // discount 70% of 78
+y3values[3] = 0; // discount 78
+y3values[4] = Math.floor(y3[2]*0.3); // discount 30% of 79
+// how big is our sample size at RHS now? orig minus the ones we discarded
+var y3_cut_samples = 500054 - (y3[0] + y3[1] + y3[2] + y3[3] + Math.ceil(y3[4]*0.7));
+// calculate stddev (count every sample twice to fake symmetry)
+var y3sqs = y3values.map((x, i) => x*2*Math.pow(2, i+75 - 79.3)).reduce((acc, e) => acc + e, 0);
+var y3stddev_t = Math.sqrt(y3sqs / (y3_cut_samples*2));
+
 y3_tail = y3values.reduce((acc, e) => acc + e, 0) / 500054;
 y3_tail = Math.floor(y3_tail* 100 * 100) / 100; // 2 significant digits as percent
-console.log("Ranger is at the " + y3_tail + "% tail of a normal distribution centered at 79.3");
+console.log("Ranger is at the " + y3_tail + "% tail of a normal distribution centered at 79.3 with estimated stddev_t", y3stddev_t);
 
 // fighter.. re-use existing computation since we wouldn't know the mean easily otherwise
 // and we've already shown it's very very close.
 //- we know we are in 94% tail
 //- we know true mean (63)
-//- we can estimate true std deviation (from perfect bell curve)
+//- can we estimate the true std deviation? surely possible somehow.... TODO
 console.log("Fighter is at the 94% tail of a normal distribution centered at 63");
+
+// 3. combine the values to find the rectified distribution values:
+y2_mean_rect = 75.3 + y2stddev * y2mean; // u_r = u + s * u_t
+y3_mean_rect = 79.3 + y2stddev * y2mean; // u_r = u + s * u_t
+
+y2_stddev_rect = y2stddev * y2stddev_t
+y3_stddev_rect = y3stddev * y3stddev_t
+
+console.log("Rectified Paladin has mu, sigma as: " + y2_mean_rect + ", " + y2_stddev_rect);
+console.log("Rectified Ranger has mu, sigma as: " + y3_mean_rect + ", " + y3_stddev_rect);
 
 </script>
 
 - $Fighter \sim$ 94th percentile tail of $\mathcal{N}(63, ?)$
 - $Paladin \sim$ 77h percentile tail of $\mathcal{N}(77.6, ?)$
 - $Ranger \sim$ 71th percentile tail of $\mathcal{N}(79.3, ?)$
+
+TODO: we can use $Paladin \sim \mathcal{N}^R(\mu, \sigma^2)$ at cutoff 75.
 
 <div id="rollhistall" style="width:600px;height:450px;"></div>
 
