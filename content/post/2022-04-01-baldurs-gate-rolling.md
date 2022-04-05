@@ -257,11 +257,11 @@ PROBHIST = document.getElementById('probhist2');
 Plotly.newPlot(PROBHIST, data, layout);
 </script>
 
-What's **left of this cutoff** actually accounts for `94%` of the distribution. If the game did not do this, you'd be as likely getting a `35` as a `91`!
+What's **left of this cutoff** actually accounts for `94%` of the distribution. If the game did not do this, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
 
 > Note that `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more "heroic" characters.
 
-To compensate for this, we need to **scale up** the probabilities of the latter events. Let's assume that when the game rolls internally, it just discards results below the cutoff (i.e. 94% of the distribution is never shown to the player, and the distribution is otherwise unaltered):
+To compensate for this, we need to **scale up** the probabilities of the latter events. Let's assume that when the game rolls internally, it just discards results below the cutoff (so the distribution is otherwise unaltered). In that, case we would expect this:
 
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
@@ -300,17 +300,17 @@ Plotly.newPlot(PROBHIST, data, layout);
 
 Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
 
-This is actually pretty close to observations for various classes, and we will prove it.
+This is actually bang on for **most** cases, and we will **demonstrate** this.
 
-But first, we are going to need to press the `ROLL` button a lot...
+But first, we are going to need to press the `reroll` button a lot...
 
 ## Automating Rolling
 
-We will go through the tools used and a bit about how the [script we use](https://github.com/Thhethssmuz/bg2ee-stat-roll) works. If you can read the source, you can skip this section.
+We will go through the [script we use](https://github.com/Thhethssmuz/bg2ee-stat-roll).
 
 ### Tools
 
-We are playing on Linux with an `X` based window manager, so we will use a couple of obscure tools:
+We are playing on **Linux** with `X` and some obscure associated tooling:
 
 - `scrot` - X screenshot utility
 - `xdotool` - X CLI automation tool
@@ -384,7 +384,7 @@ On my PC we get just over **15 rolls per second**.
 
 ## Distribution
 
-We rolled a human `fighter` and `paladin` overnight with roughly `550k` rolls each (view source for details):
+We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (view source for details), and we get these distributions:
 
 <div id="rollhist" style="width:600px;height:450px;"></div>
 
@@ -394,20 +394,26 @@ We rolled a human `fighter` and `paladin` overnight with roughly `550k` rolls ea
 var x = [...Array(109).keys()].slice(75);
 
 // values fighter (75 -> 98)
-var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1].map(x => x / 555560);
+var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1];
 
 // values paladin (75 -> 102)
-var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1].map(x => x / 555558); // divide by number of rolls
+var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1];
 
-window.FIGHTER_ROLLS = y1;
-window.PALADIN_ROLLS = y2;
+// values ranger (75 -> 100)
+var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
 
-var y1legend = y1.map(x => "occurred once in " + Math.floor(1/x) + " rolls")
-var y2legend = y2.map(x => "occurred once in " + Math.floor(1/x) + " rolls")
+// divide by number of rolls
+window.FIGHTER_ROLLS = y1.map(x => x / 555560);
+window.PALADIN_ROLLS = y2.map(x => x / 555558);
+window.RANGER_ROLLS = y3.map(x => x / 500054);
+
+var y1legend = window.FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+var y2legend = window.PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+var y3legend = window.RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
 
 var trace1 = {
   x: x,
-  y: y1,
+  y: window.FIGHTER_ROLLS,
   marker: {
     color: "rgba(255, 100, 102, 0.7)",
     line: {
@@ -422,7 +428,7 @@ var trace1 = {
 };
 var trace2 = {
   x: x,
-  y: y2,
+  y: window.PALADIN_ROLLS ,
   marker: {
     color: "rgba(100, 200, 102, 0.7)",
     line: {
@@ -435,8 +441,238 @@ var trace2 = {
   opacity: 0.75,
   type: "scatter",
 };
+var trace3 = {
+  x: x,
+  y: window.RANGER_ROLLS ,
+  marker: {
+    color: "rgba(100, 100, 200, 0.7)",
+    line: {
+        color:  "rgba(100, 100, 200, 1)",
+        //width: 1
+    }
+  },
+  name: "ranger",
+  text: y3legend,
+  opacity: 0.75,
+  type: "scatter",
+};
 
-var data = [trace1, trace2];
+var data = [trace1, trace2, trace3];
+var layout = {
+  title: "Roll Results",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+HISTOG = document.getElementById('rollhist');
+Plotly.newPlot(HISTOG, data, layout);
+</script>
+
+Let's start with the **fighter**. If we compare the fighter graph with the computed, scaled distribution, they are almost identical:
+
+<div id="probhist4" style="width:600px;height:450px;"></div>
+
+<script>
+var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
+window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
+
+var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
+
+//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
+var trace_fighter = {
+  x: window.ALL_X.slice(75-18),
+  y: FIGHTER_ROLLS,
+  marker: {
+    color: "rgba(0, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(0, 100, 102, 1)",
+    //  width: 1
+    }
+  },
+  name: 'fighter',
+  text: y1legend,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+var trace_prob = {
+  x: window.ALL_X.slice(75-18),
+  y: window.SCALED_PROBS,
+  marker: {
+    color: "rgba(100, 255, 0, 0.7)",
+    line: {
+      color:  "rgba(100, 255, 0, 1)",
+    }
+  },
+  name: 'probability',
+  text: scaled_legend,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+var data = [trace_prob, trace_fighter];
+var layout = {
+  title: "Distribution vs. Fighter",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Chance"},
+};
+PROBHIST = document.getElementById('probhist4');
+Plotly.newPlot(PROBHIST, data, layout);
+</script>
+
+So for **fighters**, we can be pretty happy with the calculations we have done, and can use the precise probabilities as a guide.
+
+> How long would it take you to achieve >95 for a fighter using the script?
+
+- `108` is a once in `5 trillion` event (10,000 years)
+- `107` is a once in `300 billion` event (600 years)
+- `106` is a once in `33 billion` event (69 years)
+- `105` is a once in `5 billion` event (10 years)
+- `104` is a once in `900 million` event (2 years)
+- `103` is a once in `200 million` event (5 months)
+- `102` is a once in `50 million` event (5 weeks)
+- `101` is a once in `16 million` event (2 weeks)
+- `100` is a once in `5 million` event (4 days)
+- `99` is a once in `2 million` event (1.5 day)
+- `98` is a once in `700k` event (12h)
+- `97` is a once in `270k` event (5h)
+- `96` is a once in `110k` event (2h)
+- `95` is a once in `50k` event (55m)
+
+So in conclusion; comparing to the unscaled calculation, we are actually quite a lot more likely to get a good roll early than what just the pure dice math would indicate (likely `95` rather than estimated `90` for 50k rolls).
+
+
+However, what's up with the paladins and rangers?
+
+### Class/Race Variance
+
+The final point here is something that's harder to account for: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
+
+For some classes, these **stat floors** actually push their mean above the `75` cutoff even though it's 12 points above the mean of the original underlying distribution.
+
+- **fighter** mins: `STR=9`, rest `3`
+- **mage** mins: `INT=9`, rest `3`
+- **paladin** mins: `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `3`
+- **ranger** mins: `CON=14`, `WIS=14`, `STR=13`, `DEX=13`, rest `3`
+- **[other classes](https://old.reddit.com/r/baldursgate/comments/reevp6/everyone_enjoys_a_good_high_ability_score_role_so/)** mins: generally light floors
+
+_In other words_: paladins and rangers have significantly higher rolls on average.
+
+> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
+
+<!--
+How the __flooring__ is performed would matter to our distribution. I.e. does the game:
+
+- does it roll each stat, and return `min(roll, statmin)`?
+- keep rolling internally until the minimums are met?
+- generate a random number uniformly in the range rather than roll 3 dice?
+- something else?
+
+We can probably rule out the second option; if it just discarded rolls internally the resulting distribution would look scaled, not translated right. The third option also feels unlikely, the falloff for paladin looks similarly steep.
+
+Short of reverse engineering, it's hard to nail down the distribution exactly without recomputing the entire thing.
+-->
+
+Calculating distributions with all these restrictions is beyond the scope of what is sane here. We will do the simplifying step we should probably have used at the beginning, and note that multinomial distributions with this `n` [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html), and so does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
+
+So let's assume we are at the tail end of some normal distribution $\mathcal{N}(μ, σ)$, where we can estimate [μ & σ](https://en.wikipedia.org/wiki/Normal_distribution#Estimation_of_parameters) (view source) to find:
+
+<script>
+// values fighter (75 -> 98)
+var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1];
+
+// values paladin (75 -> 102)
+var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1];
+
+// values ranger (75 -> 100)
+var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
+
+// NB: these are useless... need the underlying distribution...
+var FIGHTER_MEAN = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
+var PALADIN_MEAN = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
+var RANGER_MEAN = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
+// sum squares for variance calc later
+let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - FIGHTER_MEAN)).reduce((acc, e) => acc + e, 0);
+let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - PALADIN_MEAN)).reduce((acc, e) => acc + e, 0);
+let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - RANGER_MEAN)).reduce((acc, e) => acc + e, 0);
+// standard deviation
+var FIGHTER_STD = Math.sqrt(y1sqsum / 555560);
+var PALADIN_STD = Math.sqrt(y2sqsum / 555558);
+var RANGER_STD = Math.sqrt(y3sqsum / 500054);
+console.log("Fighter: " + FIGHTER_MEAN + ", " + FIGHTER_STD);
+console.log("Paladin: " + PALADIN_MEAN + ", " + PALADIN_STD);
+console.log("Fighter: " + RANGER_MEAN + ", " + RANGER_STD);
+
+// TODO: for fighter.. we could use existing computation:
+//- we know we are in 94% tail
+//- we know true mean (63)
+//- we can estimate true std deviation (from perfect bell curve)
+
+// TODO: for paladin, we could say mean is 78, and work out 50% prob from RHS of that
+// TODO: for ranger, we could say mean is 79, and work out 50% prob from RHS of that
+</script>
+
+- $Fighter \sim$ 94th percentile tail of $\mathcal{N}(63, ?)$
+- $Paladin \sim$ Xth percentile tail of $\mathcal{N}(78.x ?)$
+- $Ranger \sim$ Yth percentile tail of $\mathcal{N}(79.y, ?)$
+
+<div id="rollhistall" style="width:600px;height:450px;"></div>
+
+<script>
+
+// keys [75, 108]
+var x = [...Array(109).keys()].slice(75);
+
+var y1legend = window.FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+var y2legend = window.PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+var y3legend = window.RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+
+var trace1 = {
+  x: x,
+  y: window.FIGHTER_ROLLS,
+  marker: {
+    color: "rgba(255, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(255, 100, 102, 1)",
+    //  width: 1
+    }
+  },
+  name: 'fighter',
+  text: y1legend,
+  opacity: 0.8,
+  type: "scatter",
+};
+var trace2 = {
+  x: x,
+  y: window.PALADIN_ROLLS ,
+  marker: {
+    color: "rgba(100, 200, 102, 0.7)",
+    line: {
+        color:  "rgba(100, 200, 102, 1)",
+        //width: 1
+    }
+  },
+  name: "paladin",
+  text: y2legend,
+  opacity: 0.75,
+  type: "scatter",
+};
+var trace3 = {
+  x: x,
+  y: window.RANGER_ROLLS ,
+  marker: {
+    color: "rgba(100, 100, 200, 0.7)",
+    line: {
+        color:  "rgba(100, 100, 200, 1)",
+        //width: 1
+    }
+  },
+  name: "ranger",
+  text: y3legend,
+  opacity: 0.75,
+  type: "scatter",
+};
+
+var data = [trace1, trace2, trace3];
 var layout = {
   title: "Roll Results",
   annotations: [
@@ -565,128 +801,11 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-HISTOG = document.getElementById('rollhist');
+HISTOG = document.getElementById('rollhistall');
 Plotly.newPlot(HISTOG, data, layout);
 </script>
 
-Estimated sigma numbers from distribution seen from 550k rolls on either class. TODO: remove these in favour of actual ones later?
-
-If we compare the fighter graph with the computed, scaled distribution, they are almost identical:
-
-<div id="probhist4" style="width:600px;height:450px;"></div>
-
-<script>
-var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
-window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
-
-var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
-
-//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
-var trace_fighter = {
-  x: window.ALL_X.slice(75-18),
-  y: FIGHTER_ROLLS,
-  marker: {
-    color: "rgba(0, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(0, 100, 102, 1)",
-    //  width: 1
-    }
-  },
-  name: 'fighter',
-  text: y1legend,
-  opacity: 0.8,
-  type: "scatter",
-};
-
-var trace_prob = {
-  x: window.ALL_X.slice(75-18),
-  y: window.SCALED_PROBS,
-  marker: {
-    color: "rgba(100, 255, 0, 0.7)",
-    line: {
-      color:  "rgba(100, 255, 0, 1)",
-    }
-  },
-  name: 'probability',
-  text: scaled_legend,
-  opacity: 0.8,
-  type: "scatter",
-};
-
-var data = [trace_prob, trace_fighter];
-var layout = {
-  title: "Distribution vs. Fighter",
-  xaxis: {title: "Roll"},
-  yaxis: {title: "Chance"},
-};
-PROBHIST = document.getElementById('probhist4');
-Plotly.newPlot(PROBHIST, data, layout);
-</script>
-
-This shows that for **fighters**, the distribution is **spot on**, and we can now estaimate how long it would take us to achieve certain numbers with the script:
-
-- `108` is a once in `5 trillion` event (10,000 years)
-- `107` is a once in `300 billion` event (600 years)
-- `106` is a once in `33 billion` event (69 years)
-- `105` is a once in `5 billion` event (10 years)
-- `104` is a once in `900 million` event (2 years)
-- `103` is a once in `200 million` event (5 months)
-- `102` is a once in `50 million` event (5 weeks)
-- `101` is a once in `16 million` event (2 weeks)
-- `100` is a once in `5 million` event (4 days)
-- `99` is a once in `2 million` event (1.5 day)
-- `98` is a once in `700k` event (12h)
-- `97` is a once in `270k` event (5h)
-- `96` is a once in `110k` event (2h)
-- `95` is a once in `50k` event (55m)
-
-So compared to the unscaled calculation, if you roll 50k times, you'll likely get a `95` and not just a `90`.
-
-However, what's up with the paladins and rangers?
-
-### Class/Race Variance
-
-The final point here is something that's harder to account for: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
-
-For some classes, these stat floors actually push their mean above the `75` cutoff even though it's 12 points above the mean of the underlying distribution. E.g. compare the floors for classes:
-
-- **fighter** `STR=9`, rest `3`
-- **mage** `INT=9`, rest `3`
-- **paladin** `CHA=17`, `WIS=13`, `STR=12`, `CON=9`, rest `3`
-- **ranger** `CON=14`, `WIS=14`, `STR=13`, `DEX=13`, rest `3`
-
-Meaning paladins and rangers have significantly higher rolls by default.
-
-> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
-
-How the __flooring__ is performed would matter to our distribution. I.e. does the game:
-
-- does it roll each stat, and return `min(roll, statmin)`?
-- keep rolling internally until the minimums are met?
-- generate a random number uniformly in the range rather than roll 3 dice?
-- something else?
-
-We can probably rule out the second option; if it just discarded rolls internally the resulting distribution would look scaled, not translated right. The third option also feels unlikely, the falloff for paladin looks similarly steep.
-
-
-
-Short of reverse engineering, it's hard to nail down the distribution exactly without recomputing the entire thing.
-
-For these uglier variant distributions, we will do the simplifying step we should probably have used at the beginning, and note that multinomial distributions [approximate a normal distribution very closely](https://mathworld.wolfram.com/Dice.html), and so does [most distributions with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
-
-So let's assume we are at the tail end of some normal distribution $N(μ, σ)$, where we can spot the mean, and work out [σ](https://en.wikipedia.org/wiki/Standard_deviation):
-
-<script>
-// working out standard deviation for a paladin
-// TODO: fix this, this is wrong... do i need squares of 55k results?...
-// ..I could get that... 50888*75^2
-// would need to get version of PALADIN_ROLLS before scale down, then figure out the key, square that, and times by number in element...
-let sq_sum = window.PALADIN_ROLLS.map(x => Math.pow(2, x - 78)).reduce((acc, e) => acc + e, 0);
-let std_deviation = Math.sqrt(sq_sum) / window.PALADIN_ROLLS.length;
-console.log("Paladin std_deviation:", std_deviation);
-</script>
-
-Paladin :: N(78, )
+Interestingly, ranger has the highest mean, but paladin has the fattest tail.
 
 ## Raw data
 
