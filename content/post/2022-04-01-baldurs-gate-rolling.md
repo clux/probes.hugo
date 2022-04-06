@@ -214,7 +214,7 @@ This is how things should look on paper. From the chart you can extract:
 
 **But is this really right?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
 
-Well, let's start with the obvious. We don't see rolls below $75$. The distribution is [truncated](https://en.wikipedia.org/wiki/Truncation_(statistics)).
+Well, let's start with the obvious. We don't see the rolls below $75$. The distribution is [censored](https://en.wikipedia.org/wiki/Censoring_(statistics)).
 
 <div id="probhist2" style="width:600px;height:450px;"></div>
 
@@ -261,7 +261,7 @@ What's **left of this cutoff** actually accounts for `94%` of the distribution. 
 
 > Note that `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more "heroic" characters.
 
-To compensate for this, we need to **scale up** the probabilities of the latter events. Let's assume that when the game rolls internally, it just discards results below the cutoff (so the distribution is otherwise unaltered). In that, case we would expect this:
+To compensate for this, we need to look at a modified, truncated version of our distribution, and **scale up** the probabilities of the latter events:
 
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
@@ -273,7 +273,7 @@ var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.Numb
 
 //console.log("probability of rolling gte 75", prob_over_74);
 //console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
-
+// TODO: show zeroes on left side to seed idea of truncation better?
 var trace = {
   x: window.ALL_X.slice(75-18),
   y: window.SCALED_PROBS,
@@ -542,13 +542,13 @@ So for **fighters**, we can be pretty happy with the calculations we have done, 
 So in conclusion; comparing to the unscaled calculation, we are actually quite a lot more likely to get a good roll early than what just the pure dice math would indicate (likely `95` rather than estimated `90` for 50k rolls).
 
 
-However, what's up with the paladins and rangers?
+However, what's up with the paladins and rangers? Time for another math detour.
 
 ### Class/Race Variance
 
-The final point here is something that's harder to account for: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
+The reason for the discrepancy is simple: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
 
-For some classes, these **stat floors** actually push their mean above the `75` cutoff even though it's 12 points above the mean of the original underlying distribution.
+These stat floors are quite significant in some cases, and actually push highly floored classes' means above the `75` cutoff even though it's 12 points above the mean of the original underlying distribution.
 
 - **fighter** mins: `STR=9`, rest `3`
 - **mage** mins: `INT=9`, rest `3`
@@ -556,9 +556,31 @@ For some classes, these **stat floors** actually push their mean above the `75` 
 - **ranger** mins: `CON=14`, `WIS=14`, `STR=13`, `DEX=13`, rest `3`
 - **[other classes](https://old.reddit.com/r/baldursgate/comments/reevp6/everyone_enjoys_a_good_high_ability_score_role_so/)** mins: generally light floors
 
+<!-- TODO: can we calculate the expectation here? not unless we have a distribution to map it onto... -->
+
 _In other words_: paladins and rangers have significantly higher rolls on average.
 
 > Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
+
+<script>
+// This is calculating expectation and stddev (via variance) from the true probabilities for dice rolling (expectation matches the analytical mean from mathworld/dice as a nice sanity)
+var expectation = window.MAIN_PROBS.map((e, i) => e*(i+18)).reduce((acc, e) => acc + e, 0);
+var stddev = Math.sqrt(window.MAIN_PROBS.map((e, i) => e*Math.pow(i+18-63, 2)).reduce((acc, e) => acc + e, 0)); // 7.2! quite low.. 6.8 would feel more right if approximating as normal..
+console.log("Computed expectation:", expectation, "stddev:", stddev);
+// NB: it's probably hard to approximate this as a normal with only 18 rolls, maybe that's why the normal approximation is a bit off at the tail
+// ...this means that using a truncated normal / rectified normal is not going to be very accurate
+// maybe we drop trying to estimate distributions here? we have an astounding amount of samples anyway...
+
+// This is computing truncated expectations using true dice probability:
+var expect_trunc = window.SCALED_PROBS.map((e, i) => e*(75+i)).reduce((acc, e) => acc + e, 0);
+console.log("Truncated expectation:", expect_trunc);
+// TODO: truncated stddev?
+
+// TODO: further
+// NB: u_z (63), and u_t (77.5) => with sigma_z we can get u_R later..
+// however, caveats of bad normal fit at tail would apply...
+
+</script>
 
 <!--
 How the __flooring__ is performed would matter to our distribution. I.e. does the game:
@@ -651,8 +673,9 @@ var y2values = y2.slice();
 y2values[0] = 0; // discount 75
 y2values[1] = 0; // discount 76
 y2values[2] = Math.floor(y2[2]*0.6); // discount 40% of 77
+console.log('y2vals', y2values);
 // how big is our sample size at RHS now? orig minus the ones we discarded
-var y2_cut_samples = 555558 - (y2[0] + y2[1] + Math.ceil(y2[2]*0.4));
+var y2_cut_samples = 555558 - y2values.reduce((acc, e) => acc+e, 0);
 // calculate stddev (count every sample twice for symmetry)
 var y2sqs = y2values.map((x, i) => x*2*Math.pow(2, i+75 - 77.6)).reduce((acc, e) => acc + e, 0);
 var y2stddev_t = Math.sqrt(y2sqs / (y2_cut_samples*2));
@@ -668,7 +691,7 @@ y3values[2] = 0; // discount 77
 y3values[3] = 0; // discount 78
 y3values[4] = Math.floor(y3[2]*0.3); // discount 30% of 79
 // how big is our sample size at RHS now? orig minus the ones we discarded
-var y3_cut_samples = 500054 - (y3[0] + y3[1] + y3[2] + y3[3] + Math.ceil(y3[4]*0.7));
+var y3_cut_samples = 555558 - y3values.reduce((acc, e) => acc+e, 0);
 // calculate stddev (count every sample twice to fake symmetry)
 var y3sqs = y3values.map((x, i) => x*2*Math.pow(2, i+75 - 79.3)).reduce((acc, e) => acc + e, 0);
 var y3stddev_t = Math.sqrt(y3sqs / (y3_cut_samples*2));
