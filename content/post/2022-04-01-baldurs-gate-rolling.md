@@ -771,6 +771,8 @@ We compute $\sigma$ breakpoints using $78.86 + n*5.12$:
 
 As we can see, the high variance of paladin compensates for its lower mean compared to the ranger, and is therefore your best bet for record breaking rolls.
 
+If this calculation is semi-accurate then if `63` people roll the script for paladin for `1 day`, we are likely to collectively get an `108`...
+
 ### Getting precise probabilities
 
 Because estimating tends to fall over a bit at high sigma levels (where we are interested in the values), we ideally want to have a precise [PDF](https://en.wikipedia.org/wiki/Probability_density_function) for a random variable:
