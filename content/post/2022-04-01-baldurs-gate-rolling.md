@@ -29,9 +29,9 @@ TODO: gif of boring rolling
 
 It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment (the irony in writing this blog post is not lost on me). They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
-Still, **suppose** (as an excuse to talk about multinomials, combinatorics, and weird `X` tools) you want to **automate rolling** and figure out **how long it will take** you to receive a **good roll** without doing anything.
+Still, **suppose** you want to **automate rolling** (or want to think about combinatorics, multinomials, and weird `X` tools), then you can use this post. You can also figure out **how long it will take** you to receive your _"good roll"_.
 
-> ..it's less time than it took to write this blogpost.
+> HINT: ..it's less time than it took to write this blogpost.
 
 ## Disclaimer
 
@@ -40,7 +40,7 @@ Using the script used herein to achieve higher rolls than you have patience for,
 - this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn) single player game, and you can reduce the difficulty
 - having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
 - early items nullify effects of common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence))
-- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [bugs](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
+- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [underflow](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
 - some [NPCS](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) come with [gear](https://baldursgate.fandom.com/wiki/Edwin%27s_Amulet) that blows __marginally better stats__ out of the water
 
 So assuming you have a reason to be here despite this; let's dive in to some maths.
@@ -55,103 +55,6 @@ $$P(X = x) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \binom{
 $$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
 
 where $k_{max} = \lfloor(x-18)/6\rfloor$. If we were to expand this expression, the variability of $k_{max}$ would yield 15 different sum expressions - and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
-
-<!--tabulated values:
-
-```
-18  : 1/101559956668416
-19  : 1/5642219814912
-20  : 19/11284439629824
-21  : 95/8463329722368
-22  : 665/11284439629824
-23  : 1463/5642219814912
-24  : 33643/33853318889472
-25  : 9605/2821109907456
-26  : 119833/11284439629824
-27  : 1552015/50779978334208
-28  : 308465/3761479876608
-29  : 97223/470184984576
-30  : 2782169/5642219814912
-31  : 1051229/940369969152
-32  : 4550747/1880739938304
-33  : 786505/156728328192
-34  : 37624655/3761479876608
-35  : 36131483/1880739938304
-36  : 1206294965/33853318889472
-37  : 20045551/313456656384
-38  : 139474379/1253826625536
-39  : 1059736685/5642219814912
-40  : 128825225/417942208512
-41  : 17143871/34828517376
-42  : 8640663457/11284439629824
-43  : 728073331/626913312768
-44  : 2155134523/1253826625536
-45  : 3942228889/1586874322944
-46  : 4949217565/1410554953728
-47  : 3417441745/705277476864
-48  : 27703245169/4231664861184
-49  : 3052981465/352638738432
-50  : 126513483013/11284439629824
-51  : 240741263447/16926659444736
-52  : 199524184055/11284439629824
-53  : 60788736553/2821109907456
-54  : 2615090074301/101559956668416
-55  : 56759069113/1880739938304
-56  : 130521904423/3761479876608
-57  : 110438453753/2821109907456
-58  : 163027882055/3761479876608
-59  : 88576807769/1880739938304
-60  : 566880747559/11284439629824
-61  : 24732579319/470184984576
-62  : 101698030955/1880739938304
-63  : 461867856157/8463329722368
-64  : 101698030955/1880739938304
-65  : 24732579319/470184984576
-66  : 566880747559/11284439629824
-67  : 88576807769/1880739938304
-68  : 163027882055/3761479876608
-69  : 110438453753/2821109907456
-70  : 130521904423/3761479876608
-71  : 56759069113/1880739938304
-72  : 2615090074301/101559956668416
-73  : 60788736553/2821109907456
-74  : 199524184055/11284439629824
-75  : 240741263447/16926659444736
-76  : 126513483013/11284439629824
-77  : 3052981465/352638738432
-78  : 27703245169/4231664861184
-79  : 3417441745/705277476864
-80  : 4949217565/1410554953728
-81  : 3942228889/1586874322944
-82  : 2155134523/1253826625536
-83  : 728073331/626913312768
-84  : 8640663457/11284439629824
-85  : 17143871/34828517376
-86  : 128825225/417942208512
-87  : 1059736685/5642219814912
-88  : 139474379/1253826625536
-89  : 20045551/313456656384
-90  : 1206294965/33853318889472
-91  : 36131483/1880739938304
-92  : 37624655/3761479876608
-93  : 786505/156728328192
-94  : 4550747/1880739938304
-95  : 1051229/940369969152
-96  : 2782169/5642219814912
-97  : 97223/470184984576
-98  : 308465/3761479876608
-99  : 1552015/50779978334208
-100 : 119833/11284439629824
-101 : 9605/2821109907456
-102 : 33643/33853318889472
-103 : 1463/5642219814912
-104 : 665/11284439629824
-105 : 95/8463329722368
-106 : 19/11284439629824
-107 : 1/5642219814912
-108 : 1/101559956668416
-```
--->
 
 You can view source for the results of this, but it yields the following distribution:
 
@@ -170,12 +73,6 @@ var MAIN_LEGEND = MAIN_PROBS.map(x => "expected once in " + Intl.NumberFormat().
 var trace = {
   x: ALL_X,
   y: MAIN_PROBS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    }
-  },
   name: 'probability',
   text: MAIN_LEGEND,
   opacity: 0.8,
@@ -186,15 +83,21 @@ var trace = {
 var data = [trace];
 var layout = {
   title: "Distribution for the sum of 18d6 dice rolls",
-  // TODO: annotation on cutoff
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
 Plotly.newPlot(document.getElementById('probhist'), data, layout);
+
+// extra: precise expectation and variance
+var expectation_orig = MAIN_PROBS.map((x,i) => (i+18)*x).reduce((acc, e) => acc+e, 0);
+var variance_orig = MAIN_PROBS.map((x,i) => Math.pow(i+18 - expectation_orig, 2)*x).reduce((acc, e) => acc+e, 0);
+console.log("Precise Expectation and variance for 18d6", expectation_orig, variance_orig);
 </script>
 
-TODO: expectation  and the expected value of 18 dice rolls would be $18*(7/2) = 63$. and variance
+and with the precise distribution we can also calculation expectation and variance:
 
+- $E(X) = 63$
+- $Var(X) = 52.5 \sim = 7.24^2$
 
 This is how things **should** look on paper. From the chart you can extract:
 
@@ -211,7 +114,7 @@ This is how things **should** look on paper. From the chart you can extract:
 - $\ldots$
 - `95` would be a once in `900k` event (first number with prob < 1 in a million)
 
-**But is this really right for BG?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls, and many even getting [100](https://old.reddit.com/r/baldursgate/comments/phr68a/my_new_highest_roll_10049_elf_mclovin_fightermage/) or [more](https://old.reddit.com/r/baldursgate/comments/sfsqt1/just_got_bgee_bg2ee_and_rolled_a_cavalier/)..was that extreme luck, or are higher numbers more likely than what this distribution says?
+**But is this really right for BG?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls, and many even getting [100](https://old.reddit.com/r/baldursgate/comments/phr68a/my_new_highest_roll_10049_elf_mclovin_fightermage/) or [more](https://old.reddit.com/r/baldursgate/comments/sq54wo/how_high_can_you_roll/)..was that extreme luck, or are higher numbers more likely than what this distribution says?
 
 Well, let's start with the obvious:
 
@@ -223,14 +126,8 @@ Well, let's start with the obvious:
 var trace = {
   x: ALL_X,
   y: MAIN_PROBS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    }
-  },
   name: 'probability',
-  text: window.MAIN_LEGEND,
+  text: MAIN_LEGEND,
   opacity: 0.8,
   type: "scatter",
 };
@@ -257,11 +154,11 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist2'), data, layout);
 </script>
 
-What's **left of this cutoff** actually accounts for `94%` of the distribution. If the game did not do this, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
+What's **left of this cutoff** actually accounts for `94%` of the distribution. **If** the game **did not do this**, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
 
-> Note that `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more "heroic" characters.
+> `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more __heroic__ characters.
 
-To compensate for this, we need to look at a modified, truncated version of our distribution, and **scale up** the probabilities of the latter events:
+Note that BG maintains the original distribution, and simply omits insufficient rolls. There's no calls to a `min` function. Thus, we can compensate by **scaling up** a truncated version of our distribution:
 
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
@@ -277,12 +174,6 @@ var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.Numb
 var trace = {
   x: window.ALL_X.slice(75-18),
   y: window.SCALED_PROBS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    }
-  },
   name: 'probability',
   text: scaled_legend,
   opacity: 0.8,
@@ -295,9 +186,20 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-PROBHIST = document.getElementById('probhist3');
-Plotly.newPlot(PROBHIST, data, layout);
+Plotly.newPlot(document.getElementById('probhist3'), data, layout);
+
+// extra: precise expectation and variance
+var expectation_trunc = SCALED_PROBS.map((x,i) => (i+75)*x).reduce((acc, e) => acc+e, 0);
+var variance_trunc = SCALED_PROBS.map((x,i) => Math.pow(i+75 - expectation_trunc, 2)*x).reduce((acc, e) => acc+e, 0);
+console.log("Precise Truncated Expectation and variance for 18d6", expectation_trunc, variance_trunc);
+
 </script>
+
+and using this modified data, we can get our precise, truncated distribution parameters:
+
+- $E(X_T) = 77.525$
+- $Var(X_T) = 2.61^2$
+
 
 Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
 
@@ -406,56 +308,31 @@ var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 
 var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
 
 // divide by number of rolls
-window.FIGHTER_ROLLS = y1.map(x => x / 555560);
-window.PALADIN_ROLLS = y2.map(x => x / 555558);
-window.RANGER_ROLLS = y3.map(x => x / 500054);
-
-var y1legend = window.FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
-var y2legend = window.PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
-var y3legend = window.RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
+var FIGHTER_ROLLS = y1.map(x => x / 555560);
+var PALADIN_ROLLS = y2.map(x => x / 555558);
+var RANGER_ROLLS = y3.map(x => x / 500054);
 
 var trace1 = {
   x: x,
-  y: window.FIGHTER_ROLLS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    //  width: 1
-    }
-  },
+  y: FIGHTER_ROLLS,
   name: 'fighter',
-  text: y1legend,
+  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.8,
   type: "scatter",
 };
 var trace2 = {
   x: x,
-  y: window.PALADIN_ROLLS ,
-  marker: {
-    color: "rgba(100, 200, 102, 0.7)",
-    line: {
-        color:  "rgba(100, 200, 102, 1)",
-        //width: 1
-    }
-  },
+  y: PALADIN_ROLLS ,
   name: "paladin",
-  text: y2legend,
+  text: PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.75,
   type: "scatter",
 };
 var trace3 = {
   x: x,
-  y: window.RANGER_ROLLS ,
-  marker: {
-    color: "rgba(100, 100, 200, 0.7)",
-    line: {
-        color:  "rgba(100, 100, 200, 1)",
-        //width: 1
-    }
-  },
+  y: RANGER_ROLLS ,
   name: "ranger",
-  text: y3legend,
+  text: RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.75,
   type: "scatter",
 };
@@ -466,8 +343,7 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-HISTOG = document.getElementById('rollhist');
-Plotly.newPlot(HISTOG, data, layout);
+Plotly.newPlot(document.getElementById('rollhist'), data, layout);
 </script>
 
 Let's start with the **fighter**. If we compare the fighter graph with our precise, censored multinomial distribution, they are almost identical:
@@ -475,36 +351,29 @@ Let's start with the **fighter**. If we compare the fighter graph with our preci
 <div id="probhist4" style="width:600px;height:450px;"></div>
 
 <script>
-var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
-window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
+var prob_over_74 = MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
+var SCALED_PROBS = MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
 
-var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
+var scaled_legend = SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
-//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
+//console.log(SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
 var trace_fighter = {
-  x: window.ALL_X.slice(75-18),
+  x: ALL_X.slice(75-18),
   y: FIGHTER_ROLLS,
   marker: {
     color: "rgba(0, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(0, 100, 102, 1)",
-    //  width: 1
-    }
   },
   name: 'fighter',
-  text: y1legend,
+  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.8,
   type: "scatter",
 };
 
 var trace_prob = {
-  x: window.ALL_X.slice(75-18),
-  y: window.SCALED_PROBS,
+  x: ALL_X.slice(75-18),
+  y: SCALED_PROBS,
   marker: {
     color: "rgba(100, 255, 0, 0.7)",
-    line: {
-      color:  "rgba(100, 255, 0, 1)",
-    }
   },
   name: 'probability',
   text: scaled_legend,
@@ -518,8 +387,7 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Chance"},
 };
-PROBHIST = document.getElementById('probhist4');
-Plotly.newPlot(PROBHIST, data, layout);
+Plotly.newPlot(document.getElementById('probhist4'), data, layout);
 </script>
 
 So for **fighters**, we can be pretty happy with the calculations we have done, and can use the precise probabilities as a guide.
@@ -567,54 +435,33 @@ _In other words_: paladins and rangers have significantly higher rolls on averag
 
 > Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
 
-<script>
-// This is calculating expectation and stddev (via variance) from the true probabilities for dice rolling (expectation matches the analytical mean from mathworld/dice as a nice sanity)
-var expectation = window.MAIN_PROBS.map((e, i) => e*(i+18)).reduce((acc, e) => acc + e, 0);
-var stddev = Math.sqrt(window.MAIN_PROBS.map((e, i) => e*Math.pow(i+18-63, 2)).reduce((acc, e) => acc + e, 0)); // 7.2! quite low.. 6.8 would feel more right if approximating as normal..
-console.log("Computed expectation:", expectation, "stddev:", stddev);
-// NB: it's probably hard to approximate this as a normal with only 18 rolls, maybe that's why the normal approximation is a bit off at the tail
-// ...this means that using a truncated normal / rectified normal is not going to be very accurate
-// maybe we drop trying to estimate distributions here? we have an astounding amount of samples anyway...
+Now, how do we go about actually calculating useful values here?
 
-// This is computing truncated expectations using true dice probability:
-var expect_trunc = window.SCALED_PROBS.map((e, i) => e*(75+i)).reduce((acc, e) => acc + e, 0);
-console.log("Truncated expectation:", expect_trunc);
-// TODO: truncated stddev?
-
-// TODO: further
-// NB: u_z (63), and u_t (77.5) => with sigma_z we can get u_R later..
-// however, caveats of bad normal fit at tail would apply...
-
-// TODO: maybe just graph the precise multinomial distribution over N(u,s^2)
-// should indicate, at least at the 90% tail, that it's not a good approx
-
-// we can compute probabilities for Z and show.
-// just do it for the tail, but verify for key points, 75, 80, 85, 90
-
-</script>
-
-<!--
-How the __flooring__ is performed would matter to our distribution. I.e. does the game:
-
-- does it roll each stat, and return `min(roll, statmin)`?
-- keep rolling internally until the minimums are met?
-- generate a random number uniformly in the range rather than roll 3 dice?
-- something else?
-
-We can probably rule out the second option; if it just discarded rolls internally the resulting distribution would look scaled, not translated right. The third option also feels unlikely, the falloff for paladin looks similarly steep.
-
-Short of reverse engineering, it's hard to nail down the distribution exactly without recomputing the entire thing.
--->
+### Idea 1: Normal Approximation
 
 Calculating distributions when more than half of the distribution is truncated would difficult, but we can do some tricks for the `paladin` and `ranger` distribution in particularly:
 
-We will first do the simplifying step we should probably have used at the beginning; and note that multinomial distributions with this `n` [pproximate a normal distribution](https://mathworld.wolfram.com/Dice.html) very closely (as does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+We could do a simplifying step and note that multinomial distributions with a high `n` [pproximate a normal distribution](https://mathworld.wolfram.com/Dice.html) very closely (as does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem)).
 
 Thus, let's assume we are at the tail end of __some__ normal distribution $\mathcal{N}(μ, σ)$, where we can estimate `μ` by inspection (in the ranger and paladin case where it exceeds the truncation point), and then we can calculate `σ` of that distribution by considering the right half we have and using symmetry.
 
-### Censoring idea
+#### With Truncation
+Then, we can maybe use methods on [truncated normal distributions](https://en.wikipedia.org/wiki/Truncated_normal_distribution),
+
+
+if we are dealing with [one-sided truncation of lower tail](https://en.wikipedia.org/wiki/Truncated_normal_distribution#One_sided_truncation_(of_lower_tail))), and we can use some complicated looking formulae to compute $\mathcal{E}(X | X > a)$ and $Var(X | X > a)$ (where $a$ is the cutoff point) which feels like what we can misguidedly estimate.
+
+$Var(X | X > a) = \sigma^2[1 + \alpha \phi(\alpha)/Z - (\phi(\alpha)/Z)^2]$ where $Z = 1 - \Phi(\alpha)$
+
+which requires us to know $\sigma$ of the underlying distribution..
+
+
+
+#### With Censoring
 
 ...maybe we can fashion the extension methods from the [rectified normal distribution](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) because they seem easy... just not sure if they apply. the line between censoring and truncation is a bit hard to tell which is which for us. I THINK it's truncation because in most cases we don't know much outside our range. but censoring also seems to apply; values can occur outside the range of our measring instrument (these values are not shown to us).
+
+https://rdrr.io/cran/crch/man/cnorm.html
 
 [this problem is very similar](https://www.rhayden.us/regression-model/the-censored-normal-distribution.html), but badly written...
 
@@ -636,18 +483,6 @@ $\mu_R = \mu + \sigma \mu_t$ where:
 We can quickly compute $\mu_t$ and $\sigma_t$ using values from our full sample.
 
 For $\mu$ and $\sigma$ from the original distribution, we would not always be able to, but we can be sneaky and extract it in the *paladin* and *ranger* case because we can see the mean and know the underlying distribution is symmetrical.
-
-<!--
-### Truncation idea
-...we can maybe use something dealing with [truncated normal distributions](https://en.wikipedia.org/wiki/Truncated_normal_distribution) but the math looks hard, and can only find an R library..
-
-if we are dealing with [one-sided truncation of lower tail](https://en.wikipedia.org/wiki/Truncated_normal_distribution#One_sided_truncation_(of_lower_tail))), and we can use some complicated looking formulae to compute $\mathcal{E}(X | X > a)$ and $Var(X | X > a)$ (where $a$ is the cutoff point) which feels like what we can misguidedly estimate.
-
-$Var(X | X > a) = \sigma^2[1 + \alpha \phi(\alpha)/Z - (\phi(\alpha)/Z)^2]$ where $Z = 1 - \Phi(\alpha)$
-
-which requires us to know $\sigma$ of the underlying distribution..
--->
-
 
 <script>
 // values fighter (75 -> 98)
@@ -750,13 +585,6 @@ var y3legend = window.RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x
 var trace1 = {
   x: x,
   y: window.FIGHTER_ROLLS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    //  width: 1
-    }
-  },
   name: 'fighter',
   text: y1legend,
   opacity: 0.8,
@@ -765,13 +593,6 @@ var trace1 = {
 var trace2 = {
   x: x,
   y: window.PALADIN_ROLLS ,
-  marker: {
-    color: "rgba(100, 200, 102, 0.7)",
-    line: {
-        color:  "rgba(100, 200, 102, 1)",
-        //width: 1
-    }
-  },
   name: "paladin",
   text: y2legend,
   opacity: 0.75,
@@ -780,13 +601,6 @@ var trace2 = {
 var trace3 = {
   x: x,
   y: window.RANGER_ROLLS ,
-  marker: {
-    color: "rgba(100, 100, 200, 0.7)",
-    line: {
-        color:  "rgba(100, 100, 200, 1)",
-        //width: 1
-    }
-  },
   name: "ranger",
   text: y3legend,
   opacity: 0.75,
@@ -797,30 +611,6 @@ var data = [trace1, trace2, trace3];
 var layout = {
   title: "Roll Results",
   annotations: [
-    // {
-    //   y: 1/13,
-    //   x: 82,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '1σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "green",
-    //   ax: 0,
-    //   ay: -40
-    // },
-    // {
-    //   y: 1/63,
-    //   x: 88,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '2σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "green",
-    //   ax: 0,
-    //   ay: -40
-    // },
     {
       y: 1/675,
       x: 93,
@@ -845,43 +635,6 @@ var layout = {
       ax: 0,
       ay: -40
     },
-    // {
-    //   y: 1/138889,
-    //   x: 100,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '4.5σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "green",
-    //   ax: 0,
-    //   ay: -40
-    // },
-    // and for mage
-    // {
-    //   y: 1/9,
-    //   x: 78,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '1σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "red",
-    //   ax: 0,
-    //   ay: -40
-    // },
-    // {
-    //   y: 1/46,
-    //   x: 83,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '2σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "red",
-    //   ax: 0,
-    //   ay: -40
-    // },
     {
       y: 1/829,
       x: 89,
@@ -906,18 +659,6 @@ var layout = {
       ax: 0,
       ay: -40
     },
-    // {
-    //   y: 1/27780,
-    //   x: 96,
-    //   xref: 'x',
-    //   yref: 'y',
-    //   text: '4.5σ',
-    //   showarrow: true,
-    //   arrowhead: 7,
-    //   arrowcolor: "red",
-    //   ax: 0,
-    //   ay: -40
-    // },
   ],
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
@@ -931,7 +672,7 @@ Interestingly, ranger has the highest mean, but paladin has the fattest tail.
 
 ## Precision on n=3
 
-Turns out we __can__ compute expectations for floored dice rolls if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and truncate it by overflowing $P(X < cutoff)$ into $P(X = cutoff)$.
+We __can__ compute expectations for floored dice rolls if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and censor it at a cutoff point similar to how we censor the total distribution.
 
 [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$.
 
@@ -962,7 +703,12 @@ Turns out we __can__ compute expectations for floored dice rolls if we plot the 
 var THREEROLL_X = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
 // probabilities for p=3 up to p=18 (also sums to 0.9999999999999999)
 var THREEROLL_PROBS = [1/216, 1/72, 1/36, 5/108, 5/72, 7/72, 25/216, 1/8, 1/8, 25/216, 7/72, 5/72, 5/108, 1/36, 1/72, 1/216];
-//console.log("SUM of 3s IS:", THREEROLL_PROBS.reduce((acc, e) => acc+e, 0));
+console.log("probability sum for 3d6 =", THREEROLL_PROBS.reduce((acc, e) => acc+e, 0));
+
+var expectation_unt = THREEROLL_PROBS.map((x,i) => (i+3)*x).reduce((acc, e) => acc+e, 0);
+var variance_unt = THREEROLL_PROBS.map((x,i) => Math.pow(i+3 - expectation_unt, 2)*x).reduce((acc, e) => acc+e, 0);
+console.log("Expectation, variance for untruncated 3d6", expectation_unt, variance_unt);
+
 
 var THREE_LEGEND = THREEROLL_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
 
@@ -991,7 +737,7 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3roll'), data, layout);
 </script>
 
-if we truncate this at various points (`9`, `13`, `14`, and `17`):
+if we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `17`:
 
 
 <div id="probhist3rolltruncs" style="width:600px;height:450px;"></div>
@@ -1005,7 +751,8 @@ var truncated_trace = function (t) {
   // sanity sum (all 1)
   //console.log("Sum of 3d6 truncated at ", t, ":", THREE_TRUNC_T.reduce((acc, e)=>acc+e, 0));
   var expectation = THREE_TRUNC_T.map((x,i) => (i+t)*x).reduce((acc, e) => acc+e, 0);
-  console.log("Expectation for truncated ", t, expectation);
+  var variance = THREE_TRUNC_T.map((x,i) => Math.pow(i+t - expectation, 2)*x).reduce((acc, e) => acc+e, 0);
+  console.log("Expectation, variance for truncated 3d6 at", t, expectation, variance);
   var trace = {
     x: THREEROLL_X.slice(t-3),
     y: THREE_TRUNC_T,
@@ -1032,7 +779,50 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3rolltruncs'), data, layout);
 </script>
 
-## Raw data
+and we can use this data to compute the conditional expectations by floor:
+
+- $E(X) = 3\sum_{k=1}^{6}\frac{k}{6} = 3*3.5 = 10.5$
+- $E(X | X\ge9) = 11.8125$
+- $E(X | X\ge12) = 13.5555$
+- $E(X | X\ge13) = 14.2500$
+- $E(X | X\ge14) = 15.0000$
+- $E(X | X\ge17) = 17.2500$
+
+and use this to compute accurate class means by summing across the 6 main stats:
+
+- $E(Fighter) = E(X | X \ge 9) + 5E(X) = 64.31$
+- $E(Ranger) = 2E(X | X\ge14) + 2E(X | X\ge13) + 2E(X) = 79.5$
+- $E(Paladin) = E(X | X\ge17) + E(X | X\ge13) + E(X | X\ge12) + E(X | X\ge9)+ 2E(X) = 77.86$
+
+similarly, we can compute variances:
+
+- $Var(X) = 3\sum_{k=1}^6\frac{(x_i - 3.5)^2}{6} = 3*2.92 = 8.75$
+- $Var(X | X\ge9) = 4.5773$
+- $Var(X | X\ge12) = 2.2469$
+- $Var(X | X\ge13) = 1.6875$
+- $Var(X | X\ge14) = 1.2000$
+- $Var(X | X\ge17) = 0.1875$
+
+and sum them up across main stats:
+
+- $Var(Fighter) = Var(X | X \ge 9) + 5Var(X) ~= 6.95^2$
+- $Var(Ranger) = 2Var(X | X\ge14) + 2Var(X | X\ge13) + 2Var(X) ~= 4.82^2$
+- $Var(Paladin) = Var(X | X\ge17) + Var(X | X\ge13) + Var(X | X\ge12) + Var(X | X\ge9)+ 2Var(X) ~= 4.17^2$
+
+noting that variables are independent under the observed two stage censoring.
+
+Thus, the classes follow a truncated multinomial-based distribution $\mathcal{M}^T(\mu, \sigma^2)$:
+
+- $Fighter \sim \mathcal{M}^T(64.31, 6.95^2)$
+- $Ranger \sim \mathcal{M}^T(79.5, 4.82^2)$
+- $Paladin \sim \mathcal{M}^T(77.86, 4.17^2)$
+
+It is probably possible to construct the precise distributions by summing up the censored 3d6 distributions for each ability score for each class, but we omit this here for our own sanity.
+
+
+## Appendix
+<details><summary style="cursor:pointer"><b>1. Raw data</b></summary>
+<p>
 
 10 hour paladin roll (`555558` rolls in `601m`)
 
@@ -1126,3 +916,105 @@ Plotly.newPlot(document.getElementById('probhist3rolltruncs'), data, layout);
 99: 10
 100: 1
 ```
+
+</p>
+</details>
+
+<details><summary style="cursor:pointer"><b>2. Tabulated values for 18 dice multinomial probability distribution</b></summary>
+<p>
+
+```yaml
+18  : 1/101559956668416
+19  : 1/5642219814912
+20  : 19/11284439629824
+21  : 95/8463329722368
+22  : 665/11284439629824
+23  : 1463/5642219814912
+24  : 33643/33853318889472
+25  : 9605/2821109907456
+26  : 119833/11284439629824
+27  : 1552015/50779978334208
+28  : 308465/3761479876608
+29  : 97223/470184984576
+30  : 2782169/5642219814912
+31  : 1051229/940369969152
+32  : 4550747/1880739938304
+33  : 786505/156728328192
+34  : 37624655/3761479876608
+35  : 36131483/1880739938304
+36  : 1206294965/33853318889472
+37  : 20045551/313456656384
+38  : 139474379/1253826625536
+39  : 1059736685/5642219814912
+40  : 128825225/417942208512
+41  : 17143871/34828517376
+42  : 8640663457/11284439629824
+43  : 728073331/626913312768
+44  : 2155134523/1253826625536
+45  : 3942228889/1586874322944
+46  : 4949217565/1410554953728
+47  : 3417441745/705277476864
+48  : 27703245169/4231664861184
+49  : 3052981465/352638738432
+50  : 126513483013/11284439629824
+51  : 240741263447/16926659444736
+52  : 199524184055/11284439629824
+53  : 60788736553/2821109907456
+54  : 2615090074301/101559956668416
+55  : 56759069113/1880739938304
+56  : 130521904423/3761479876608
+57  : 110438453753/2821109907456
+58  : 163027882055/3761479876608
+59  : 88576807769/1880739938304
+60  : 566880747559/11284439629824
+61  : 24732579319/470184984576
+62  : 101698030955/1880739938304
+63  : 461867856157/8463329722368
+64  : 101698030955/1880739938304
+65  : 24732579319/470184984576
+66  : 566880747559/11284439629824
+67  : 88576807769/1880739938304
+68  : 163027882055/3761479876608
+69  : 110438453753/2821109907456
+70  : 130521904423/3761479876608
+71  : 56759069113/1880739938304
+72  : 2615090074301/101559956668416
+73  : 60788736553/2821109907456
+74  : 199524184055/11284439629824
+75  : 240741263447/16926659444736
+76  : 126513483013/11284439629824
+77  : 3052981465/352638738432
+78  : 27703245169/4231664861184
+79  : 3417441745/705277476864
+80  : 4949217565/1410554953728
+81  : 3942228889/1586874322944
+82  : 2155134523/1253826625536
+83  : 728073331/626913312768
+84  : 8640663457/11284439629824
+85  : 17143871/34828517376
+86  : 128825225/417942208512
+87  : 1059736685/5642219814912
+88  : 139474379/1253826625536
+89  : 20045551/313456656384
+90  : 1206294965/33853318889472
+91  : 36131483/1880739938304
+92  : 37624655/3761479876608
+93  : 786505/156728328192
+94  : 4550747/1880739938304
+95  : 1051229/940369969152
+96  : 2782169/5642219814912
+97  : 97223/470184984576
+98  : 308465/3761479876608
+99  : 1552015/50779978334208
+100 : 119833/11284439629824
+101 : 9605/2821109907456
+102 : 33643/33853318889472
+103 : 1463/5642219814912
+104 : 665/11284439629824
+105 : 95/8463329722368
+106 : 19/11284439629824
+107 : 1/5642219814912
+108 : 1/101559956668416
+```
+</p>
+</details>
