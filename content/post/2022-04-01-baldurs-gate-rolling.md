@@ -56,7 +56,7 @@ $$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)
 
 where $k_{max} = \lfloor(x-18)/6\rfloor$. If we were to expand this expression, the variability of $k_{max}$ would yield 15 different sum expressions - and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
 
-You can view source for the results of this, but it yields the following distribution:
+You can `view-source` or see the <a href="#appendix">appendix</a> for the numbers, but we can more easily graph the distribution:
 
 <div id="probhist" style="width:600px;height:450px;"></div>
 
@@ -97,7 +97,7 @@ console.log("Precise Expectation and variance for 18d6", expectation_orig, varia
 and with the precise distribution we can also calculation expectation and variance:
 
 - $E(X) = 63$
-- $Var(X) = 52.5 \sim = 7.24^2$
+- $Var(X) = 52.5 \thickapprox 7.24^2$
 
 This is how things **should** look on paper. From the chart you can extract:
 
@@ -156,9 +156,9 @@ Plotly.newPlot(document.getElementById('probhist2'), data, layout);
 
 What's **left of this cutoff** actually accounts for `94%` of the distribution. **If** the game **did not do this**, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
 
-> `AD&D 2e` also had [ways to tilt the distribution towards the player](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) that resulted in more __heroic__ characters.
+> `AD&D 2e` had its [own ways to tilt the distribution](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) in a way that resulted in more powerful characters.
 
-Note that BG maintains the original distribution, and simply omits insufficient rolls. There's no calls to a `min` function. Thus, we can compensate by **scaling up** a truncated version of our distribution:
+How such a truncation or censoring is performed is at the mercy of the BG engine. We will [rectify](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) the distribution by **scaling up** a truncated version of our distribution, and show that this is correct later.
 
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
@@ -195,17 +195,14 @@ console.log("Precise Truncated Expectation and variance for 18d6", expectation_t
 
 </script>
 
-and using this modified data, we can get our precise, truncated distribution parameters:
+Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X \ge 75)$ to get the new probability sum to `1`.
+
+Using this scaled data, we can get precise, truncated distribution parameters:
 
 - $E(X_T) = 77.525$
 - $Var(X_T) = 2.61^2$
 
-
-Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
-
-This censoring is why **we can't** simply consider 6 different ability rolls separately (each with 3 dice), then combine later; we would get an entirely **different end distribution**.
-
-This _censored multinomial distribution_ is actually bang on for **most** cases, and we will **demonstrate** this.
+This _censored multinomial distribution_ is actually very close for **most** cases, and we will **demonstrate** this.
 
 But first, we are going to need to press the `reroll` button a lot...
 
@@ -289,7 +286,7 @@ On my machine, we get just over **15 rolls per second**.
 
 ## Sampling
 
-We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (view source for details), and we get these distributions:
+We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (view-source / <a href="#appendix">appendix</a> for details), and we got these values:
 
 <div id="rollhist" style="width:600px;height:450px;"></div>
 
@@ -341,12 +338,12 @@ var data = [trace1, trace2, trace3];
 var layout = {
   title: "Roll Results",
   xaxis: {title: "Roll"},
-  yaxis: {title: "Probability"},
+  yaxis: {title: "Observed probability"},
 };
 Plotly.newPlot(document.getElementById('rollhist'), data, layout);
 </script>
 
-Let's start with the **fighter**. If we compare the fighter graph with our precise, censored multinomial distribution, they are almost identical:
+Let's start with the **fighter**. If we compare the fighter graph with our precise, censored multinomial distribution, they are **very close**:
 
 <div id="probhist4" style="width:600px;height:450px;"></div>
 
@@ -383,9 +380,9 @@ var trace_prob = {
 
 var data = [trace_prob, trace_fighter];
 var layout = {
-  title: "Distribution vs. Fighter",
+  title: "Distribution vs. Observed Fighter",
   xaxis: {title: "Roll"},
-  yaxis: {title: "Chance"},
+  yaxis: {title: "Probability"},
 };
 Plotly.newPlot(document.getElementById('probhist4'), data, layout);
 </script>
@@ -409,8 +406,9 @@ So for **fighters**, we can be pretty happy with the calculations we have done, 
 - `96` is a once in `110k` event (2h)
 - `95` is a once in `50k` event (55m)
 
-So in conclusion; comparing to the unscaled calculation, we are actually quite a lot more likely to get a good roll early than what just the pure dice math would indicate (likely `95` rather than estimated `90` for 50k rolls).
+So if we only look at human fighters or mages, we can stop here:
 
+> We are actually quite a lot more likely to get a good roll early than what just the pure dice math would indicate thanks to censoring (50k rolls => likely `95` rather than estimated `90` without censoring).
 
 However, what's up with the paladins and rangers? Time for another math detour.
 
@@ -433,10 +431,11 @@ The floors for a some of the classes:
 _In other words_: paladins and rangers have significantly higher rolls on average.
 
 
-> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
+> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. This seems very anti-fun, but hey.
 
 Now, how do we go about actually calculating useful values here?
 
+<!--
 ### Idea 1: Normal Approximation
 
 Calculating distributions when more than half of the distribution is truncated would difficult, but we can do some tricks for the `paladin` and `ranger` distribution in particularly:
@@ -572,130 +571,51 @@ console.log("Rectified Ranger has mu, sigma as: " + y3_mean_rect + ", " + y3_std
 TODO: we can use $Paladin \sim \mathcal{N}^R(\mu, \sigma^2)$ at cutoff 75.
 
 <div id="rollhistall" style="width:600px;height:450px;"></div>
-
 <script>
-
 // keys [75, 108]
 var x = [...Array(109).keys()].slice(75);
-
-var y1legend = window.FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
-var y2legend = window.PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
-var y3legend = window.RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls");
-
 var trace1 = {
   x: x,
-  y: window.FIGHTER_ROLLS,
+  y: FIGHTER_ROLLS,
   name: 'fighter',
-  text: y1legend,
+  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.8,
   type: "scatter",
 };
 var trace2 = {
   x: x,
-  y: window.PALADIN_ROLLS ,
+  y: PALADIN_ROLLS,
   name: "paladin",
-  text: y2legend,
+  text: PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.75,
   type: "scatter",
 };
 var trace3 = {
   x: x,
-  y: window.RANGER_ROLLS ,
+  y: RANGER_ROLLS,
   name: "ranger",
-  text: y3legend,
+  text: RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
   opacity: 0.75,
   type: "scatter",
 };
-
 var data = [trace1, trace2, trace3];
 var layout = {
   title: "Roll Results",
-  annotations: [
-    {
-      y: 1/675,
-      x: 93,
-      xref: 'x',
-      yref: 'y',
-      text: '3σ',
-      showarrow: true,
-      arrowhead: 7,
-      arrowcolor: "green",
-      ax: 0,
-      ay: -40
-    },
-    {
-      y: 1/23148,
-      x: 98,
-      xref: 'x',
-      yref: 'y',
-      text: '4σ',
-      showarrow: true,
-      arrowhead: 7,
-      arrowcolor: "green",
-      ax: 0,
-      ay: -40
-    },
-    {
-      y: 1/829,
-      x: 89,
-      xref: 'x',
-      yref: 'y',
-      text: '3σ',
-      showarrow: true,
-      arrowhead: 7,
-      arrowcolor: "red",
-      ax: 0,
-      ay: -40
-    },
-    {
-      y: 1/21367,
-      x: 94,
-      xref: 'x',
-      yref: 'y',
-      text: '4σ',
-      showarrow: true,
-      arrowhead: 7,
-      arrowcolor: "red",
-      ax: 0,
-      ay: -40
-    },
-  ],
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-HISTOG = document.getElementById('rollhistall');
-Plotly.newPlot(HISTOG, data, layout);
+Plotly.newPlot(document.getElementById('rollhistall'), data, layout);
 </script>
 
 Interestingly, ranger has the highest mean, but paladin has the fattest tail.
 
-
-## Precision on n=3
-
-We __can__ compute expectations for floored dice rolls if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and censor it at a cutoff point similar to how we censor the total distribution.
-
-[paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$.
-
-<!-- tabulated values
-```yaml:
-3: 1/216
-4: 1/72
-5: 1/36
-6: 5/108
-7: 5/72
-8: 7/72
-9: 25/216
-10: 1/8
-11: 1/8
-12: 25/216
-13: 7/72
-14: 5/72
-15: 5/108
-16: 1/36
-17: 1/72
-18: 1/216
-```
 -->
+
+## New distribution from ability sums
+
+Suppose we take a step back. We __can__ compute expectations for **individual ability scores** (even if floored) if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and censor it at a cutoff point similar to how we censor the total distribution.
+
+Same idea as when we did 18 dice; use [wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$:
 
 <div id="probhist3roll" style="width:600px;height:450px;"></div>
 
@@ -737,7 +657,7 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3roll'), data, layout);
 </script>
 
-if we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `17`:
+then we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `17`:
 
 
 <div id="probhist3rolltruncs" style="width:600px;height:450px;"></div>
@@ -746,7 +666,7 @@ if we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `17`
 var truncated_trace = function (t) {
   // calculate probability up to cutoff point:
   var TRUNC_T_SUM = THREEROLL_PROBS.slice(t-3).reduce((acc, e) => acc+e, 0);
-  // truncate and scale the right side of the distribution:
+  // truncate and scale (rectify) the right side of the distribution:
   var THREE_TRUNC_T = THREEROLL_PROBS.slice(t-3).map(x => x / TRUNC_T_SUM);
   // sanity sum (all 1)
   //console.log("Sum of 3d6 truncated at ", t, ":", THREE_TRUNC_T.reduce((acc, e)=>acc+e, 0));
@@ -772,14 +692,14 @@ let trace_17 = truncated_trace(17);
 
 var data = [trace_9, trace_12, trace_13, trace_14, trace_17];
 var layout = {
-  title: "Truncated Distribution for the sum of 3d6 dice rolls",
+  title: "Rectified Distribution for the sum of 3d6 dice rolls",
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
 Plotly.newPlot(document.getElementById('probhist3rolltruncs'), data, layout);
 </script>
 
-and we can use this data to compute the conditional expectations by floor:
+We can then compute precise conditional expectations by floor:
 
 - $E(X) = 3\sum_{k=1}^{6}\frac{k}{6} = 3*3.5 = 10.5$
 - $E(X | X\ge9) = 11.8125$
@@ -788,13 +708,13 @@ and we can use this data to compute the conditional expectations by floor:
 - $E(X | X\ge14) = 15.0000$
 - $E(X | X\ge17) = 17.2500$
 
-and use this to compute accurate class means by summing across the 6 main stats:
+and use this to compute class means by summing across the 6 main stats:
 
 - $E(Fighter) = E(X | X \ge 9) + 5E(X) = 64.31$
 - $E(Ranger) = 2E(X | X\ge14) + 2E(X | X\ge13) + 2E(X) = 79.5$
 - $E(Paladin) = E(X | X\ge17) + E(X | X\ge13) + E(X | X\ge12) + E(X | X\ge9)+ 2E(X) = 77.86$
 
-similarly, we can compute variances:
+Similarly, we can compute precise variances:
 
 - $Var(X) = 3\sum_{k=1}^6\frac{(x_i - 3.5)^2}{6} = 3*2.92 = 8.75$
 - $Var(X | X\ge9) = 4.5773$
@@ -803,22 +723,71 @@ similarly, we can compute variances:
 - $Var(X | X\ge14) = 1.2000$
 - $Var(X | X\ge17) = 0.1875$
 
-and sum them up across main stats:
+and sum them up across the 6 main stats:
 
-- $Var(Fighter) = Var(X | X \ge 9) + 5Var(X) ~= 6.95^2$
-- $Var(Ranger) = 2Var(X | X\ge14) + 2Var(X | X\ge13) + 2Var(X) ~= 4.82^2$
-- $Var(Paladin) = Var(X | X\ge17) + Var(X | X\ge13) + Var(X | X\ge12) + Var(X | X\ge9)+ 2Var(X) ~= 4.17^2$
+- $Var(Fighter) = Var(X | X \ge 9) + 5Var(X) \thickapprox 6.95^2$
+- $Var(Ranger) = 2Var(X | X\ge14) + 2Var(X | X\ge13) + 2Var(X) \thickapprox 4.82^2$
+- $Var(Paladin) = Var(X | X\ge17) + Var(X | X\ge13) + Var(X | X\ge12) + Var(X | X\ge9)+ 2Var(X) \thickapprox 5.12^2$
 
 noting that variables are independent under the observed two stage censoring.
 
-Thus, the classes follow a truncated multinomial-based distribution $\mathcal{M}^T(\mu, \sigma^2)$:
+> Why can we rely on two stage censoring and their independence? If any of these internal mechanisms used some kind of `min` function, it would be immediately obvious from the distribution. The paladin distribution of charisma is clearly a `~1/4` for an `18`, and `~3/4` for a `17`; it would have been **very** rare to see an 18 otherwise.
+
+Thus, the classes follow truncated multinomial-based distributions $\mathcal{M}^T(\mu, \sigma^2)$ with the following initial moments:
 
 - $Fighter \sim \mathcal{M}^T(64.31, 6.95^2)$
 - $Ranger \sim \mathcal{M}^T(79.5, 4.82^2)$
-- $Paladin \sim \mathcal{M}^T(77.86, 4.17^2)$
+- $Paladin \sim \mathcal{M}^T(77.86, 5.12^2)$
 
-It is probably possible to construct the precise distributions by summing up the censored 3d6 distributions for each ability score for each class, but we omit this here for our own sanity.
+### Rough Estimation of Values
 
+We can do a hand-wavy estimating from [normal distributed sigma-level events](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule), an [error function calculator](https://keisan.casio.com/exec/system/1180573449), and our 15 roll per second time for the script.
+
+This is not going to give very accurate numbers, because the data is not normally distributed at this low level of dice rolling, but it should give a very rough guideline.
+
+#### Ranger estimations
+
+We compute $\sigma$ breakpoints using $79.5 + n*4.82$:
+
+- 108 is a $5.9\sigma$ event, once in 275M (30 weeks)
+- 106 is a $5.5\sigma$ event, once in 26M (3 weeks)
+- 104 is a $5.1\sigma$ event, once in 3M (2 days)
+- 101 is a $4.5\sigma$ event, once in 150k (3h)
+- 99 is a $4\sigma$ event, once in 16k (17m)
+- 96 is a $3.4\sigma$ event, once in 1500 (2m)
+- 94 is a $3\sigma$ event, once in 400 (30s)
+
+#### Paladin estimations
+
+We compute $\sigma$ breakpoints using $78.86 + n*5.12$:
+
+- 108 is a $5.7\sigma$ event, once in 83M (9 weeks)
+- 106 is a $5.3\sigma$ event, once in 9M (7 days)
+- 104 is a $4.9\sigma$ event, once in 1M (18h)
+- 102 is a $4.5\sigma$ event, once in 150k (3h)
+- 99 is a $3.9\sigma$ event, once in 10k (11m)
+- 97 is a $3.5\sigma$ event, once in 2k (2m)
+- 94 is a $3\sigma$ event, once in 400 (30s)
+
+As we can see, the high variance of paladin compensates for its lower mean compared to the ranger, and is therefore your best bet for record breaking rolls.
+
+### Getting precise probabilities
+
+Because estimating tends to fall over a bit at high sigma levels (where we are interested in the values), we ideally want to have a precise [PDF](https://en.wikipedia.org/wiki/Probability_density_function) for a random variable:
+
+$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor0\rfloor} + X_6^{\lfloor0\rfloor}$
+
+where $X_i^{\lfloor N \rfloor}$ is the precise, `3d6` based multinomial distribution rectified at $N$.
+
+We have already computed the first [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)) (expectations and variance) of these sum random variables, but precise probabilities is harder.
+
+It is actually possible to [inductively compute](https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/07%3A_Sums_of_Random_Variables/7.01%3A_Sums_of_Discrete_Random_Variables) the pdfs of $Z$ via convolution. This [answer explains it in the simplest terms](https://stats.stackexchange.com/questions/3614/how-to-easily-determine-the-results-distribution-for-multiple-dice/3684#3684).
+
+However, this also requires **either** mathematica functions (that we do not have here in our inlined source), **or** we need to go through a laborious and manual through [characteristic functions](https://en.wikipedia.org/wiki/Characteristic_function_(probability_theory)) (see [sum of multinomials answer](https://math.stackexchange.com/questions/3076634/sum-of-two-multinomial-random-variables)) and [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution). If someone wants to contribute or help out here, I'd be interested to see, but for my own sanity; we will leave this here for now.
+
+Hope you have enjoy this infrequent brain dump.
+
+<small>/me closes 20 tabs</small>
 
 ## Appendix
 <details><summary style="cursor:pointer"><b>1. Raw data</b></summary>
@@ -923,6 +892,8 @@ It is probably possible to construct the precise distributions by summing up the
 <details><summary style="cursor:pointer"><b>2. Tabulated values for 18 dice multinomial probability distribution</b></summary>
 <p>
 
+[Wolfram Alpha Query](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D)
+
 ```yaml
 18  : 1/101559956668416
 19  : 1/5642219814912
@@ -1016,5 +987,32 @@ It is probably possible to construct the precise distributions by summing up the
 107 : 1/5642219814912
 108 : 1/101559956668416
 ```
+</p>
+</details>
+
+<details><summary style="cursor:pointer"><b>3. Tabulated values for 3 dice multinomial probability distribution</b></summary>
+<p>
+
+[Wolfram Alpha Query](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D)
+
+```yaml:
+3: 1/216
+4: 1/72
+5: 1/36
+6: 5/108
+7: 5/72
+8: 7/72
+9: 25/216
+10: 1/8
+11: 1/8
+12: 25/216
+13: 7/72
+14: 5/72
+15: 5/108
+16: 1/36
+17: 1/72
+18: 1/216
+```
+
 </p>
 </details>
