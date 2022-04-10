@@ -25,7 +25,7 @@ Basics; D&D (2e) has:
 
 This **should** give you a character with an expected "10.5" points per ability (or a sum of `63` in total), and the process looks like this:
 
-TODO: gif/video of how it looks
+TODO: gif of boring rolling
 
 It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment (the irony in writing this blog post is not lost on me). They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
@@ -47,16 +47,14 @@ So assuming you have a reason to be here despite this; let's dive in to some mat
 
 ## Multinomials and probabilities
 
-> How many rolls would you need to get 90/95/100?
+> How likely are you to get a 90/95/100?
 
-Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) ($k=6$, and $p_i = 1/6$ for all $i$), and the expected value of 18 dice rolls would be $18*(7/2) = 63$.
-
-We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
+Rolling a 6 sided dice 18 times follows a degenerate case of the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) where all events are equally likely, and each sampling follows the same distribution. We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
 
 $$P(X = x) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{x-6k-1}{17}$$
 $$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
 
-which.. when cased for $k_{max}$ would yield 15 different sum expressions, and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
+where $k_{max} = \lfloor(x-18)/6\rfloor$. If we were to expand this expression, the variability of $k_{max}$ would yield 15 different sum expressions - and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
 
 <!--tabulated values:
 
@@ -155,23 +153,23 @@ which.. when cased for $k_{max}$ would yield 15 different sum expressions, and t
 ```
 -->
 
-This yields the following distribution:
+You can view source for the results of this, but it yields the following distribution:
 
 <div id="probhist" style="width:600px;height:450px;"></div>
 
 <script>
 
 // keys [18, 108]
-window.ALL_X = [...Array(109).keys()].slice(18);
+var ALL_X = [...Array(109).keys()].slice(18);
 
 // probabilities for p=18 up to p=108 (sums to 0.9999999999999999 \o/)
-window.MAIN_PROBS = [1/101559956668416, 1/5642219814912, 19/11284439629824, 95/8463329722368, 665/11284439629824, 1463/5642219814912, 33643/33853318889472, 9605/2821109907456, 119833/11284439629824, 1552015/50779978334208, 308465/3761479876608, 97223/470184984576, 2782169/5642219814912, 1051229/940369969152, 4550747/1880739938304, 786505/156728328192, 37624655/3761479876608, 36131483/1880739938304, 1206294965/33853318889472, 20045551/313456656384, 139474379/1253826625536, 1059736685/5642219814912, 128825225/417942208512, 17143871/34828517376, 8640663457/11284439629824, 728073331/626913312768, 2155134523/1253826625536, 3942228889/1586874322944, 4949217565/1410554953728, 3417441745/705277476864, 27703245169/4231664861184, 3052981465/352638738432, 126513483013/11284439629824, 240741263447/16926659444736, 199524184055/11284439629824, 60788736553/2821109907456, 2615090074301/101559956668416, 56759069113/1880739938304, 130521904423/3761479876608, 110438453753/2821109907456, 163027882055/3761479876608, 88576807769/1880739938304, 566880747559/11284439629824, 24732579319/470184984576, 101698030955/1880739938304, 461867856157/8463329722368, 101698030955/1880739938304, 24732579319/470184984576, 566880747559/11284439629824, 88576807769/1880739938304, 163027882055/3761479876608, 110438453753/2821109907456, 130521904423/3761479876608, 56759069113/1880739938304, 2615090074301/101559956668416, 60788736553/2821109907456, 199524184055/11284439629824, 240741263447/16926659444736, 126513483013/11284439629824, 3052981465/352638738432, 27703245169/4231664861184, 3417441745/705277476864, 4949217565/1410554953728, 3942228889/1586874322944, 2155134523/1253826625536, 728073331/626913312768, 8640663457/11284439629824, 17143871/34828517376, 128825225/417942208512, 1059736685/5642219814912, 139474379/1253826625536, 20045551/313456656384, 1206294965/33853318889472, 36131483/1880739938304, 37624655/3761479876608, 786505/156728328192, 4550747/1880739938304, 1051229/940369969152, 2782169/5642219814912, 97223/470184984576, 308465/3761479876608, 1552015/50779978334208, 119833/11284439629824, 9605/2821109907456, 33643/33853318889472, 1463/5642219814912, 665/11284439629824, 95/8463329722368, 19/11284439629824, 1/5642219814912, 1/101559956668416];
+var MAIN_PROBS = [1/101559956668416, 1/5642219814912, 19/11284439629824, 95/8463329722368, 665/11284439629824, 1463/5642219814912, 33643/33853318889472, 9605/2821109907456, 119833/11284439629824, 1552015/50779978334208, 308465/3761479876608, 97223/470184984576, 2782169/5642219814912, 1051229/940369969152, 4550747/1880739938304, 786505/156728328192, 37624655/3761479876608, 36131483/1880739938304, 1206294965/33853318889472, 20045551/313456656384, 139474379/1253826625536, 1059736685/5642219814912, 128825225/417942208512, 17143871/34828517376, 8640663457/11284439629824, 728073331/626913312768, 2155134523/1253826625536, 3942228889/1586874322944, 4949217565/1410554953728, 3417441745/705277476864, 27703245169/4231664861184, 3052981465/352638738432, 126513483013/11284439629824, 240741263447/16926659444736, 199524184055/11284439629824, 60788736553/2821109907456, 2615090074301/101559956668416, 56759069113/1880739938304, 130521904423/3761479876608, 110438453753/2821109907456, 163027882055/3761479876608, 88576807769/1880739938304, 566880747559/11284439629824, 24732579319/470184984576, 101698030955/1880739938304, 461867856157/8463329722368, 101698030955/1880739938304, 24732579319/470184984576, 566880747559/11284439629824, 88576807769/1880739938304, 163027882055/3761479876608, 110438453753/2821109907456, 130521904423/3761479876608, 56759069113/1880739938304, 2615090074301/101559956668416, 60788736553/2821109907456, 199524184055/11284439629824, 240741263447/16926659444736, 126513483013/11284439629824, 3052981465/352638738432, 27703245169/4231664861184, 3417441745/705277476864, 4949217565/1410554953728, 3942228889/1586874322944, 2155134523/1253826625536, 728073331/626913312768, 8640663457/11284439629824, 17143871/34828517376, 128825225/417942208512, 1059736685/5642219814912, 139474379/1253826625536, 20045551/313456656384, 1206294965/33853318889472, 36131483/1880739938304, 37624655/3761479876608, 786505/156728328192, 4550747/1880739938304, 1051229/940369969152, 2782169/5642219814912, 97223/470184984576, 308465/3761479876608, 1552015/50779978334208, 119833/11284439629824, 9605/2821109907456, 33643/33853318889472, 1463/5642219814912, 665/11284439629824, 95/8463329722368, 19/11284439629824, 1/5642219814912, 1/101559956668416];
 
-window.MAIN_LEGEND = window.MAIN_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
+var MAIN_LEGEND = MAIN_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
 
 var trace = {
-  x: window.ALL_X,
-  y: window.MAIN_PROBS,
+  x: ALL_X,
+  y: MAIN_PROBS,
   marker: {
     color: "rgba(255, 100, 102, 0.7)",
     line: {
@@ -179,7 +177,7 @@ var trace = {
     }
   },
   name: 'probability',
-  text: window.MAIN_LEGEND,
+  text: MAIN_LEGEND,
   opacity: 0.8,
   type: "scatter",
 };
@@ -192,12 +190,13 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-PROBHIST = document.getElementById('probhist');
-Plotly.newPlot(PROBHIST, data, layout);
+Plotly.newPlot(document.getElementById('probhist'), data, layout);
 </script>
 
+TODO: expectation  and the expected value of 18 dice rolls would be $18*(7/2) = 63$. and variance
 
-This is how things should look on paper. From the chart you can extract:
+
+This is how things **should** look on paper. From the chart you can extract:
 
 - `108` would be a once in `101 trillion` ($6^{18}$) event
 - `107` would be a once in `5 trillion` event (`6^18/18`)
@@ -212,16 +211,18 @@ This is how things should look on paper. From the chart you can extract:
 - $\ldots$
 - `95` would be a once in `900k` event (first number with prob < 1 in a million)
 
-**But is this really right?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls.. was that just luck, or are higher numbers more likely than what this distribution says?
+**But is this really right for BG?** A [lot](https://old.reddit.com/r/baldursgate/comments/svnyy5/this_is_why_i_let_my_gf_roll_my_stats_lol/hxhde5k/) of [people](https://old.reddit.com/r/baldursgate/comments/tak2m7/say_hello_to_my_archer_roll/) have [all](https://old.reddit.com/r/baldursgate/comments/rjnw22/less_than_a_minute_of_rolling_this_is_my_alltime/) rolled nineties in just a few hundred rolls, and many even getting [100](https://old.reddit.com/r/baldursgate/comments/phr68a/my_new_highest_roll_10049_elf_mclovin_fightermage/) or [more](https://old.reddit.com/r/baldursgate/comments/sfsqt1/just_got_bgee_bg2ee_and_rolled_a_cavalier/)..was that extreme luck, or are higher numbers more likely than what this distribution says?
 
-Well, let's start with the obvious. We don't see the rolls below $75$. The distribution is [censored](https://en.wikipedia.org/wiki/Censoring_(statistics)).
+Well, let's start with the obvious:
+
+> **The distribution is [censored](https://en.wikipedia.org/wiki/Censoring_(statistics)). We don't see the rolls below $75$.**
 
 <div id="probhist2" style="width:600px;height:450px;"></div>
 
 <script>
 var trace = {
-  x: window.ALL_X,
-  y: window.MAIN_PROBS,
+  x: ALL_X,
+  y: MAIN_PROBS,
   marker: {
     color: "rgba(255, 100, 102, 0.7)",
     line: {
@@ -253,8 +254,7 @@ var layout = {
   xaxis: {title: "Roll"},
   yaxis: {title: "Probability"},
 };
-PROBHIST = document.getElementById('probhist2');
-Plotly.newPlot(PROBHIST, data, layout);
+Plotly.newPlot(document.getElementById('probhist2'), data, layout);
 </script>
 
 What's **left of this cutoff** actually accounts for `94%` of the distribution. If the game did not do this, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
@@ -301,13 +301,15 @@ Plotly.newPlot(PROBHIST, data, layout);
 
 Here we have divided by the sum of the probabilities of the right hand side of the graph $P(X >= 75)$ as this creates a new distribution, that sums to `1`, but is otherwise a mere up-scaling of the right-hand side.
 
-This is actually bang on for **most** cases, and we will **demonstrate** this.
+This censoring is why **we can't** simply consider 6 different ability rolls separately (each with 3 dice), then combine later; we would get an entirely **different end distribution**.
+
+This _censored multinomial distribution_ is actually bang on for **most** cases, and we will **demonstrate** this.
 
 But first, we are going to need to press the `reroll` button a lot...
 
 ## Automating Rolling
 
-We will go through the [script we use](https://github.com/Thhethssmuz/bg2ee-stat-roll).
+The simulation script / hacks we made is [found here](https://github.com/Thhethssmuz/bg2ee-stat-roll).
 
 ### Tools
 
@@ -320,30 +322,34 @@ We are playing on **Linux** with `X` and some obscure associated tooling:
 Basic strategy;
 
 - find out where buttons are with `xwininfo`
-- press the `re-roll` button with `xdotool`
+- press the `reroll` button with `xdotool`
 - take screenshot of the `total` number with `scrot`
 - compare screenshot to previous rolls
 - press `store` when a new maximum is found
 
-The script also does some extra stuff to determine the strength roll, but that's not relevant here.
+The script also does some extra stuff to determine the strength roll, but that's not relevant here (it just makes perfect type rolls 100 times less likely if it's a stat you optimize for).
 
 ### Initialization
 
-My brother decided to write a completely overkill thing here; taking progressive screenshots and compensating for the window manager bar height, and relying on BG2EE's consistent layout to hardcode offsets. Not going through this, it is insanity. But, assuming you are on Linux with X, it should probably work for you...
+To standardise what we are taking screenshots of, we need a consistent frame of reference.
 
-The standardised approach also helps with dealing with rolls, and it let us populate a roll-table.
+`xwininfo` will give us the `x,y` coordinates of the top left corner of the game window, and then hard-code the offsets from that because the game has a consistent layout. There is [some complexity](https://github.com/Thhethssmuz/bg2ee-stat-roll/blob/5a023de83c468224aa999b5b3c60f224aae76b97/roll.sh#L20-L84) in doing this, but it has so far worked well.
+
+> **Caveat**: You need to have **scaled the window** to size >= 1024x768 to avoid UI downscaling.
+
+The standardised approach also helps with dealing with rolls, and it let us populate a roll-table quickly.
 
 ### Roll Tables
 
-Taking screenshots is pretty easy. Use `scrot` at an `x,y` coordinate followed by `,width,height` as remaining arguments defining the square:
+Taking screenshots is pretty easy. Use `scrot` at an `x,y` coordinate followed by lenghts; `,width,height` as remaining arguments defining the square to screenshot:
 
 ```sh
-scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17"
+scrot -a "${STR_TOP_LEFT_X},${STR_TOP_LEFT_Y},49,17" -
 ```
 
 the output of this can be piped to a `.png` and passed to `compare` (part of `imagemagick` package), to compare values based on thresholds. However, this idea is actually overkill..
 
-Because the background is static and nothing moves, the screenshots are actually completely deterministic per value and you can instead just compare them by their hashes (i.e. pipe to `md5`), and save the result in a table:
+The menu background is **static** and the resulting screenshots are actually **completely deterministic per value**, so we can instead just compare them by their hashes in one big `switch` (i.e. after piping to `md5`) and use that as our [roll table](https://github.com/Thhethssmuz/bg2ee-stat-roll/blob/5a023de83c468224aa999b5b3c60f224aae76b97/roll.sh#L130-L159), Excerpt:
 
 ```sh
     d74939b47327e4f2c1b781d64e2ab28d*) CURRENT_ROLL=90 ;;
@@ -359,8 +365,6 @@ Because the background is static and nothing moves, the screenshots are actually
     3ef9bf6cd4d9946d89765870e5b21566*) CURRENT_ROLL=100 ;;
 ```
 
-That's an excerpt of some of the later roll hashes from the [actual table](https://github.com/Thhethssmuz/bg2ee-stat-roll/blob/5a023de83c468224aa999b5b3c60f224aae76b97/roll.sh#L130-L159).
-
 ## Clicking
 
 Clicking is pretty easy;
@@ -371,19 +375,17 @@ xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
 
 Notice the `--delay=0` to override the builtin delay between clicks.
 
-It turns out BG performs internal buffering of clicks, so this allows you to blast through numbers faster than the screen can display them.
+The only complication here is that BG performs **internal buffering** of clicks, so this allows us to blast through numbers faster than the screen can display them.
 
 This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll before another click is registered.
 
 ## Showcase
 
-TODO: video
+{{< youtube 849xInj3GmI >}}
 
-On my PC we get just over **15 rolls per second**.
+On my machine, we get just over **15 rolls per second**.
 
-
-
-## Distribution
+## Sampling
 
 We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (view source for details), and we get these distributions:
 
@@ -468,7 +470,7 @@ HISTOG = document.getElementById('rollhist');
 Plotly.newPlot(HISTOG, data, layout);
 </script>
 
-Let's start with the **fighter**. If we compare the fighter graph with the computed, scaled distribution, they are almost identical:
+Let's start with the **fighter**. If we compare the fighter graph with our precise, censored multinomial distribution, they are almost identical:
 
 <div id="probhist4" style="width:600px;height:450px;"></div>
 
@@ -548,7 +550,9 @@ However, what's up with the paladins and rangers? Time for another math detour.
 
 The reason for the discrepancy is simple: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
 
-These stat floors are quite significant in some cases, and actually push highly floored classes' means above the `75` cutoff even though it's 12 points above the mean of the original underlying distribution.
+These stat floors are insignificant in some cases, but highly significant in others. Some highly floored classes actually push the uncensored mean above the `75` cutoff even though it's a whole 12 points above the mean of the original underlying distribution.
+
+The floors for a some of the classes:
 
 - **fighter** mins: `STR=9`, rest `3`
 - **mage** mins: `INT=9`, rest `3`
@@ -559,6 +563,7 @@ These stat floors are quite significant in some cases, and actually push highly 
 <!-- TODO: can we calculate the expectation here? not unless we have a distribution to map it onto... -->
 
 _In other words_: paladins and rangers have significantly higher rolls on average.
+
 
 > Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. That seems crazy exclusionary to me, but hey.
 
@@ -579,6 +584,12 @@ console.log("Truncated expectation:", expect_trunc);
 // TODO: further
 // NB: u_z (63), and u_t (77.5) => with sigma_z we can get u_R later..
 // however, caveats of bad normal fit at tail would apply...
+
+// TODO: maybe just graph the precise multinomial distribution over N(u,s^2)
+// should indicate, at least at the 90% tail, that it's not a good approx
+
+// we can compute probabilities for Z and show.
+// just do it for the tail, but verify for key points, 75, 80, 85, 90
 
 </script>
 
@@ -916,6 +927,110 @@ Plotly.newPlot(HISTOG, data, layout);
 </script>
 
 Interestingly, ranger has the highest mean, but paladin has the fattest tail.
+
+
+## Precision on n=3
+
+Turns out we __can__ compute expectations for floored dice rolls if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and truncate it by overflowing $P(X < cutoff)$ into $P(X = cutoff)$.
+
+[paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$.
+
+<!-- tabulated values
+```yaml:
+3: 1/216
+4: 1/72
+5: 1/36
+6: 5/108
+7: 5/72
+8: 7/72
+9: 25/216
+10: 1/8
+11: 1/8
+12: 25/216
+13: 7/72
+14: 5/72
+15: 5/108
+16: 1/36
+17: 1/72
+18: 1/216
+```
+-->
+
+<div id="probhist3roll" style="width:600px;height:450px;"></div>
+
+<script>
+var THREEROLL_X = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+// probabilities for p=3 up to p=18 (also sums to 0.9999999999999999)
+var THREEROLL_PROBS = [1/216, 1/72, 1/36, 5/108, 5/72, 7/72, 25/216, 1/8, 1/8, 25/216, 7/72, 5/72, 5/108, 1/36, 1/72, 1/216];
+//console.log("SUM of 3s IS:", THREEROLL_PROBS.reduce((acc, e) => acc+e, 0));
+
+var THREE_LEGEND = THREEROLL_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
+
+var trace = {
+  x: THREEROLL_X,
+  y: THREEROLL_PROBS,
+  marker: {
+    color: "rgba(255, 100, 102, 0.7)",
+    line: {
+      color:  "rgba(255, 100, 102, 1)",
+    }
+  },
+  name: 'probability',
+  text: THREE_LEGEND,
+  opacity: 0.8,
+  type: "scatter",
+};
+
+
+var data = [trace];
+var layout = {
+  title: "Distribution for the sum of 3d6 dice rolls",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhist3roll'), data, layout);
+</script>
+
+if we truncate this at various points (`9`, `13`, `14`, and `17`):
+
+
+<div id="probhist3rolltruncs" style="width:600px;height:450px;"></div>
+
+<script>
+var truncated_trace = function (t) {
+  // calculate probability up to cutoff point:
+  var TRUNC_T_SUM = THREEROLL_PROBS.slice(t-3).reduce((acc, e) => acc+e, 0);
+  // truncate and scale the right side of the distribution:
+  var THREE_TRUNC_T = THREEROLL_PROBS.slice(t-3).map(x => x / TRUNC_T_SUM);
+  // sanity sum (all 1)
+  //console.log("Sum of 3d6 truncated at ", t, ":", THREE_TRUNC_T.reduce((acc, e)=>acc+e, 0));
+  var expectation = THREE_TRUNC_T.map((x,i) => (i+t)*x).reduce((acc, e) => acc+e, 0);
+  console.log("Expectation for truncated ", t, expectation);
+  var trace = {
+    x: THREEROLL_X.slice(t-3),
+    y: THREE_TRUNC_T,
+    name: 'floor ' + t,
+    text: THREE_TRUNC_T.map(x => "expected once in " + Intl.NumberFormat('en-IN', {maximumSignificantDigits: 2}).format(1/x) + " rolls"),
+    opacity: 0.8,
+    type: "scatter",
+  };
+  return trace;
+};
+
+let trace_9 = truncated_trace(9);
+let trace_12 = truncated_trace(12);
+let trace_13 = truncated_trace(13);
+let trace_14 = truncated_trace(14);
+let trace_17 = truncated_trace(17);
+
+var data = [trace_9, trace_12, trace_13, trace_14, trace_17];
+var layout = {
+  title: "Truncated Distribution for the sum of 3d6 dice rolls",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhist3rolltruncs'), data, layout);
+</script>
 
 ## Raw data
 
