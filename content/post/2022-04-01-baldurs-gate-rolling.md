@@ -35,7 +35,7 @@ Still, **suppose** you want to **automate rolling** (or want to think about comb
 
 ## Disclaimer
 
-Using the script used herein to achieve higher rolls than you have patience for, is on some level; **cheating**. That said; no-one cares, and it's a fairly pointless effort:
+Using the script used herein to achieve higher rolls than you have patience for, is on some level; cheating. That said, it's a fairly pointless effort, not worth caring about:
 
 - this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn) single player game, and you can reduce the difficulty
 - having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
@@ -49,19 +49,18 @@ So assuming you have a reason to be here despite this; let's dive in to some mat
 
 > How likely are you to get a 90/95/100?
 
-Rolling a 6 sided dice 18 times follows a degenerate case of the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) where all events are equally likely, and each sampling follows the same distribution. We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
+Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) where all individual trial outcomes are equally likely, and each individual trial element follows the same distribution. We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
 
 $$P(X = x) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{x-6k-1}{17}$$
 $$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
 
 where $k_{max} = \lfloor(x-18)/6\rfloor$. If we were to expand this expression, the variability of $k_{max}$ would yield 15 different sum expressions - and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
 
-You can `view-source` or see the <a href="#appendix">appendix</a> for the numbers, but we can more easily graph the distribution:
+You can see the <a href="#appendix">appendix</a> for the numbers. Here we will just plot the values:
 
 <div id="probhist" style="width:600px;height:450px;"></div>
 
 <script>
-
 // keys [18, 108]
 var ALL_X = [...Array(109).keys()].slice(18);
 
@@ -123,16 +122,14 @@ Well, let's start with the obvious:
 <div id="probhist2" style="width:600px;height:450px;"></div>
 
 <script>
-var trace = {
+var data = [{
   x: ALL_X,
   y: MAIN_PROBS,
   name: 'probability',
   text: MAIN_LEGEND,
   opacity: 0.8,
   type: "scatter",
-};
-
-var data = [trace];
+}];
 var layout = {
   annotations: [
    {
@@ -154,7 +151,7 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist2'), data, layout);
 </script>
 
-What's **left of this cutoff** actually accounts for `94%` of the distribution. **If** the game **did not do this**, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
+What's **left of this cutoff** actually accounts for around `94%` of the distribution. **If** the game **did not do this**, you'd be as likely getting `36` as a `90`. We are effectively throwing away "19 bad rolls" on every roll.
 
 > `AD&D 2e` had its [own ways to tilt the distribution](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) in a way that resulted in more powerful characters.
 
@@ -163,17 +160,17 @@ How such a truncation or censoring is performed is at the mercy of the BG engine
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
 <script>
-var prob_over_74 = window.MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
-window.SCALED_PROBS = window.MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
+var prob_over_74 = MAIN_PROBS.slice(75-18).reduce((acc, e) => acc + e, 0);
+var SCALED_PROBS = MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale up by whats left
 
-var scaled_legend = window.SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
+var scaled_legend = SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
 //console.log("probability of rolling gte 75", prob_over_74);
-//console.log(window.SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
+//console.log(SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
 // TODO: show zeroes on left side to seed idea of truncation better?
 var trace = {
-  x: window.ALL_X.slice(75-18),
-  y: window.SCALED_PROBS,
+  x: ALL_X.slice(75-18),
+  y: SCALED_PROBS,
   name: 'probability',
   text: scaled_legend,
   opacity: 0.8,
@@ -202,7 +199,7 @@ Using this scaled data, we can get precise, truncated distribution parameters:
 - $E(X_T) = 77.525$
 - $Var(X_T) = 2.61^2$
 
-This _censored multinomial distribution_ is actually very close for **most** cases, and we will **demonstrate** this.
+This _censored 18d6 multinomial distribution_ is actually very close for certain cases, and we will **demonstrate** this.
 
 But first, we are going to need to press the `reroll` button a lot...
 
@@ -286,53 +283,44 @@ On my machine, we get just over **15 rolls per second**.
 
 ## Sampling
 
-We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (view-source / <a href="#appendix">appendix</a> for details), and we got these values:
+We rolled a human `fighter`, `paladin`, and a `ranger` overnight with roughly half a million rolls each (see <a href="#appendix">appendix</a>), and we got these values:
 
 <div id="rollhist" style="width:600px;height:450px;"></div>
 
 <script>
-
 // keys [75, 108]
 var x = [...Array(109).keys()].slice(75);
 
-// values fighter (75 -> 98)
-var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1];
+// number of samples per class
+var samples = {
+  //  fighter (75 -> 98)
+  "fighter": [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1],
+  // paladin (75 -> 102)
+  "paladin": [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1],
 
-// values paladin (75 -> 102)
-var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1];
-
-// values ranger (75 -> 100)
-var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
-
-// divide by number of rolls
-var FIGHTER_ROLLS = y1.map(x => x / 555560);
-var PALADIN_ROLLS = y2.map(x => x / 555558);
-var RANGER_ROLLS = y3.map(x => x / 500054);
-
-var trace_obs_fighter = {
-  x: x,
-  y: FIGHTER_ROLLS,
-  name: 'fighter',
-  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.8,
-  type: "scatter",
+  // ranger (75 -> 100)
+  "ranger": [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1],
 };
-var trace_obs_paladin = {
-  x: x,
-  y: PALADIN_ROLLS ,
-  name: "paladin",
-  text: PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.75,
-  type: "scatter",
+
+var trace_observations = function(klss) {
+  var sample_klss = samples[klss];
+  let num_samples = sample_klss.reduce((acc, e) => acc+e, 0);
+  var observed_probs = sample_klss.map(x => x / num_samples);
+
+  // TODO: estimate expecation and variance here?
+  return {
+    x: x,
+    y: observed_probs,
+    name: 'observed ' + klss,
+    text: observed_probs.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
+    opacity: 0.8,
+    type: "scatter",
+  };
 };
-var trace_obs_ranger = {
-  x: x,
-  y: RANGER_ROLLS ,
-  name: "ranger",
-  text: RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.75,
-  type: "scatter",
-};
+
+var trace_obs_fighter = trace_observations('fighter');
+var trace_obs_paladin = trace_observations('paladin');
+var trace_obs_ranger = trace_observations('ranger');
 
 var data = [trace_obs_fighter, trace_obs_paladin, trace_obs_ranger];
 var layout = {
@@ -353,19 +341,16 @@ var SCALED_PROBS = MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale 
 
 var scaled_legend = SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
-var trace_prob = {
+let trace_single_trunc = {
   x: ALL_X.slice(75-18),
   y: SCALED_PROBS,
-  marker: {
-    color: "rgba(100, 255, 0, 0.7)",
-  },
-  name: 'probability',
+  name: 'fighter multinomial 18d6',
   text: scaled_legend,
   opacity: 0.8,
   type: "scatter",
 };
 
-var data = [trace_prob, trace_obs_fighter];
+var data = [trace_single_trunc, trace_obs_fighter];
 var layout = {
   title: "Distribution vs. Observed Fighter",
   xaxis: {title: "Roll"},
@@ -397,7 +382,7 @@ So if we only look at human fighters or mages, we can stop here:
 
 > We are actually quite a lot more likely to get a good roll early than what just the pure dice math would indicate thanks to censoring (50k rolls => likely `95` rather than estimated `90` without censoring).
 
-However, what's up with the paladins and rangers? Time for another math detour.
+However, what's up with the paladins and rangers? Time for a more painful math detour.
 
 ### Class/Race Variance
 
@@ -422,187 +407,11 @@ _In other words_: paladins and rangers have significantly higher rolls on averag
 
 Now, how do we go about actually calculating useful values here?
 
-<!--
-### Idea 1: Normal Approximation
+## Floored Ability Distributions
 
-Calculating distributions when more than half of the distribution is truncated would difficult, but we can do some tricks for the `paladin` and `ranger` distribution in particularly:
+If floors are involved at earlier stages, we have to take a step back and look at the distributions that make up the sum. We __can__ compute distributions for **individual ability scores** (even if floored) if we use the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and censor it at a cutoff point similar to how we censor the total distribution.
 
-We could do a simplifying step and note that multinomial distributions with a high `n` [pproximate a normal distribution](https://mathworld.wolfram.com/Dice.html) very closely (as does [most sums of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem)).
-
-Thus, let's assume we are at the tail end of __some__ normal distribution $\mathcal{N}(μ, σ)$, where we can estimate `μ` by inspection (in the ranger and paladin case where it exceeds the truncation point), and then we can calculate `σ` of that distribution by considering the right half we have and using symmetry.
-
-#### With Truncation
-Then, we can maybe use methods on [truncated normal distributions](https://en.wikipedia.org/wiki/Truncated_normal_distribution),
-
-
-if we are dealing with [one-sided truncation of lower tail](https://en.wikipedia.org/wiki/Truncated_normal_distribution#One_sided_truncation_(of_lower_tail))), and we can use some complicated looking formulae to compute $\mathcal{E}(X | X > a)$ and $Var(X | X > a)$ (where $a$ is the cutoff point) which feels like what we can misguidedly estimate.
-
-$Var(X | X > a) = \sigma^2[1 + \alpha \phi(\alpha)/Z - (\phi(\alpha)/Z)^2]$ where $Z = 1 - \Phi(\alpha)$
-
-which requires us to know $\sigma$ of the underlying distribution..
-
-
-
-#### With Censoring
-
-...maybe we can fashion the extension methods from the [rectified normal distribution](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) because they seem easy... just not sure if they apply. the line between censoring and truncation is a bit hard to tell which is which for us. I THINK it's truncation because in most cases we don't know much outside our range. but censoring also seems to apply; values can occur outside the range of our measring instrument (these values are not shown to us).
-
-https://rdrr.io/cran/crch/man/cnorm.html
-
-[this problem is very similar](https://www.rhayden.us/regression-model/the-censored-normal-distribution.html), but badly written...
-
-[rectified normal extension](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution#Extension_to_general_bounds) (from 2017) shows that:
-
-
-$\sigma_R^2 = \sigma^2 \sigma_t^2$ where:
-
-- $\sigma^2$ is the variance of the original (unknown distribution)
-- $\sigma_t^2$ is the variance of the new distribution (what we see and can measure)
-
-similarly:
-
-$\mu_R = \mu + \sigma \mu_t$ where:
-
-- $\mu$ is the mean of the original unknown distribution
-- $\mu_t$ is the mean of the truncated distribution (and can measure directly)
-
-We can quickly compute $\mu_t$ and $\sigma_t$ using values from our full sample.
-
-For $\mu$ and $\sigma$ from the original distribution, we would not always be able to, but we can be sneaky and extract it in the *paladin* and *ranger* case because we can see the mean and know the underlying distribution is symmetrical.
-
-<script>
-// values fighter (75 -> 98)
-var y1 = [137379, 109198, 85620, 65004, 48256, 35041, 24987, 17545, 11981, 7883, 5007, 3139, 1946, 1138, 670, 368, 199, 103, 49, 26, 12, 6, 2, 1];
-
-// values paladin (75 -> 102)
-var y2 = [50888, 54911, 57338, 57442, 55589, 52357, 47503, 41339, 34458, 28599, 21997, 16722, 12322, 8697, 5997, 3774, 2371, 1489, 822, 465, 251, 129, 56, 24, 12, 4, 1, 1];
-
-// values ranger (75 -> 100)
-var y3 = [32296, 37790, 43118, 46609, 48108, 47589, 45774, 41963, 36876, 30973, 25272, 19904, 14730, 10430, 7285, 4667, 2991, 1696, 986, 529, 254, 121, 56, 26, 10, 1]
-
-// 1. calculate the worthless \mu_t and \sigma_t of the truncated distribution
-var y1mean = y1.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555560;
-var y2mean = y2.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 555558;
-var y3mean = y3.map((x, i) => x*(i+75)).reduce((acc, e) => acc + e, 0) / 500054;
-// sum squares for variance calc later
-let y1sqsum = y1.map((x, i) => x*Math.pow(2, i+75 - y1mean)).reduce((acc, e) => acc + e, 0);
-let y2sqsum = y2.map((x, i) => x*Math.pow(2, i+75 - y2mean)).reduce((acc, e) => acc + e, 0);
-let y3sqsum = y3.map((x, i) => x*Math.pow(2, i+75 - y3mean)).reduce((acc, e) => acc + e, 0);
-// standard deviation
-var y1stddev = Math.sqrt(y1sqsum / 555560);
-var y2stddev = Math.sqrt(y2sqsum / 555558);
-var y3stddev = Math.sqrt(y3sqsum / 500054);
-console.log("Fighter: (mu_t, sigma_t) = (" + y1mean + ", " + y1stddev + ")");
-console.log("Paladin: (mu_t, sigma_t) = (" + y2mean + ", " + y2stddev + ")");
-console.log("Ranger: (mu_t, sigma_t) = (" + y3mean + ", " + y3stddev + ")");
-// NB: these are reasonable (sigma between 7 and 12)
-
-// 2. estimate \mu and \sigma of the original distribution
-// TODO: fix this, the variance should decrease here
-
-// paladin: we estimate mean as 77.6 from curve, and work out 50% prob from RHS of that
-var y2values = y2.slice();
-y2values[0] = 0; // discount 75
-y2values[1] = 0; // discount 76
-y2values[2] = Math.floor(y2[2]*0.6); // discount 40% of 77
-console.log('y2vals', y2values);
-// how big is our sample size at RHS now? orig minus the ones we discarded
-var y2_cut_samples = 555558 - y2values.reduce((acc, e) => acc+e, 0);
-// calculate stddev (count every sample twice for symmetry)
-var y2sqs = y2values.map((x, i) => x*2*Math.pow(2, i+75 - 77.6)).reduce((acc, e) => acc + e, 0);
-var y2stddev_t = Math.sqrt(y2sqs / (y2_cut_samples*2));
-y2_tail = y2values.reduce((acc, e) => acc + e, 0) / 555558;
-y2_tail = Math.floor(y2_tail* 100 * 100) / 100; // 2 significant digits as percent
-console.log("Paladin is at the " + y2_tail + "% tail of a normal distribution centered at 77.6 with estimated stddev_t", y2stddev_t);
-
-// ranger: we estimate mean as 79.3 from curve, and work out 50% prob from RHS of that
-var y3values = y3.slice();
-y3values[0] = 0; // discount 75
-y3values[1] = 0; // discount 76
-y3values[2] = 0; // discount 77
-y3values[3] = 0; // discount 78
-y3values[4] = Math.floor(y3[2]*0.3); // discount 30% of 79
-// how big is our sample size at RHS now? orig minus the ones we discarded
-var y3_cut_samples = 555558 - y3values.reduce((acc, e) => acc+e, 0);
-// calculate stddev (count every sample twice to fake symmetry)
-var y3sqs = y3values.map((x, i) => x*2*Math.pow(2, i+75 - 79.3)).reduce((acc, e) => acc + e, 0);
-var y3stddev_t = Math.sqrt(y3sqs / (y3_cut_samples*2));
-
-y3_tail = y3values.reduce((acc, e) => acc + e, 0) / 500054;
-y3_tail = Math.floor(y3_tail* 100 * 100) / 100; // 2 significant digits as percent
-console.log("Ranger is at the " + y3_tail + "% tail of a normal distribution centered at 79.3 with estimated stddev_t", y3stddev_t);
-
-// fighter.. re-use existing computation since we wouldn't know the mean easily otherwise
-// and we've already shown it's very very close.
-//- we know we are in 94% tail
-//- we know true mean (63)
-//- can we estimate the true std deviation? surely possible somehow.... TODO
-console.log("Fighter is at the 94% tail of a normal distribution centered at 63");
-
-// 3. combine the values to find the rectified distribution values:
-y2_mean_rect = 75.3 + y2stddev * y2mean; // u_r = u + s * u_t
-y3_mean_rect = 79.3 + y2stddev * y2mean; // u_r = u + s * u_t
-
-y2_stddev_rect = y2stddev * y2stddev_t
-y3_stddev_rect = y3stddev * y3stddev_t
-
-console.log("Rectified Paladin has mu, sigma as: " + y2_mean_rect + ", " + y2_stddev_rect);
-console.log("Rectified Ranger has mu, sigma as: " + y3_mean_rect + ", " + y3_stddev_rect);
-
-</script>
-
-- $Fighter \sim$ 94th percentile tail of $\mathcal{N}(63, ?)$
-- $Paladin \sim$ 77h percentile tail of $\mathcal{N}(77.6, ?)$
-- $Ranger \sim$ 71th percentile tail of $\mathcal{N}(79.3, ?)$
-
-TODO: we can use $Paladin \sim \mathcal{N}^R(\mu, \sigma^2)$ at cutoff 75.
-
-<div id="rollhistall" style="width:600px;height:450px;"></div>
-<script>
-// keys [75, 108]
-var x = [...Array(109).keys()].slice(75);
-var trace1 = {
-  x: x,
-  y: FIGHTER_ROLLS,
-  name: 'fighter',
-  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.8,
-  type: "scatter",
-};
-var trace2 = {
-  x: x,
-  y: PALADIN_ROLLS,
-  name: "paladin",
-  text: PALADIN_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.75,
-  type: "scatter",
-};
-var trace3 = {
-  x: x,
-  y: RANGER_ROLLS,
-  name: "ranger",
-  text: RANGER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.75,
-  type: "scatter",
-};
-var data = [trace1, trace2, trace3];
-var layout = {
-  title: "Roll Results",
-  xaxis: {title: "Roll"},
-  yaxis: {title: "Probability"},
-};
-Plotly.newPlot(document.getElementById('rollhistall'), data, layout);
-</script>
-
-Interestingly, ranger has the highest mean, but paladin has the fattest tail.
-
--->
-
-## New distribution from ability sums
-
-Suppose we take a step back. We __can__ compute expectations for **individual ability scores** (even if floored) if we plot the distribution for $P(x, 3, 6)$ from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) where `s=6` and `n=3` and censor it at a cutoff point similar to how we censor the total distribution.
-
-Same idea as when we did 18 dice; use [wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$:
+Computing the value without a floor follows the same setup as when we did 18 dice; use [wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C3%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%293%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2910-6k-1%5C%2844%29+2%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2910-3%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[3, \ldots, 18]$:
 
 <div id="probhist3roll" style="width:600px;height:450px;"></div>
 
@@ -616,25 +425,14 @@ var expectation_unt = THREEROLL_PROBS.map((x,i) => (i+3)*x).reduce((acc, e) => a
 var variance_unt = THREEROLL_PROBS.map((x,i) => Math.pow(i+3 - expectation_unt, 2)*x).reduce((acc, e) => acc+e, 0);
 console.log("Expectation, variance for untruncated 3d6", expectation_unt, variance_unt);
 
-
-var THREE_LEGEND = THREEROLL_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls")
-
 var trace = {
   x: THREEROLL_X,
   y: THREEROLL_PROBS,
-  marker: {
-    color: "rgba(255, 100, 102, 0.7)",
-    line: {
-      color:  "rgba(255, 100, 102, 1)",
-    }
-  },
   name: 'probability',
-  text: THREE_LEGEND,
+  text: THREEROLL_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
   opacity: 0.8,
   type: "scatter",
 };
-
-
 var data = [trace];
 var layout = {
   title: "Distribution for the sum of 3d6 dice rolls",
@@ -690,101 +488,110 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3rolltruncs'), data, layout);
 </script>
 
+To avoid having to write out conditionals $P(X = x| X\ge k)$ everywhere we will denote $X^{\lfloor k \rfloor}$ as one of these graphed multinomial distributions for the sum of `3d6` floored at $k$:
+
+$$X^{\lfloor k \rfloor} \sim \mathcal{M}^{\lfloor k \rfloor}(3d6)$$
+
+Note also that an unfloored ability score $X$ is equal to $X^{\lfloor3\rfloor}$.
+
 We can then compute precise conditional expectations by floor:
 
-- $E(X) = 3\sum_{k=1}^{6}\frac{k}{6} = 3*3.5 = 10.5$
-- $E(X | X\ge9) = 11.8125$
-- $E(X | X\ge12) = 13.5555$
-- $E(X | X\ge13) = 14.2500$
-- $E(X | X\ge14) = 15.0000$
-- $E(X | X\ge17) = 17.2500$
-
-and use this to compute class means by summing across the 6 main stats:
-
-- $E(Fighter) = E(X | X \ge 9) + 5E(X) = 64.31$
-- $E(Ranger) = 2E(X | X\ge14) + 2E(X | X\ge13) + 2E(X) = 79.5$
-- $E(Paladin) = E(X | X\ge17) + E(X | X\ge13) + E(X | X\ge12) + E(X | X\ge9)+ 2E(X) = 77.86$
+- $\mathbb{E}(X^{\lfloor3\rfloor}) = \mathbb{E}(X) = 3\sum_{k=1}^{6}\frac{k}{6} = 3*3.5 = 10.5$
+- $\mathbb{E}(X^{\lfloor9\rfloor}) = 11.8125$
+- $\mathbb{E}(X^{\lfloor12\rfloor}) = 13.5555$
+- $\mathbb{E}(X^{\lfloor13\rfloor}) = 14.2500$
+- $\mathbb{E}(X^{\lfloor14\rfloor}) = 15.0000$
+- $\mathbb{E}(X^{\lfloor17\rfloor}) = 17.2500$
 
 Similarly, we can compute precise variances:
 
-- $Var(X) = 3\sum_{k=1}^6\frac{(x_i - 3.5)^2}{6} = 3*2.92 = 8.75$
-- $Var(X | X\ge9) = 4.5773$
-- $Var(X | X\ge12) = 2.2469$
-- $Var(X | X\ge13) = 1.6875$
-- $Var(X | X\ge14) = 1.2000$
-- $Var(X | X\ge17) = 0.1875$
+- $Var(X^{\lfloor3\rfloor}) = Var(X) = 3\sum_{k=1}^6\frac{(x_i - 3.5)^2}{6} = 3*2.92 = 8.75$
+- $Var(X^{\lfloor9\rfloor}) = 4.5773$
+- $Var(X^{\lfloor12\rfloor}) = 2.2469$
+- $Var(X^{\lfloor13\rfloor}) = 1.6875$
+- $Var(X^{\lfloor14\rfloor}) = 1.2000$
+- $Var(X^{\lfloor17\rfloor}) = 0.1875$
 
-and sum them up across the 6 main stats:
+### Sum of Floored Ability Distributions
 
-- $Var(Fighter) = Var(X | X \ge 9) + 5Var(X) \thickapprox 6.95^2$
-- $Var(Ranger) = 2Var(X | X\ge14) + 2Var(X | X\ge13) + 2Var(X) \thickapprox 4.82^2$
-- $Var(Paladin) = Var(X | X\ge17) + Var(X | X\ge13) + Var(X | X\ge12) + Var(X | X\ge9)+ 2Var(X) \thickapprox 5.12^2$
+Define $Z_{paladin}$, $Z_{ranger}$ and $Z_{fighter}$ as:
+
+$$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor3\rfloor} + X_6^{\lfloor3\rfloor}$$
+$$Z_{ranger} = X_1^{\lfloor14\rfloor} + X_2^{\lfloor14\rfloor} + X_3^{\lfloor13\rfloor} + X_4^{\lfloor13\rfloor} + X_5^{\lfloor3\rfloor} + X_6^{\lfloor3\rfloor}$$
+$$Z_{fighter} = X_1^{\lfloor9\rfloor} + X_2^{\lfloor3\rfloor} + X_3^{\lfloor3\rfloor} + X_4^{\lfloor3\rfloor} + X_5^{\lfloor3\rfloor} + X_6^{\lfloor3\rfloor}$$
+
+for random variables $X_i^{\lfloor N \rfloor}  \sim \mathcal{M}^{\lfloor N \rfloor}(3d6)$.
+
+Using the computed expectations above to sum across the 6 main stats:
+
+- $\mathbb{E}(Fighter) = \mathbb{E}(X^{\lfloor9\rfloor}) + 5\mathbb{E}(X) = 64.31$
+- $\mathbb{E}(Ranger) = 2\mathbb{E}(X^{\lfloor14\rfloor}) + 2\mathbb{E}(X^{\lfloor13\rfloor}) + 2\mathbb{E}(X) = 79.5$
+- $\mathbb{E}(Paladin) = \mathbb{E}(X^{\lfloor17\rfloor}) + \mathbb{E}(X^{\lfloor13\rfloor}) + \mathbb{E}(X^{\lfloor12\rfloor}) + \mathbb{E}(X^{\lfloor9\rfloor})+ 2\mathbb{E}(X) = 77.86$
+
+
+and similarly for variance:
+
+- $Var(Fighter) = Var(X^{\lfloor9\rfloor}) + 5Var(X) \thickapprox 6.95^2$
+- $Var(Ranger) = 2Var(X^{\lfloor14\rfloor}) + 2Var(X^{\lfloor13\rfloor}) + 2Var(X) \thickapprox 4.82^2$
+- $Var(Paladin) = Var(X^{\lfloor17\rfloor}) + Var(X^{\lfloor13\rfloor}) + Var(X^{\lfloor12\rfloor}) + Var(X^{\lfloor3\rfloor})+ 2Var(X) \thickapprox 5.12^2$
 
 noting that variables are independent under the observed two stage censoring.
 
-> Why can we rely on two stage censoring and their independence? If any of these internal mechanisms used some kind of `min` function, it would be immediately obvious from the distribution. The paladin distribution of charisma is clearly a `~1/4` for an `18`, and `~3/4` for a `17`; it would have been **very** rare to see an 18 otherwise.
+> Why can we rely on two stage censoring and their independence? If any of these internal mechanisms used some kind of `if` condition or `min` function, it would be immediately obvious from the distribution. The paladin distribution of charisma is clearly a `~1/4` for an `18`, and `~3/4` for a `17`; it would have been much rarer to see an 18 otherwise.
 
-Thus, the classes follow truncated multinomial-based distributions $\mathcal{M}^T(\mu, \sigma^2)$ with the following initial moments:
+Thus, the distributions of our classes are based on multinomal-based distributions with the following first moments:
 
-- $Fighter \sim \mathcal{M}^T(64.31, 6.95^2)$
-- $Ranger \sim \mathcal{M}^T(79.5, 4.82^2)$
-- $Paladin \sim \mathcal{M}^T(77.86, 5.12^2)$
+- $Uncensored\ Fighter \sim \mathcal{M}(\mu = 64.31, \sigma^2 = 6.95^2)$
+- $Uncensored\ Ranger \sim \mathcal{M}(\mu = 79.5, \sigma^2 = 4.82^2)$
+- $Uncensored\ Paladin \sim \mathcal{M}(\mu = 77.86, \sigma^2 = 5.12^2)$
 
-<!-- this doesn't work and the estimations are way off
-### Rough Estimation of Values
+However, this is only useful for a quick overview of the distributions. Without the **[PMF](https://en.wikipedia.org/wiki/Probability_mass_function)** for the **sum of our ability scores**, it's hard to give good values for what the truncated version will look like. In particular, these heavily floored random variables end up giving us quite asymmetrical distributions in the tails.
 
-We can do a hand-wavy estimating from [normal distributed sigma-level events](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule), an [error function calculator](https://keisan.casio.com/exec/system/1180573449), and our 15 roll per second time for the script.
+### Class Distributions
 
-This is not going to give very accurate numbers, because the data is not sufficiently normally distributed at this low level of dice rolling, but it should give a very rough guideline.
+Thankfully, it is possible to inductively compute the pmf of $Z_{class}$ via [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution).
 
-#### Ranger estimations
+Some internet digging notwithstanding; most answers found online for this required **either** [mathematica functions](https://stats.stackexchange.com/questions/3614/how-to-easily-determine-the-results-distribution-for-multiple-dice/3684#3684) (that we do not have here in our inlined source), **or** a slightly more laborious manual convolution. We will follow the [inductive convolution approach](https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/07%3A_Sums_of_Random_Variables/7.01%3A_Sums_of_Discrete_Random_Variables) which we can solve with recursion. Paladin case:
 
-We compute $\sigma$ breakpoints using $79.5 + n*4.82$:
-
-- 108 is a $5.9\sigma$ event, once in ~275M (30 weeks)
-- 106 is a $5.5\sigma$ event, once in ~26M (3 weeks)
-- 104 is a $5.1\sigma$ event, once in ~3M (2 days)
-- 101 is a $4.5\sigma$ event, once in ~150k (3h)
-- 99 is a $4\sigma$ event, once in ~16k (17m)
-- 96 is a $3.4\sigma$ event, once in ~1500 (2m)
-- 94 is a $3\sigma$ event, once in ~400 (30s)
-
-#### Paladin estimations
-
-We compute $\sigma$ breakpoints using $78.86 + n*5.12$:
-
-- 108 is a $5.7\sigma$ event, once in ~83M (9 weeks)
-- 106 is a $5.3\sigma$ event, once in ~9M (7 days)
-- 104 is a $4.9\sigma$ event, once in ~1M (18h)
-- 102 is a $4.5\sigma$ event, once in ~150k (3h)
-- 99 is a $3.9\sigma$ event, once in ~10k (11m)
-- 97 is a $3.5\sigma$ event, once in ~2k (2m)
-- 94 is a $3\sigma$ event, once in ~400 (30s)
-
-As we can see, the high variance of paladin compensates for its lower mean compared to the ranger, and is therefore your best bet for record breaking rolls.
-
-If this calculation is semi-accurate then if `63` people roll the script for paladin for `1 day`, we are likely to collectively get an `108`...
--->
-
-
-### Getting precise probabilities
-
-Because these floored distributions are necessarily quite shifted, they will not look like anything that we can just give our $\sigma$ and $\mu$ and expect a reasonable likelihood. We want the precise [PMF](https://en.wikipedia.org/wiki/Probability_mass_function) for the sum of our ability scores. Define $Z_{paladin}$ as:
-
-$$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor0\rfloor} + X_6^{\lfloor0\rfloor}$$
-
-where $X_i^{\lfloor N \rfloor}$ is the precise, `3d6` based multinomial distribution rectified at $N$.
-
-It is actually possible to [inductively compute](https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/07%3A_Sums_of_Random_Variables/7.01%3A_Sums_of_Discrete_Random_Variables) the pdfs of $Z$ via convolution. This [answer explains it in the simplest terms](https://stats.stackexchange.com/questions/3614/how-to-easily-determine-the-results-distribution-for-multiple-dice/3684#3684).
-
-Most answers here requires **either** mathematica functions (that we do not have here in our inlined source), **or** we need to go through a laborious and manual through [characteristic functions](https://en.wikipedia.org/wiki/Characteristic_function_(probability_theory)) (see [sum of multinomials answer](https://math.stackexchange.com/questions/3076634/sum-of-two-multinomial-random-variables)) and [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution). If someone wants to contribute or help out here, I'd be interested to see, but for my own sanity; we will leave this here for now.
-
-
-Let $X_{12} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor}$, then we can generate values for the pmf for $X_{12}$ via the pmfs $p_{X_i}$ for $X_1^{\lfloor17\rfloor}$ and $X_2^{\lfloor13\rfloor}$:
+Let $X_{12} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor}$. We can generate values for the pmf $p_{X_{12}}$ for $X_{12}$ via the pmfs $p_{X_i}$ for $X_1^{\lfloor17\rfloor}$ and $X_2^{\lfloor13\rfloor}$ via the convolution formula:
 
 $$P(X_{12} = n) = (p_{X_1} * p_{X_2})(n) = \sum_{m=-\infty}^{\infty}P(X_1=m)P(X_2 = n-m)$$
 
-The first iteration here is particularly easy, because $X_1^{\lfloor17\rfloor}$ only takes two values. This means most of the hard work is just getting correct indexes and defaulting of our internal probability arrays that serve as our mass functions. You can view source for details.
+This step is particularly easy for the paladin, because $X_1^{\lfloor17\rfloor}$ only takes two values (i.e. $m=17$ ahd $m=18$ are the only non-zero parts in the sum).
+
+The rest is less easy to do by hand, as the sums get increasingly hairy while we iterate towards $Z=P_{123456}$ by repeatedly applying convolution to the remaining $X_i$:
+
+$$P(X_{123} = n) = (p_{X_{12}} * p_{X_3})(n) \sum_{m=-\infty}^{\infty}P(X_{12}=m)P(X_3 = n-m)$$
+
+$$P(X_{1234} = n) = (p_{X_{123}} * p_{X_4})(n) \sum_{m=-\infty}^{\infty}P(X_{123}=m)P(X_4 = n-m)$$
+
+$$P(X_{12345} = n) = (p_{X_{1234}} * p_{X_5})(n) \sum_{m=-\infty}^{\infty}P(X_{1234}=m)P(X_5 = n-m)$$
+
+$$P(X_{123456} = n) = (p_{X_{12345}} * p_{X_5})(n) \sum_{m=-\infty}^{\infty}P(X_{12345}=m)P(X_6 = n-m)$$
+
+The hard work is correctly matching indexes in our probability arrays that serve as our mass functions to the sum, and defaulting to zero when accessing out of bounds:
+
+```js
+// given pXi = [0.75, 0.25], pXj = [0.375, 0.2678, 0.1786, 0.1071, 0.05357, 0.01786]
+// (approximations of the first two truncated paladin probability arrays for CHA + WIS)
+var convolve = function (pXi, pXj) {
+  // pre-allocate a zero-indexed array where our probabilities will go
+  var pXij = [...Array(pXi.length + pXj.length - 1).keys()];
+  // loop to generate P(Xij = n) for all n
+  for (let n = 0; n < pXi.length + pXj.length - 1; n += 1) {
+    pXij[n] = 0; // init to zero
+    // loop to do sum over m, first variable determines length of this sum
+    for (let m = 0; m < pXi.length; m += 1) {
+      // we do defaulting outside range with `|| 0`
+      pXij[n] += (pXi[m] || 0) * (pXj[n-m] || 0);
+    }
+  }
+  return pXij;
+};
+// returns [0.28125, 0.29464, 0.2009, 0.125, 0.06696, 0.02678, 0.004464]
+```
+
+The result is the PMF for $Z_{class}$ via $P_{X_{123456}}$ graphed below. The source of this post goes through the calculations in detail.
 
 <div id="probhist3convolved" style="width:600px;height:450px;"></div>
 
@@ -792,6 +599,7 @@ The first iteration here is particularly easy, because $X_1^{\lfloor17\rfloor}$ 
 // The first one is easy, P_1 only has 2 values => m={0,1}
 //let pX1 = TRUNCATED_DISTS[17]; // 2 values, for 17,18
 //let pX2 = TRUNCATED_DISTS[13]; // 6 values, for 13,...,18
+//console.log("convolving", pX1, pX2)
 // new dist starts at 17+13 and goes to 18x2
 //let pX12 = [];
 //pX12[0] = pX1[0] * pX2[0]; // 17+13 || 18+12 (zero)
@@ -855,11 +663,11 @@ var gen_convolved_trace_for_class_dist = function(dists, klss) {
   var pX6 = TRUNCATED_DISTS[dists[5]];
   var start = dists.reduce((acc, e) => acc+e, 0); // start at sum of floors
 
-  let gen12 = convolve(pX1, pX2); // dist from 30 -> 36
-  let gen123 = convolve(gen12, pX3); // dist from 42 -> 54
-  let gen1234 = convolve(gen123, pX4); // dist from 51 -> 72
-  let gen12345 = convolve(gen1234, pX5); // dist from 54 -> 90
-  let gen123456 = convolve(gen12345, pX6); // dist from 57 -> 108
+  let gen12 = convolve(pX1, pX2);
+  let gen123 = convolve(gen12, pX3);
+  let gen1234 = convolve(gen123, pX4);
+  let gen12345 = convolve(gen1234, pX5);
+  let gen123456 = convolve(gen12345, pX6);
   CONVOLVED_DISTS[klss] = gen123456;
 
   return {
@@ -886,7 +694,7 @@ Plotly.newPlot(document.getElementById('probhist3convolved'), data, layout);
 
 > Notice the heavily tilted ranger/paladin distributions whose lean is distinctively more to the right.
 
-These distributions again need to be truncated at `75` like before to get our true, final probabilities:
+The last thing that's left now is to rectify $Z_c$ at `75` to get our **true, final distributions**:
 
 <div id="probhist3convolvedtrunc" style="width:600px;height:450px;"></div>
 <script>
@@ -904,7 +712,7 @@ var truncated_klass = function (klss) {
   return {
     x: TRUNC_CONV.map((x,i) => i +75),
     y: TRUNC_CONV,
-    name: klss,
+    name: 'true ' + klss,
     text: TRUNC_CONV.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
     opacity: 0.8,
     type: "scatter",
@@ -923,26 +731,28 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3convolvedtrunc'), data, layout);
 </script>
 
-As can be seen; paladin becomes more efficient when hunting for numbers > 100, before that, ranger always performs slightly better (90 -> 97 range in particularly favours ranger).
+These match the sampled data almost perfectly as can be seen in more detailed comparisons in the <a href="#appendix">appendix</a>.
 
-We conclude with the smallest numbers needed to roll above a certain threshold where we use the most efficient class based on the number:
+As can be seen; `ranger` is faster at getting high numbers, particularly in the 90 -> 97 range, but if you want rolls >= 100, **`paladin` rolls the highest** at the fastest rate.
 
-- `108` paladin rolls once in `100 billion` (210y)
-- `107` paladin rolls once in `5 billion` (10y)
-- `106` paladin rolls once in `600 million` (1y)
-- `105` paladin rolls once in `100 million` (11w)
-- `104` paladin rolls once in `19 million` (2w)
-- `103` paladin rolls once in `5 million` (4d)
-- `102` paladin rolls once in `1.4 million` (1d)
-- `101` paladin rolls once in `400k` (7h)
-- `100` paladin rolls once in `150k` (3h)
-- `99` ranger rolls once in `57k` (1h)
-- `98` ranger rolls once in `23k` (25m)
-- `97` ranger rolls once in `10k` (11m)
-- `96` ranger rolls once in `5k` (5m)
-- `95` ranger rolls once in `2k` (2m)
+We end with the expected time to roll above a certain threshold where we use the most efficient class based on the number:
 
-Hope you have enjoyed this random brain dump on probability.
+- `108` paladin rolls once in `100 billion` ⇒ 210y
+- `107` paladin rolls once in `5 billion` ⇒ 10y
+- `106` paladin rolls once in `600 million` ⇒ 1y
+- `105` paladin rolls once in `100 million` ⇒ 11w
+- `104` paladin rolls once in `19 million` ⇒ 2w
+- `103` paladin rolls once in `5 million` ⇒ 4d
+- `102` paladin rolls once in `1.4 million` ⇒ 1d
+- `101` paladin rolls once in `400k` ⇒ 7h
+- `100` paladin/ranger rolls once in `150k` ⇒ 3h
+- `99` ranger rolls once in `57k` ⇒ 1h
+- `98` ranger rolls once in `23k` ⇒ 25m
+- `97` ranger rolls once in `10k` ⇒ 11m
+- `96` ranger rolls once in `5k` ⇒ 5m
+- `95` ranger rolls once in `2k` ⇒ 2m
+
+Hope you have enjoyed this random brain dump on probability. Don't think I have ever been nerd sniped this hard before.. I just wanted to play a game and take a break.
 
 <small>/me closes 20 tabs</small>
 
@@ -1180,7 +990,6 @@ We compare with the precise $Z_{class}$ distributions worked out by convolution 
 
 <div id="probhistappdxpala" style="width:600px;height:450px;"></div>
 <script>
-trace_obs_paladin.name = "observed paladin";
 var data = [trace_trunconv_paladin, trace_obs_paladin];
 var layout = {
   title: "Theoretical vs Observed Distributions for Paladin",
@@ -1192,7 +1001,6 @@ Plotly.newPlot(document.getElementById('probhistappdxpala'), data, layout);
 
 <div id="probhistappdxrang" style="width:600px;height:450px;"></div>
 <script>
-trace_obs_ranger.name = "observed ranger";
 var data = [trace_trunconv_ranger, trace_obs_ranger];
 var layout = {
   title: "Theoretical vs Observed Distributions for Ranger",
@@ -1202,11 +1010,11 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhistappdxrang'), data, layout);
 </script>
 
-// TODO: include multinomial to show tiny bias
+For fighter we have included the original uncorrected multinomial distribution for 18 dice before doing simulations. It was sufficiently close to the true distribution because flooring a single ability to `9` amounts to almost nothing in the right tail:
+
 <div id="probhistappdxfig" style="width:600px;height:450px;"></div>
 <script>
-trace_obs_fighter.name = "observed fighter";
-var data = [trace_trunconv_fighter, trace_obs_fighter];
+var data = [trace_trunconv_fighter, trace_obs_fighter, trace_single_trunc];
 var layout = {
   title: "Theoretical vs Observed Distributions for Fighter",
   xaxis: {title: "Roll"},
@@ -1214,6 +1022,37 @@ var layout = {
 };
 Plotly.newPlot(document.getElementById('probhistappdxfig'), data, layout);
 </script>
+
+That said, the true distribution taking into account the single floored stat has a much better fit.
+
+</p>
+</details>
+
+
+<details><summary style="cursor:pointer"><b>5. Normal approximations</b></summary>
+<p>
+
+An original idea here was to avoid doing all the faff with convolution above, and "just" approximate the distribution with some normal $\mathcal{N}(μ, σ)$.
+
+After all, [this is suggested for high n](https://mathworld.wolfram.com/Dice.html), and it will hold even for an unequal [sum of independent random variables with sufficient degrees of freedom](https://en.wikipedia.org/wiki/Central_limit_theorem).
+
+However, there are many **complications** with this approach:
+
+- we only **sample** the **doubly censored data**, we don't see the full normal distribution
+- **distributions** are heavily **shifted** (as can be seen with the true paladin distribution)
+- estimation of underlying normal distribution relies difficult for classes whose means precedes the truncation point
+
+It does looks like there are tools to work with truncated or rectified normals:
+
+- extension methods for [rectified normal distributions](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution#Extension_to_general_bounds)
+- [formulas for dealing with truncation of a normal distributions](https://en.wikipedia.org/wiki/Truncated_normal_distribution#One_sided_truncation_(of_lower_tail))
+- [cnorm r library](https://rdrr.io/cran/crch/man/cnorm.html) which comes with a [giant pdf](https://cran.r-project.org/web/packages/cNORM/cNORM.pdf) as documentation to help remind you of why we need rustdoc
+
+But this felt like the wrong path to descend, and the path was littered with arcana:
+
+<blockquote class="twitter-tweet" data-dnt="true" data-theme="light"><p lang="en" dir="ltr">ah, yes, just a vector. <a href="https://t.co/RvkpS4h0DX">pic.twitter.com/RvkpS4h0DX</a></p>&mdash; eirik ᐸ&#39;⧖ᐳ (@sszynrae) <a href="https://twitter.com/sszynrae/status/1512161877698174983?ref_src=twsrc%5Etfw">April 7, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+That said. If anyone wants to fill in something here, or link to alternate methods, feel free to PR in something [here](https://github.com/clux/probes).
 
 </p>
 </details>
