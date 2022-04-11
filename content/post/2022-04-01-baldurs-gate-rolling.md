@@ -663,6 +663,9 @@ then we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `1
 <div id="probhist3rolltruncs" style="width:600px;height:450px;"></div>
 
 <script>
+var TRUNCATED_DISTS = {};
+TRUNCATED_DISTS[0] = THREEROLL_PROBS.slice();
+TRUNCATED_DISTS[3] = THREEROLL_PROBS.slice(); // no truncation == truncation at 3
 var truncated_trace = function (t) {
   // calculate probability up to cutoff point:
   var TRUNC_T_SUM = THREEROLL_PROBS.slice(t-3).reduce((acc, e) => acc+e, 0);
@@ -673,6 +676,7 @@ var truncated_trace = function (t) {
   var expectation = THREE_TRUNC_T.map((x,i) => (i+t)*x).reduce((acc, e) => acc+e, 0);
   var variance = THREE_TRUNC_T.map((x,i) => Math.pow(i+t - expectation, 2)*x).reduce((acc, e) => acc+e, 0);
   console.log("Expectation, variance for truncated 3d6 at", t, expectation, variance);
+  TRUNCATED_DISTS[t] = THREE_TRUNC_T;
   var trace = {
     x: THREEROLL_X.slice(t-3),
     y: THREE_TRUNC_T,
@@ -743,31 +747,31 @@ Thus, the classes follow truncated multinomial-based distributions $\mathcal{M}^
 
 We can do a hand-wavy estimating from [normal distributed sigma-level events](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule), an [error function calculator](https://keisan.casio.com/exec/system/1180573449), and our 15 roll per second time for the script.
 
-This is not going to give very accurate numbers, because the data is not normally distributed at this low level of dice rolling, but it should give a very rough guideline.
+This is not going to give very accurate numbers, because the data is not sufficiently normally distributed at this low level of dice rolling, but it should give a very rough guideline.
 
 #### Ranger estimations
 
 We compute $\sigma$ breakpoints using $79.5 + n*4.82$:
 
-- 108 is a $5.9\sigma$ event, once in 275M (30 weeks)
-- 106 is a $5.5\sigma$ event, once in 26M (3 weeks)
-- 104 is a $5.1\sigma$ event, once in 3M (2 days)
-- 101 is a $4.5\sigma$ event, once in 150k (3h)
-- 99 is a $4\sigma$ event, once in 16k (17m)
-- 96 is a $3.4\sigma$ event, once in 1500 (2m)
-- 94 is a $3\sigma$ event, once in 400 (30s)
+- 108 is a $5.9\sigma$ event, once in ~275M (30 weeks)
+- 106 is a $5.5\sigma$ event, once in ~26M (3 weeks)
+- 104 is a $5.1\sigma$ event, once in ~3M (2 days)
+- 101 is a $4.5\sigma$ event, once in ~150k (3h)
+- 99 is a $4\sigma$ event, once in ~16k (17m)
+- 96 is a $3.4\sigma$ event, once in ~1500 (2m)
+- 94 is a $3\sigma$ event, once in ~400 (30s)
 
 #### Paladin estimations
 
 We compute $\sigma$ breakpoints using $78.86 + n*5.12$:
 
-- 108 is a $5.7\sigma$ event, once in 83M (9 weeks)
-- 106 is a $5.3\sigma$ event, once in 9M (7 days)
-- 104 is a $4.9\sigma$ event, once in 1M (18h)
-- 102 is a $4.5\sigma$ event, once in 150k (3h)
-- 99 is a $3.9\sigma$ event, once in 10k (11m)
-- 97 is a $3.5\sigma$ event, once in 2k (2m)
-- 94 is a $3\sigma$ event, once in 400 (30s)
+- 108 is a $5.7\sigma$ event, once in ~83M (9 weeks)
+- 106 is a $5.3\sigma$ event, once in ~9M (7 days)
+- 104 is a $4.9\sigma$ event, once in ~1M (18h)
+- 102 is a $4.5\sigma$ event, once in ~150k (3h)
+- 99 is a $3.9\sigma$ event, once in ~10k (11m)
+- 97 is a $3.5\sigma$ event, once in ~2k (2m)
+- 94 is a $3\sigma$ event, once in ~400 (30s)
 
 As we can see, the high variance of paladin compensates for its lower mean compared to the ranger, and is therefore your best bet for record breaking rolls.
 
@@ -775,15 +779,101 @@ If this calculation is semi-accurate then if `63` people roll the script for pal
 
 ### Getting precise probabilities
 
-Because estimating tends to fall over a bit at high sigma levels (where we are interested in the values), we ideally want to have a precise [PDF](https://en.wikipedia.org/wiki/Probability_density_function) for a random variable:
+Because estimating tends to fall over a bit at high sigma levels (where we are interested in the values), we ideally want to have a precise [PMF](https://en.wikipedia.org/wiki/Probability_mass_function) for a random variable:
 
-$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor0\rfloor} + X_6^{\lfloor0\rfloor}$
+$$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor0\rfloor} + X_6^{\lfloor0\rfloor}$$
 
 where $X_i^{\lfloor N \rfloor}$ is the precise, `3d6` based multinomial distribution rectified at $N$.
 
-We have already computed the first [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)) (expectations and variance) of these sum random variables, but precise probabilities is harder.
-
 It is actually possible to [inductively compute](https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/07%3A_Sums_of_Random_Variables/7.01%3A_Sums_of_Discrete_Random_Variables) the pdfs of $Z$ via convolution. This [answer explains it in the simplest terms](https://stats.stackexchange.com/questions/3614/how-to-easily-determine-the-results-distribution-for-multiple-dice/3684#3684).
+
+Let $X_{12} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor}$, then we can generate values for the pmf for $X_{12}$ via the pmfs $p_{X_i}$ for $X_1^{\lfloor17\rfloor}$ and $X_2^{\lfloor13\rfloor}$:
+
+$$P(X_{12} = n) = (p_{X_1} * p_{X_2})(n) = \sum_{m=-\infty}^{\infty}P(X_1=m)P(X_2 = n-m)$$
+
+The first iteration here is particularly easy, because $X_1^{\lfloor17\rfloor}$ only takes two values.
+
+<div id="probhist3convolved" style="width:600px;height:450px;"></div>
+
+<script>
+// The first one is easy, P_1 only has 2 values => m={0,1}
+//let pX1 = TRUNCATED_DISTS[17]; // 2 values, for 17,18
+//let pX2 = TRUNCATED_DISTS[13]; // 6 values, for 13,...,18
+// new dist starts at 17+13 and goes to 18x2
+//let pX12 = [];
+//pX12[0] = pX1[0] * pX2[0]; // 17+13 || 18+12 (zero)
+//pX12[1] = pX1[0] * pX2[1] + pX1[1]*pX2[0]; // 17+14 || 18+13
+//pX12[2] = pX1[0] * pX2[2] + pX1[1]*pX2[1]; // 17+15 || 18+14
+//pX12[3] = pX1[0] * pX2[3] + pX1[1]*pX2[2]; // 17+16 || 18+15
+//pX12[4] = pX1[0] * pX2[4] + pX1[1]*pX2[3]; // 17+17 || 18+16
+//pX12[5] = pX1[0] * pX2[5] + pX1[1]*pX2[4]; // 17+18 || 18+17
+//pX12[6] =                 + pX1[1]*pX2[5]; // 17+19 (zero) || 18+18
+//console.log(pX12, pX12.reduce((acc,e)=>acc+e,0)); // perfect
+
+// then do P_{12} + P_3
+//pX12 has 7 values, for 30, 31, 32, 33, 34, 35, 36
+//let pX3 = TRUNCATED_DISTS[12]; // has 7 values, for 12,13,14,15,16,17,18
+// new dist starts at 30+12 and goes to 18x3 i.e. length (13)
+//let pX123 = [];
+//pX123[0] = pX12[0]*pX3[0]; // 42 : 30+12
+//pX123[1] = pX12[0]*pX3[1] + pX12[1]*pX3[0]; // 43: 30+13 || 31+12
+//pX123[2] = pX12[0]*pX3[2] + pX12[1]*pX3[1] + pX12[2]*pX3[0]; // 44: 30+14 || 31+13 || 32+12
+//pX123[3] = pX12[0]*pX3[3] + pX12[1]*pX3[2] + pX12[2]*pX3[1] + pX12[3] +pX3[0]; // 45: 30+15 || 31+14 || 32+13 || 33+12
+// ok... clearly not a hand written thing, but matches convolve result
+
+// what am i doing with my life
+var convolve = function (pXi, pXj) {
+  // pre-allocate a zero-indexed array where our probabilities will go
+  var pXij = [...Array(pXi.length + pXj.length - 1).keys()];
+  // loop to generate P(Xij = n) for all n
+  for (let n = 0; n < pXi.length + pXj.length - 1; n += 1) {
+    pXij[n] = 0; // init to zero
+    // loop to do sum over m, first variable determines length of this sum
+    for (let m = 0; m < pXi.length; m += 1) {
+      // we do defaulting outside range with `|| 0`
+      pXij[n] += (pXi[m] || 0) * (pXj[n-m] || 0);
+    }
+  }
+  return pXij;
+}
+
+let pX1 = TRUNCATED_DISTS[17]; // 2 values; 17,18
+let pX2 = TRUNCATED_DISTS[13]; // 6 values; 13,...,18
+let pX3 = TRUNCATED_DISTS[12]; // 7 values; 12,13,14,15,16,17,18
+let pX4 = TRUNCATED_DISTS[9]; // 10 values; 9,...,18
+let pX5 = TRUNCATED_DISTS[3]; // 16 values; 3,...,18
+let pX6 = TRUNCATED_DISTS[3].slice();
+
+let gen12 = convolve(pX1, pX2); // dist from 30 -> 36
+let gen123 = convolve(gen12, pX3); // dist from 42 -> 54
+let gen1234 = convolve(gen123, pX4); // dist from 51 -> 72
+let gen12345 = convolve(gen1234, pX5); // dist from 54 -> 90
+let gen123456 = convolve(gen12345, pX6); // dist from 57 -> 108
+console.log(gen123456, gen123456.length)
+
+
+
+var trace_paladin = {
+  x: gen123456.slice().map((x,i)=>i + 3+3+9+12+13+17),
+  y: gen123456,
+  name: 'pmf paladin',
+  text: gen123456.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
+  opacity: 0.8,
+  type: "scatter",
+};
+
+
+var data = [trace_paladin];
+var layout = {
+  title: "Convolved Ability Distributions for Classes",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhist3convolved'), data, layout);
+</script>
+
+
+
 
 However, this also requires **either** mathematica functions (that we do not have here in our inlined source), **or** we need to go through a laborious and manual through [characteristic functions](https://en.wikipedia.org/wiki/Characteristic_function_(probability_theory)) (see [sum of multinomials answer](https://math.stackexchange.com/questions/3076634/sum-of-two-multinomial-random-variables)) and [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution). If someone wants to contribute or help out here, I'd be interested to see, but for my own sanity; we will leave this here for now.
 
