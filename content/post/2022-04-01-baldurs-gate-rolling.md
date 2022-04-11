@@ -309,7 +309,7 @@ var FIGHTER_ROLLS = y1.map(x => x / 555560);
 var PALADIN_ROLLS = y2.map(x => x / 555558);
 var RANGER_ROLLS = y3.map(x => x / 500054);
 
-var trace1 = {
+var trace_obs_fighter = {
   x: x,
   y: FIGHTER_ROLLS,
   name: 'fighter',
@@ -317,7 +317,7 @@ var trace1 = {
   opacity: 0.8,
   type: "scatter",
 };
-var trace2 = {
+var trace_obs_paladin = {
   x: x,
   y: PALADIN_ROLLS ,
   name: "paladin",
@@ -325,7 +325,7 @@ var trace2 = {
   opacity: 0.75,
   type: "scatter",
 };
-var trace3 = {
+var trace_obs_ranger = {
   x: x,
   y: RANGER_ROLLS ,
   name: "ranger",
@@ -334,7 +334,7 @@ var trace3 = {
   type: "scatter",
 };
 
-var data = [trace1, trace2, trace3];
+var data = [trace_obs_fighter, trace_obs_paladin, trace_obs_ranger];
 var layout = {
   title: "Roll Results",
   xaxis: {title: "Roll"},
@@ -353,19 +353,6 @@ var SCALED_PROBS = MAIN_PROBS.slice(75-18).map(x => x / prob_over_74); // scale 
 
 var scaled_legend = SCALED_PROBS.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls");
 
-//console.log(SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
-var trace_fighter = {
-  x: ALL_X.slice(75-18),
-  y: FIGHTER_ROLLS,
-  marker: {
-    color: "rgba(0, 100, 102, 0.7)",
-  },
-  name: 'fighter',
-  text: FIGHTER_ROLLS.map(x => "occurred once in " + Math.floor(1/x) + " rolls"),
-  opacity: 0.8,
-  type: "scatter",
-};
-
 var trace_prob = {
   x: ALL_X.slice(75-18),
   y: SCALED_PROBS,
@@ -378,7 +365,7 @@ var trace_prob = {
   type: "scatter",
 };
 
-var data = [trace_prob, trace_fighter];
+var data = [trace_prob, trace_obs_fighter];
 var layout = {
   title: "Distribution vs. Observed Fighter",
   xaxis: {title: "Roll"},
@@ -743,6 +730,7 @@ Thus, the classes follow truncated multinomial-based distributions $\mathcal{M}^
 - $Ranger \sim \mathcal{M}^T(79.5, 4.82^2)$
 - $Paladin \sim \mathcal{M}^T(77.86, 5.12^2)$
 
+<!-- this doesn't work and the estimations are way off
 ### Rough Estimation of Values
 
 We can do a hand-wavy estimating from [normal distributed sigma-level events](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule), an [error function calculator](https://keisan.casio.com/exec/system/1180573449), and our 15 roll per second time for the script.
@@ -776,10 +764,12 @@ We compute $\sigma$ breakpoints using $78.86 + n*5.12$:
 As we can see, the high variance of paladin compensates for its lower mean compared to the ranger, and is therefore your best bet for record breaking rolls.
 
 If this calculation is semi-accurate then if `63` people roll the script for paladin for `1 day`, we are likely to collectively get an `108`...
+-->
+
 
 ### Getting precise probabilities
 
-Because estimating tends to fall over a bit at high sigma levels (where we are interested in the values), we ideally want to have a precise [PMF](https://en.wikipedia.org/wiki/Probability_mass_function) for a random variable:
+Because these floored distributions are necessarily quite shifted, they will not look like anything that we can just give our $\sigma$ and $\mu$ and expect a reasonable likelihood. We want the precise [PMF](https://en.wikipedia.org/wiki/Probability_mass_function) for the sum of our ability scores. Define $Z_{paladin}$ as:
 
 $$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12\rfloor} + X_4^{\lfloor9\rfloor} + X_5^{\lfloor0\rfloor} + X_6^{\lfloor0\rfloor}$$
 
@@ -787,11 +777,14 @@ where $X_i^{\lfloor N \rfloor}$ is the precise, `3d6` based multinomial distribu
 
 It is actually possible to [inductively compute](https://stats.libretexts.org/Bookshelves/Probability_Theory/Book%3A_Introductory_Probability_(Grinstead_and_Snell)/07%3A_Sums_of_Random_Variables/7.01%3A_Sums_of_Discrete_Random_Variables) the pdfs of $Z$ via convolution. This [answer explains it in the simplest terms](https://stats.stackexchange.com/questions/3614/how-to-easily-determine-the-results-distribution-for-multiple-dice/3684#3684).
 
+Most answers here requires **either** mathematica functions (that we do not have here in our inlined source), **or** we need to go through a laborious and manual through [characteristic functions](https://en.wikipedia.org/wiki/Characteristic_function_(probability_theory)) (see [sum of multinomials answer](https://math.stackexchange.com/questions/3076634/sum-of-two-multinomial-random-variables)) and [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution). If someone wants to contribute or help out here, I'd be interested to see, but for my own sanity; we will leave this here for now.
+
+
 Let $X_{12} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor}$, then we can generate values for the pmf for $X_{12}$ via the pmfs $p_{X_i}$ for $X_1^{\lfloor17\rfloor}$ and $X_2^{\lfloor13\rfloor}$:
 
 $$P(X_{12} = n) = (p_{X_1} * p_{X_2})(n) = \sum_{m=-\infty}^{\infty}P(X_1=m)P(X_2 = n-m)$$
 
-The first iteration here is particularly easy, because $X_1^{\lfloor17\rfloor}$ only takes two values.
+The first iteration here is particularly easy, because $X_1^{\lfloor17\rfloor}$ only takes two values. This means most of the hard work is just getting correct indexes and defaulting of our internal probability arrays that serve as our mass functions. You can view source for details.
 
 <div id="probhist3convolved" style="width:600px;height:450px;"></div>
 
@@ -837,33 +830,52 @@ var convolve = function (pXi, pXj) {
   return pXij;
 }
 
-let pX1 = TRUNCATED_DISTS[17]; // 2 values; 17,18
-let pX2 = TRUNCATED_DISTS[13]; // 6 values; 13,...,18
-let pX3 = TRUNCATED_DISTS[12]; // 7 values; 12,13,14,15,16,17,18
-let pX4 = TRUNCATED_DISTS[9]; // 10 values; 9,...,18
-let pX5 = TRUNCATED_DISTS[3]; // 16 values; 3,...,18
-let pX6 = TRUNCATED_DISTS[3].slice();
+// doing paladin from function above:
+//let pX1 = TRUNCATED_DISTS[17]; // 2 values; 17,18
+//let pX2 = TRUNCATED_DISTS[13]; // 6 values; 13,...,18
+//let pX3 = TRUNCATED_DISTS[12]; // 7 values; 12,13,14,15,16,17,18
+//let pX4 = TRUNCATED_DISTS[9]; // 10 values; 9,...,18
+//let pX5 = TRUNCATED_DISTS[3]; // 16 values; 3,...,18
+//let pX6 = TRUNCATED_DISTS[3]; // ditto
+//let gen12 = convolve(pX1, pX2); // dist from 30 -> 36
+//let gen123 = convolve(gen12, pX3); // dist from 42 -> 54
+//let gen1234 = convolve(gen123, pX4); // dist from 51 -> 72
+//let gen12345 = convolve(gen1234, pX5); // dist from 54 -> 90
+//let gen123456 = convolve(gen12345, pX6); // dist from 57 -> 108
+//console.log(gen123456, gen123456.length)
 
-let gen12 = convolve(pX1, pX2); // dist from 30 -> 36
-let gen123 = convolve(gen12, pX3); // dist from 42 -> 54
-let gen1234 = convolve(gen123, pX4); // dist from 51 -> 72
-let gen12345 = convolve(gen1234, pX5); // dist from 54 -> 90
-let gen123456 = convolve(gen12345, pX6); // dist from 57 -> 108
-console.log(gen123456, gen123456.length)
+// automating class convolution
+CONVOLVED_DISTS = {};
+var gen_convolved_trace_for_class_dist = function(dists, klss) {
+  var pX1 = TRUNCATED_DISTS[dists[0]];
+  var pX2 = TRUNCATED_DISTS[dists[1]];
+  var pX3 = TRUNCATED_DISTS[dists[2]];
+  var pX4 = TRUNCATED_DISTS[dists[3]];
+  var pX5 = TRUNCATED_DISTS[dists[4]];
+  var pX6 = TRUNCATED_DISTS[dists[5]];
+  var start = dists.reduce((acc, e) => acc+e, 0); // start at sum of floors
 
+  let gen12 = convolve(pX1, pX2); // dist from 30 -> 36
+  let gen123 = convolve(gen12, pX3); // dist from 42 -> 54
+  let gen1234 = convolve(gen123, pX4); // dist from 51 -> 72
+  let gen12345 = convolve(gen1234, pX5); // dist from 54 -> 90
+  let gen123456 = convolve(gen12345, pX6); // dist from 57 -> 108
+  CONVOLVED_DISTS[klss] = gen123456;
 
-
-var trace_paladin = {
-  x: gen123456.slice().map((x,i)=>i + 3+3+9+12+13+17),
-  y: gen123456,
-  name: 'pmf paladin',
-  text: gen123456.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
-  opacity: 0.8,
-  type: "scatter",
-};
-
-
-var data = [trace_paladin];
+  return {
+    x: gen123456.slice().map((x,i)=> i + start),
+    y: gen123456,
+    name: klss,
+    text: gen123456.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
+    opacity: 0.8,
+    type: "scatter",
+  };
+}
+var trace_paladin = gen_convolved_trace_for_class_dist([17,13,12,9,3,3], 'paladin');
+var trace_ranger = gen_convolved_trace_for_class_dist([14,14,13,13,3,3], 'ranger');
+var trace_fighter = gen_convolved_trace_for_class_dist([9,3,3,3,3,3], 'fighter');
+trace_fighter.visible = 'legendonly'; // default off since we've kind of covered it
+var data = [trace_paladin, trace_ranger, trace_fighter];
 var layout = {
   title: "Convolved Ability Distributions for Classes",
   xaxis: {title: "Roll"},
@@ -872,17 +884,70 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3convolved'), data, layout);
 </script>
 
+> Notice the heavily tilted ranger/paladin distributions whose lean is distinctively more to the right.
 
+These distributions again need to be truncated at `75` like before to get our true, final probabilities:
 
+<div id="probhist3convolvedtrunc" style="width:600px;height:450px;"></div>
+<script>
+var truncated_klass = function (klss) {
+  let CONVOLVED = CONVOLVED_DISTS[klss];
+  // calculate probability up to cutoff point:
+  let TRUNC_SUM = CONVOLVED.slice(-(108-75+1)).reduce((acc, e) => acc+e, 0);
+  // truncate and scale (rectify) the right side of the distribution:
+  let TRUNC_CONV = CONVOLVED.slice(-(108-75+1)).map(x => x / TRUNC_SUM);
+  // sanity sum (all 1)
+  console.log("Sum of convolved truncated", klss, TRUNC_CONV.reduce((acc, e)=>acc+e, 0));
+  //let expectation = TRUNC_CONV.map((x,i) => (i+t)*x).reduce((acc, e) => acc+e, 0);
+  //let variance = TRUNC_CONV.map((x,i) => Math.pow(i+t - expectation, 2)*x).reduce((acc, e) => acc+e, 0);
+  //console.log("Expectation, variance for conv truncated", klss, expectation, variance);
+  return {
+    x: TRUNC_CONV.map((x,i) => i +75),
+    y: TRUNC_CONV,
+    name: klss,
+    text: TRUNC_CONV.map(x => "expected once in " + Intl.NumberFormat().format(Math.floor(1/x)) + " rolls"),
+    opacity: 0.8,
+    type: "scatter",
+  };
+};
+let trace_trunconv_paladin = truncated_klass('paladin');
+let trace_trunconv_fighter = truncated_klass('fighter');
+let trace_trunconv_ranger = truncated_klass('ranger');
+trace_trunconv_fighter.visible = 'legendonly';
+var data = [trace_trunconv_paladin, trace_trunconv_fighter, trace_trunconv_ranger];
+var layout = {
+  title: "True Roll Distributions for Classes",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhist3convolvedtrunc'), data, layout);
+</script>
 
-However, this also requires **either** mathematica functions (that we do not have here in our inlined source), **or** we need to go through a laborious and manual through [characteristic functions](https://en.wikipedia.org/wiki/Characteristic_function_(probability_theory)) (see [sum of multinomials answer](https://math.stackexchange.com/questions/3076634/sum-of-two-multinomial-random-variables)) and [convolution](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution). If someone wants to contribute or help out here, I'd be interested to see, but for my own sanity; we will leave this here for now.
+As can be seen; paladin becomes more efficient when hunting for numbers > 100, before that, ranger always performs slightly better (90 -> 97 range in particularly favours ranger).
 
-Hope you have enjoy this infrequent brain dump.
+We conclude with the smallest numbers needed to roll above a certain threshold where we use the most efficient class based on the number:
+
+- `108` paladin rolls once in `100 billion` (210y)
+- `107` paladin rolls once in `5 billion` (10y)
+- `106` paladin rolls once in `600 million` (1y)
+- `105` paladin rolls once in `100 million` (11w)
+- `104` paladin rolls once in `19 million` (2w)
+- `103` paladin rolls once in `5 million` (4d)
+- `102` paladin rolls once in `1.4 million` (1d)
+- `101` paladin rolls once in `400k` (7h)
+- `100` paladin rolls once in `150k` (3h)
+- `99` ranger rolls once in `57k` (1h)
+- `98` ranger rolls once in `23k` (25m)
+- `97` ranger rolls once in `10k` (11m)
+- `96` ranger rolls once in `5k` (5m)
+- `95` ranger rolls once in `2k` (2m)
+
+Hope you have enjoyed this random brain dump on probability.
 
 <small>/me closes 20 tabs</small>
 
 ## Appendix
-<details><summary style="cursor:pointer"><b>1. Raw data</b></summary>
+<details><summary style="cursor:pointer"><b>1. Raw simulation data</b></summary>
 <p>
 
 10 hour paladin roll (`555558` rolls in `601m`)
@@ -1105,6 +1170,50 @@ Hope you have enjoy this infrequent brain dump.
 17: 1/72
 18: 1/216
 ```
+
+</p>
+</details>
+
+<details><summary style="cursor:pointer"><b>4. Comparing observed vs. computed by class</b></summary>
+<p>
+We compare with the precise $Z_{class}$ distributions worked out by convolution above.
+
+<div id="probhistappdxpala" style="width:600px;height:450px;"></div>
+<script>
+trace_obs_paladin.name = "observed paladin";
+var data = [trace_trunconv_paladin, trace_obs_paladin];
+var layout = {
+  title: "Theoretical vs Observed Distributions for Paladin",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhistappdxpala'), data, layout);
+</script>
+
+<div id="probhistappdxrang" style="width:600px;height:450px;"></div>
+<script>
+trace_obs_ranger.name = "observed ranger";
+var data = [trace_trunconv_ranger, trace_obs_ranger];
+var layout = {
+  title: "Theoretical vs Observed Distributions for Ranger",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhistappdxrang'), data, layout);
+</script>
+
+// TODO: include multinomial to show tiny bias
+<div id="probhistappdxfig" style="width:600px;height:450px;"></div>
+<script>
+trace_obs_fighter.name = "observed fighter";
+var data = [trace_trunconv_fighter, trace_obs_fighter];
+var layout = {
+  title: "Theoretical vs Observed Distributions for Fighter",
+  xaxis: {title: "Roll"},
+  yaxis: {title: "Probability"},
+};
+Plotly.newPlot(document.getElementById('probhistappdxfig'), data, layout);
+</script>
 
 </p>
 </details>
