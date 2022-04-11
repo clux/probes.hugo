@@ -1,7 +1,7 @@
 ---
 title: "Baldur's Gate: Multinomial Edition"
 subtitle: Auto-rolling and getting nerd sniped before venturing forth
-date: 2022-04-01
+date: 2022-04-12
 tags: []
 categories: ["gaming"]
 ---
