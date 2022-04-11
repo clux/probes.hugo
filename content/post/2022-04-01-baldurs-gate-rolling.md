@@ -10,34 +10,32 @@ In a ~~brief~~ bout of escapism from the world and responsibilities, I booted up
 
 For today's installment; rather than telling you about the game, let's talk about the **maths** behind rolling a `2e` character for `BG2`, and then running simulations with weird `X`-based linux tools.
 
-TODO: gif of roll clicking...
-TODO: maybe just a reroll button that links to the article?
-
 <!--more-->
 <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
 
 ## Rolling a character
 
-Basics; D&D (2e) has:
+The `BG2` character generation mechanics is almost entirely based on the rules from `AD&D 2e`. You get `6` ability scores, and each ability score is rolled as the sum of `3d6`.
 
-- `6` ability scores
-- each ability == sum of rolling `3d6`
+> Probablistically; this **should** give you a character with an expected `63` total ability points (as a result of rolling `18d6`).
 
-This **should** give you a character with an expected "10.5" points per ability (or a sum of `63` in total), and the process looks like this:
+Mechanically, you are in this screen:
 
-TODO: gif of boring rolling
+![bg2 stat rolling screen](/imgs/bg/rolling.png)
 
-It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going, encouraging excessive time investment (the irony in writing this blog post is not lost on me). They should have just gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
+...and they have given you a `reroll` button.
 
-Still, **suppose** you want to **automate rolling** (or want to think about combinatorics, multinomials, and weird `X` tools), then you can use this post. You can also figure out **how long it will take** you to receive your _"good roll"_.
+It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). They should have gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
-> HINT: ..it's less time than it took to write this blogpost.
+Still, **suppose** you want to **automate rolling** (or want to think about combinatorics, multinomials, and weird `X` tools), then you can use this post. You can also figure out **how long it's expected to take** to roll high.
+
+> HINT: ..it's less time than it took to write this blogpost - but less mindnumbing.
 
 ## Disclaimer
 
-Using the script used herein to achieve higher rolls than you have patience for, is on some level; cheating. That said, it's a fairly pointless effort, not worth caring about:
+Using the script used herein to achieve higher rolls than you have patience for, is on some level; cheating. That said, it's a fairly pointless effort:
 
-- this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn) single player game, and you can reduce the difficulty
+- this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn), unranked rpg with difficulty settings
 - having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
 - early items nullify effects of common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence))
 - you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [underflow](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
@@ -155,7 +153,7 @@ What's **left of this cutoff** actually accounts for around `94%` of the distrib
 
 > `AD&D 2e` had its [own ways to tilt the distribution](https://advanced-dungeons-dragons-2nd-edition.fandom.com/wiki/Rolling_Ability_Scores) in a way that resulted in more powerful characters.
 
-How such a truncation or censoring is performed is at the mercy of the BG engine. We will [rectify](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) the distribution by **scaling up** a truncated version of our distribution, and show that this is correct later.
+How such a truncation or censoring is performed is at the mercy of the BG engine. We will [rectify](https://en.wikipedia.org/wiki/Rectified_Gaussian_distribution) the distribution by **scaling up** the truncated version of our distribution, and show that this is correct later.
 
 <div id="probhist3" style="width:600px;height:450px;"></div>
 
@@ -167,7 +165,6 @@ var scaled_legend = SCALED_PROBS.map(x => "expected once in " + Intl.NumberForma
 
 //console.log("probability of rolling gte 75", prob_over_74);
 //console.log(SCALED_PROBS.reduce((acc, e) => acc + e, 0)); // 1!
-// TODO: show zeroes on left side to seed idea of truncation better?
 var trace = {
   x: ALL_X.slice(75-18),
   y: SCALED_PROBS,
@@ -223,7 +220,7 @@ Basic strategy;
 - compare screenshot to previous rolls
 - press `store` when a new maximum is found
 
-The script also does some extra stuff to determine the strength roll, but that's not relevant here (it just makes perfect type rolls 100 times less likely if it's a stat you optimize for).
+The script also does some extra stuff to determine the strength roll, but that's not relevant here.
 
 ### Initialization
 
@@ -263,17 +260,15 @@ The menu background is **static** and the resulting screenshots are actually **c
 
 ## Clicking
 
-Clicking is pretty easy;
+Automating a click is simply:
 
 ```sh
 xdotool mousemove "$REROLL_BTN_X" "$REROLL_BTN_Y" click --delay=0 1
 ```
 
-Notice the `--delay=0` to override the builtin delay between clicks.
+where the `--delay=0` overrides a builtin delay between clicks.
 
-The only complication here is that BG performs **internal buffering** of clicks, so this allows us to blast through numbers faster than the screen can display them.
-
-This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll before another click is registered.
+The only complication here is that BG performs **internal buffering** of clicks, so this allows us to blast through numbers faster than the screen can display them. This means we have to compensate with a `sleep 0.001` after clicking to ensure we can grab the `scrot` of the roll before another click is registered.
 
 ## Showcase
 
@@ -384,6 +379,8 @@ So if we only look at human fighters or mages, we can stop here:
 
 However, what's up with the paladins and rangers? Time for a more painful math detour.
 
+![sweat mile cat math](/imgs/bg/amicat1-math.gif)
+
 ### Class/Race Variance
 
 The reason for the discrepancy is simple: [stat floors based on races/class](https://rpg.stackexchange.com/questions/165377/how-do-baldurs-gate-and-baldurs-gate-2s-rolling-for-stats-actually-get-gene).
@@ -398,10 +395,7 @@ The floors for a some of the classes:
 - **ranger** mins: `CON=14`, `WIS=14`, `STR=13`, `DEX=13`, rest `3`
 - **[other classes](https://old.reddit.com/r/baldursgate/comments/reevp6/everyone_enjoys_a_good_high_ability_score_role_so/)** mins: generally light floors
 
-<!-- TODO: can we calculate the expectation here? not unless we have a distribution to map it onto... -->
-
 _In other words_: paladins and rangers have significantly higher rolls on average.
-
 
 > Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. This seems very anti-fun, but hey.
 
