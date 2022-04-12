@@ -38,7 +38,7 @@ Using the script used herein to achieve higher rolls than you have patience for,
 - this is an [old](https://en.wikipedia.org/wiki/Baldur%27s_Gate_II:_Shadows_of_Amn), unranked rpg with difficulty settings
 - having [dump stats](https://tvtropes.org/pmwiki/pmwiki.php/Main/DumpStat) is not heavily penalized in the game
 - early items nullify effects of common dump stats ([19 STR girdle](https://baldursgate.fandom.com/wiki/Girdle_of_Hill_Giant_Strength) or [18 CHA ring](https://baldursgate.fandom.com/wiki/Ring_of_Human_Influence))
-- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory [underflow](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
+- you can get [max stats in 20 minutes](https://www.youtube.com/watch?v=5dDmh98lmkA) with by abusing inventory+stat [underflow](https://baldursgate.fandom.com/wiki/Exploits#Potion_Swap_Glitch)
 - some [NPCS](https://baldursgate.fandom.com/wiki/Edwin_Odesseiron) come with [gear](https://baldursgate.fandom.com/wiki/Edwin%27s_Amulet) that blows __marginally better stats__ out of the water
 
 So assuming you have a reason to be here despite this; let's dive in to some maths.
