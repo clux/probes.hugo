@@ -2,7 +2,7 @@
 title: "Baldur's Gate: Multinomial Edition"
 subtitle: Auto-rolling and getting nerd sniped before venturing forth
 date: 2022-04-12
-tags: []
+tags: ["math"]
 categories: ["gaming"]
 ---
 
@@ -27,9 +27,9 @@ Mechanically, you are in this screen:
 
 It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). They should have gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
 
-Still, **suppose** you want to **automate rolling** (or want to think about combinatorics, multinomials, and weird `X` tools), then you can use this post. You can also figure out **how long it's expected to take** to roll high.
+Still, **suppose** you want learn how to automate this, or you just want to think about combinatorics, multinomials, and weird `X` tools for a while, then this is the right place. You will also figure out **how long it's expected to take** to roll high.
 
-> HINT: ..it's less time than it took to write this blogpost - but less mindnumbing.
+> HINT: ..it's less time than it took to write this blogpost
 
 ## Disclaimer
 
@@ -47,12 +47,12 @@ So assuming you have a reason to be here despite this; let's dive in to some mat
 
 > How likely are you to get a 90/95/100?
 
-Rolling a 6 sided dice 18 times follows the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) where all individual trial outcomes are equally likely, and each individual trial element follows the same distribution. We are going to follow the multinomial expansion at [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$:
+The sum of rolling 18 six-sided dice follows an easier variant of the [multinomial distribution](https://en.wikipedia.org/wiki/Multinomial_distribution) where we have equal event probabilities. We are going to follow the _simpler_ multinomial expansion from [mathworld/Dice](https://mathworld.wolfram.com/Dice.html) for `s=6` and `n=18` and find $P(x, 18, 6)$ which we will denote as $P(X = x)$; the chance of rolling a sum equal to $x$:
 
 $$P(X = x) = \frac{1}{6^{18}} \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \binom{18}{k} \binom{x-6k-1}{17}$$
-$$ = \sum_{k=0}^{k_{max}} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
+$$ = \sum_{k=0}^{\lfloor(x-18)/6\rfloor} (-1)^k \frac{18}{k!(18-k)!} \frac{(x-6k-1)!}{(x-6k-18)!}$$
 
-where $k_{max} = \lfloor(x-18)/6\rfloor$. If we were to expand this expression, the variability of $k_{max}$ would yield 15 different sum expressions - and the ones we care about would all have 10+ expressions. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
+If we were to expand this expression, we would get 15 different expressions depending on how big of an $x$ you want to determine. So rather than trying to reduce this to a polynomial expression over $p$, we will [paste values into wolfram alpha](https://www.wolframalpha.com/input?i2d=true&i=+Divide%5B1%2CPower%5B6%2C18%5D%5DSum%5BPower%5B%5C%2840%29-1%5C%2841%29%2Ck%5D+*binomial%5C%2840%2918%5C%2844%29+k%5C%2841%29*binomial%5C%2840%2991-6k-1%5C%2844%29+17%5C%2841%29%2C%7Bk%2C0%2Cfloor%5C%2840%29Divide%5B%5C%2840%2991-18%5C%2841%29%2C6%5D%5C%2841%29%7D%5D) and tabulate for $[18, \ldots, 108]$.
 
 You can see the <a href="#appendix">appendix</a> for the numbers. Here we will just plot the values:
 
@@ -272,6 +272,8 @@ The only complication here is that BG performs **internal buffering** of clicks,
 
 ## Showcase
 
+Running the script (with a terminal showing the script output overlayed) looks like this:
+
 {{< youtube 849xInj3GmI >}}
 
 On my machine, we get just over **15 rolls per second**.
@@ -397,9 +399,9 @@ The floors for a some of the classes:
 
 _In other words_: paladins and rangers have significantly higher rolls on average.
 
-> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. This seems very anti-fun, but hey.
+> Sidenote: in `2e` you actually rolled stats first, and **only if** you met the **requirements** could you become a Paladin / Ranger. It's an interesting choice. Would not call this fun.
 
-Now, how do we go about actually calculating useful values here?
+Anyway. Is it possible to incorporate these floors into our modelling?
 
 ## Floored Ability Distributions
 
@@ -436,7 +438,7 @@ var layout = {
 Plotly.newPlot(document.getElementById('probhist3roll'), data, layout);
 </script>
 
-then we truncate this at the observed floor points `9`, `12`, `13`, `14`, and `17`:
+then we truncate + scale this at the observed floor points `9`, `12`, `13`, `14`, and `17`:
 
 
 <div id="probhist3rolltruncs" style="width:600px;height:450px;"></div>
@@ -514,7 +516,7 @@ $$Z_{paladin} = X_1^{\lfloor17\rfloor} + X_2^{\lfloor13\rfloor} + X_3^{\lfloor12
 $$Z_{ranger} = X_1^{\lfloor14\rfloor} + X_2^{\lfloor14\rfloor} + X_3^{\lfloor13\rfloor} + X_4^{\lfloor13\rfloor} + X_5^{\lfloor3\rfloor} + X_6^{\lfloor3\rfloor}$$
 $$Z_{fighter} = X_1^{\lfloor9\rfloor} + X_2^{\lfloor3\rfloor} + X_3^{\lfloor3\rfloor} + X_4^{\lfloor3\rfloor} + X_5^{\lfloor3\rfloor} + X_6^{\lfloor3\rfloor}$$
 
-for random variables $X_i^{\lfloor N \rfloor}  \sim \mathcal{M}^{\lfloor N \rfloor}(3d6)$.
+for floored 3d6 based random variables $X_i^{\lfloor N \rfloor}  \sim \mathcal{M}^{\lfloor N \rfloor}(3d6)$.
 
 Using the computed expectations above to sum across the 6 main stats:
 
@@ -539,7 +541,7 @@ Thus, the distributions of our classes are based on multinomal-based distributio
 - $Uncensored\ Ranger \sim \mathcal{M}(\mu = 79.5, \sigma^2 = 4.82^2)$
 - $Uncensored\ Paladin \sim \mathcal{M}(\mu = 77.86, \sigma^2 = 5.12^2)$
 
-However, this is only useful for a quick overview of the distributions. Without the **[PMF](https://en.wikipedia.org/wiki/Probability_mass_function)** for the **sum of our ability scores**, it's hard to give good values for what the truncated version will look like. In particular, these heavily floored random variables end up giving us quite asymmetrical distributions in the tails.
+This is nice as a quick overview of what's best in the higher ranges, but it's not very precise. Without the **[PMF](https://en.wikipedia.org/wiki/Probability_mass_function)** for the **sum of our ability scores**, it's hard to give good values for what the truncated version will look like (we are censoring in two stages). In particular, these heavily floored random variables end up giving us quite asymmetrical distributions in the tails.
 
 ### Class Distributions
 
@@ -553,7 +555,7 @@ $$P(X_{12} = n) = (p_{X_1} * p_{X_2})(n) = \sum_{m=-\infty}^{\infty}P(X_1=m)P(X_
 
 This step is particularly easy for the paladin, because $X_1^{\lfloor17\rfloor}$ only takes two values (i.e. $m=17$ ahd $m=18$ are the only non-zero parts in the sum).
 
-The rest is less easy to do by hand, as the sums get increasingly hairy while we iterate towards $Z=P_{123456}$ by repeatedly applying convolution to the remaining $X_i$:
+The rest is less easy to do by hand, as the sums get increasingly large while we iterate towards $Z=P_{123456}$ by repeatedly applying convolution to the remaining $X_i$:
 
 $$P(X_{123} = n) = (p_{X_{12}} * p_{X_3})(n) \sum_{m=-\infty}^{\infty}P(X_{12}=m)P(X_3 = n-m)$$
 
@@ -585,7 +587,11 @@ var convolve = function (pXi, pXj) {
 // returns [0.28125, 0.29464, 0.2009, 0.125, 0.06696, 0.02678, 0.004464]
 ```
 
-The result is the PMF for $Z_{class}$ via $P_{X_{123456}}$ graphed below. The source of this post goes through the calculations in detail.
+Using this, we can compute the PMF for $Z_{class} = X_{123456}$:
+
+$$P(Z_{class} = z) = (((((p_{X_1} * p_{X_2}) * p_{X_3}) * p_{X_4}) * p_{X_5}) * p_{X_6}) (z)$$
+
+and we graph them for various classes:
 
 <div id="probhist3convolved" style="width:600px;height:450px;"></div>
 
