@@ -6,7 +6,7 @@
 <title>Baldur's Gate: Multinomial Edition - probes</title>
 <meta name=description content="Auto-rolling and getting nerd sniped before venturing forth">
 <meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2022-04-12-baldurs-roll\/","name":"Baldur\u0027S gate multinomial edition"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Baldur\u0027s Gate: Multinomial Edition","description":"In a brief bout of escapism from the world and responsibilities, I booted up Baldur\u0026rsquo;s Gate 2 with my brother. It\u0026rsquo;s an amazing game, once you have figured out how to roll your character.\nFor today\u0026rsquo;s installment; rather than telling you about the game, let\u0026rsquo;s talk about the maths behind rolling a 2e character for BG2, and then running simulations with weird X-based linux tools.\n","inLanguage":"en","wordCount":5503,"datePublished":"2022-04-12T00:00:00","dateModified":"2022-04-12T00:00:00","image":"https:\/\/clux.dev\/","keywords":["math"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2022-04-12-baldurs-roll\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2022-04-12-baldurs-roll\/","name":"Baldur\u0027S gate multinomial edition"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Baldur\u0027s Gate: Multinomial Edition","description":"In a brief bout of escapism from the world and responsibilities, I booted up Baldur\u0026rsquo;s Gate 2 with my brother. It\u0026rsquo;s an amazing game, once you have figured out how to roll your character.\nFor today\u0026rsquo;s installment; rather than telling you about the game, let\u0026rsquo;s talk about the maths behind rolling a 2e character for BG2, and then running simulations with weird X-based linux tools.\n","inLanguage":"en","wordCount":5514,"datePublished":"2022-04-12T00:00:00","dateModified":"2022-04-12T00:00:00","image":"https:\/\/clux.dev\/","keywords":["math"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2022-04-12-baldurs-roll\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
 <meta property="og:title" content="Baldur's Gate: Multinomial Edition">
 <meta property="og:description" content="Auto-rolling and getting nerd sniped before venturing forth">
 <meta property="og:url" content="https://clux.dev/post/2022-04-12-baldurs-roll/">
@@ -97,6 +97,7 @@
 <h2 class=post-subheading>Auto-rolling and getting nerd sniped before venturing forth</h2>
 <span class=post-meta>
 <i class="fas fa-calendar"></i>&nbsp;Posted on April 12, 2022
+&nbsp;(Last modified on April 14, 2022)
 &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux
 </span>
 </div>
@@ -120,8 +121,8 @@
 <p>Mechanically, you are in this screen:</p>
 <p><img src=https://clux.dev/imgs/bg/rolling.png alt="bg2 stat rolling screen"></p>
 <p>&mldr;and they have given you a <code>reroll</code> button.</p>
-<p>It&rsquo;s a pretty dumb design idea to port the rolling mechanics from <code>d&d</code> into the game. In a normal campaign you&rsquo;d get one chance rolling, but here, there&rsquo;s no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). They should have gone for something like <a href=https://chicken-dinner.com/5e/5e-point-buy.html>5e point buy</a>.</p>
-<p>Still, <strong>suppose</strong> you want learn how to automate this, or you just want to think about combinatorics, multinomials, and weird <code>X</code> tools for a while, then this is the right place. You will also figure out <strong>how long it&rsquo;s expected to take</strong> to roll high.</p>
+<p>It&rsquo;s a strange design idea to port the rolling mechanics from <code>d&d</code> into this game. In a normal campaign you&rsquo;d usually get one chance rolling, but here, there&rsquo;s no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). <small>The character creation in BG2 would probably have been less perfection focused if they&rsquo;d gone for something like <a href=https://chicken-dinner.com/5e/5e-point-buy.html>5e point buy</a>.</small></p>
+<p>Anyway, <strong>suppose</strong> you want learn how to automate this, or you just want to think about combinatorics, multinomials, and weird <code>X</code> tools for a while, then this is the right place. You will also figure out <strong>how long it&rsquo;s expected to take</strong> to roll high.</p>
 <blockquote>
 <p>HINT: ..it&rsquo;s less time than it took to write this blogpost</p>
 </blockquote>
@@ -733,7 +734,7 @@ clux
 </p>
 <p class="credits theme-by text-muted">
 <a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
-&nbsp;&bull;&nbsp;[<a href=fb8ea553c75cbf2b4f9dbecd633b377abc0f16df>fb8ea553</a>]
+&nbsp;&bull;&nbsp;[<a href=937221c4df78fb746d826293e4b1c55240103787>937221c4</a>]
 </p>
 </div>
 </div>
