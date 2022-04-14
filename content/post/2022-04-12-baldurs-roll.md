@@ -25,9 +25,9 @@ Mechanically, you are in this screen:
 
 ...and they have given you a `reroll` button.
 
-It's a pretty dumb design idea to port the rolling mechanics from `d&d` into the game. In a normal campaign you'd get one chance rolling, but here, there's no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). They should have gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).
+It's a strange design idea to port the rolling mechanics from `d&d` into this game. In a normal campaign you'd usually get one chance rolling, but here, there's no downside to keeping going; encouraging excessive time investment (the irony in writing a blog post on this is not lost on me). <small>The character creation in BG2 would probably have been less perfection focused if they'd gone for something like [5e point buy](https://chicken-dinner.com/5e/5e-point-buy.html).</small>
 
-Still, **suppose** you want learn how to automate this, or you just want to think about combinatorics, multinomials, and weird `X` tools for a while, then this is the right place. You will also figure out **how long it's expected to take** to roll high.
+Anyway, **suppose** you want learn how to automate this, or you just want to think about combinatorics, multinomials, and weird `X` tools for a while, then this is the right place. You will also figure out **how long it's expected to take** to roll high.
 
 > HINT: ..it's less time than it took to write this blogpost
 
