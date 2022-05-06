@@ -31,7 +31,7 @@ These days, **[kube-rs](https://github.com/kube-rs/kube-rs)** - which has grown 
 
 Work-wise, you might remember me from these open source projects:
 
-- 2018 [babylon/shipcat](https://github.com/babylonhealth/shipcat) :: a typed config management system for kubernetes microservices (pretty babylon specific, but helped us control early gitops)
+- 2018 [babylon/shipcat](https://github.com/clux/shipcat) :: a typed config management system for kubernetes microservices (pretty babylon specific, but helped us control early gitops)
 - 2016 [cisco/lal](https://github.com/cisco/lal-build-manager) :: a language agnostic build system (the [old build team](https://github.com/orgs/lalbuild/people) have a [fork](https://github.com/lalbuild/lal), but haven't needed it much since rust)
 
 ### Roleplaying
