@@ -6,9 +6,17 @@ tags: ["running"]
 categories: ["life"]
 ---
 
-As a more healthy habit, I ran a lot this year. Trained about half a year for Royal Parks Half Marthon (3 months mileage training and 3 months on a program) with an average mileage of 70km/w on the program. Also beat pretty much all my endurance records in the process. Sub 40min 10k, sub 90 min halfs, and a VO2max estimate going from 52 to 58. It's been pretty fun. Post is just some stats for myself.
+As a more healthy habit, I ran a lot this year. Trained about half a year for Royal Parks Half Marthon (3 months mileage training and 3 months on a program) with an average mileage of 70km/w on the program. Also beat pretty much all my endurance records in the process. Post is just some stats for myself.
 
 <!--more-->
+
+## Records Broken
+
+- ~~[41:51 on 10k on 08 Jun](https://www.strava.com/activities/7274508726)~~
+- [11:15 on 3k on 28 Sep](https://www.strava.com/activities/7878906931/overview)
+- [39:29 on 10k on 04 Sep](https://www.strava.com/activities/7750969909/overview)
+- [1:29:34 on HM on 09 Oct](https://www.strava.com/activities/7934772777#21922284308)
+
 
 ## Log
 
@@ -27,7 +35,7 @@ https://connect.garmin.com/modern/report/17/all/last_year
 | Jul   | 266k    | 56     |
 | Aug   | 322k    | 57     |
 | Sep   | 333k    | 58     |
-| Oct   | ??k     | 57     |
+| Oct   | 249k    | 57     |
 | Nov   | ??k     | ??     |
 | Dec   | ??      | ??     |
 
