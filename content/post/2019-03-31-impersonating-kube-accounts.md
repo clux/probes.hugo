@@ -12,6 +12,8 @@ While controllers and operators authenticate with service accounts directly, thi
 
 <!--more-->
 
+**EDIT:** as of Kubernetes 1.24 the bypass method **no longer works**.
+
 ..but why would you need to do this?
 
 ### 1. Testing service account access
