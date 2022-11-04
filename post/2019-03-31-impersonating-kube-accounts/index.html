@@ -6,7 +6,7 @@
 <title>Impersonating kube service accounts - probes</title>
 <meta name=description content="Bypassing complicated kubernetes identity providers">
 <meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2019-03-31-impersonating-kube-accounts\/","name":"Impersonating kube service accounts"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Impersonating kube service accounts","description":"Authenticating with large kubernetes clusters often risks you dealing with complicated provider logic and sometimes policies outside your control.\nWhile controllers and operators authenticate with service accounts directly, this is only true inside the cluster. That is, unless you can impersonate the service account from outside.\n","inLanguage":"en","wordCount":681,"datePublished":"2019-03-31T00:00:00","dateModified":"2019-03-31T00:00:00","image":"https:\/\/clux.dev\/","keywords":["bash, kubernetes"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2019-03-31-impersonating-kube-accounts\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2019-03-31-impersonating-kube-accounts\/","name":"Impersonating kube service accounts"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Impersonating kube service accounts","description":"Authenticating with large kubernetes clusters often risks you dealing with complicated provider logic and sometimes policies outside your control.\nWhile controllers and operators authenticate with service accounts directly, this is only true inside the cluster. That is, unless you can impersonate the service account from outside.\n","inLanguage":"en","wordCount":692,"datePublished":"2019-03-31T00:00:00","dateModified":"2019-03-31T00:00:00","image":"https:\/\/clux.dev\/","keywords":["bash, kubernetes"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2019-03-31-impersonating-kube-accounts\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
 <meta property="og:title" content="Impersonating kube service accounts">
 <meta property="og:description" content="Bypassing complicated kubernetes identity providers">
 <meta property="og:url" content="https://clux.dev/post/2019-03-31-impersonating-kube-accounts/">
@@ -97,7 +97,7 @@
 <h2 class=post-subheading>Bypassing complicated kubernetes identity providers</h2>
 <span class=post-meta>
 <i class="fas fa-calendar"></i>&nbsp;Posted on March 31, 2019
-&nbsp;(Last modified on April 30, 2019)
+&nbsp;(Last modified on November 4, 2022)
 &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux
 </span>
 </div>
@@ -112,6 +112,7 @@
 <article role=main class=blog-post>
 <p>Authenticating with large kubernetes clusters often risks you dealing with complicated provider logic and sometimes policies outside your control.</p>
 <p>While controllers and operators authenticate with service accounts directly, this is only true inside the cluster. That is, unless you can impersonate the service account from outside.</p>
+<p><strong>EDIT:</strong> as of Kubernetes 1.24 the bypass method <strong>no longer works</strong>.</p>
 <p>..but why would you need to do this?</p>
 <h3 id=1-testing-service-account-access>1. Testing service account access</h3>
 <p>If you have a way to quickly impersonate a service account you can tell if your <a href=https://kubernetes.io/docs/reference/access-authn-authz/rbac/>rbac verbs, resources</a> are correct and were slash separated in the way kube expects.</p>
@@ -283,7 +284,7 @@ clux
 </p>
 <p class="credits theme-by text-muted">
 <a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
-&nbsp;&bull;&nbsp;[<a href=4b4c30bba988130c32de94354c5dc07112e5c06b>4b4c30bb</a>]
+&nbsp;&bull;&nbsp;[<a href=e7a4b98db8d6135733e0d703b2bc6655df670ed0>e7a4b98d</a>]
 </p>
 </div>
 </div>
