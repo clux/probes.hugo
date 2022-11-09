@@ -1,4 +1,4 @@
-HUGO := "klakegg/hugo:0.87.0-ubuntu-onbuild"
+HUGO := "klakegg/hugo:0.105.0-ubuntu-onbuild"
 
 default:
   @just --list --unsorted --color=always | rg -v "    default"
