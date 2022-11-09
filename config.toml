@@ -27,7 +27,7 @@ pygmentsStyle = "dracula"
   strava = "49770219"
   discord = "tokio"
   youtube = "channel/UCLpykMxkxuPUR9CciheipZg"
-  mastadon = "@clux@hachyderm.io"
+  mastadon = "https://hachyderm.io/@clux"
   steam = "sszynrae"
 
 [[menu.main]]
