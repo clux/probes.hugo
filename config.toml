@@ -21,12 +21,12 @@ pygmentsStyle = "dracula"
 [Author]
   name = "clux"
   github = "clux"
-  twitter = "sszynrae"
   reddit = "clux"
   email = "sszynrae@gmail.com"
   linkedin = "🗑-eirik-albrigtsen-b279863a"
   strava = "49770219"
   youtube = "channel/UCLpykMxkxuPUR9CciheipZg"
+  mastadon = "@clux@hachyderm.io"
   steam = "sszynrae"
 
 [[menu.main]]
