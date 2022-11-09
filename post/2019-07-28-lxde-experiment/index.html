@@ -1,254 +1,37 @@
-<!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Trying out LXDE - probes</title>
-<meta name=description content="How useful is a power optimized WM these days?">
-<meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2019-07-28-lxde-experiment\/","name":"Trying out lxde"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Trying out LXDE","description":"Despite having been a lazy Cinnamon customer since the Linux Mint days, recently some interesting benchmarks started surfacing about input lag in various Window Mangagers, and this made me want to experiment a little.\nThis is a log of stuff I needed to tweak to get LXDE working well.\n","inLanguage":"en","wordCount":720,"datePublished":"2019-07-28T00:00:00","dateModified":"2019-07-28T00:00:00","image":"https:\/\/clux.dev\/","keywords":["linux"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2019-07-28-lxde-experiment\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script>
-<meta property="og:title" content="Trying out LXDE">
-<meta property="og:description" content="How useful is a power optimized WM these days?">
-<meta property="og:url" content="https://clux.dev/post/2019-07-28-lxde-experiment/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="probes">
-<meta name=twitter:title content="Trying out LXDE">
-<meta name=twitter:description content="How useful is a power optimized WM these days?">
-<meta name=twitter:card content="summary">
-<meta name=generator content="Hugo 0.87.0">
-<link rel=alternate href=https://clux.dev/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
-<link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous>
-<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.dev/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
-<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.dev/css/syntax.css><link rel=stylesheet href=https://clux.dev/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
-<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous>
-</head>
-<body>
-<nav class="navbar navbar-default navbar-fixed-top navbar-custom">
-<div class=container-fluid>
-<div class=navbar-header>
-<button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
+<!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><title>Trying out LXDE - probes</title><meta name=description content="How useful is a power optimized WM these days?"><meta name=author content="clux"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"probes","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/clux.dev\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/clux.dev\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/clux.dev\/post\/2019-07-28-lxde-experiment\/","name":"Trying out lxde"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"clux"},"headline":"Trying out LXDE","description":"Despite having been a lazy Cinnamon customer since the Linux Mint days, recently some interesting benchmarks started surfacing about input lag in various Window Mangagers, and this made me want to experiment a little.\nThis is a log of stuff I needed to tweak to get LXDE working well.\n","inLanguage":"en","wordCount":720,"datePublished":"2019-07-28T00:00:00","dateModified":"2019-07-28T00:00:00","image":"https:\/\/clux.dev\/","keywords":["linux"],"mainEntityOfPage":"https:\/\/clux.dev\/post\/2019-07-28-lxde-experiment\/","publisher":{"@type":"Organization","name":"https:\/\/clux.dev\/","logo":{"@type":"ImageObject","url":"https:\/\/clux.dev\/","height":60,"width":60}}}</script><meta property="og:title" content="Trying out LXDE"><meta property="og:description" content="How useful is a power optimized WM these days?"><meta property="og:url" content="https://clux.dev/post/2019-07-28-lxde-experiment/"><meta property="og:type" content="website"><meta property="og:site_name" content="probes"><meta name=twitter:title content="Trying out LXDE"><meta name=twitter:description content="How useful is a power optimized WM these days?"><meta name=twitter:card content="summary_large_image"><meta name=generator content="Hugo 0.105.0"><link rel=alternate href=https://clux.dev/index.xml type=application/rss+xml title=probes><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css integrity=sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X crossorigin=anonymous><link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous><link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://clux.dev/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><link rel=stylesheet href=https://clux.dev/css/syntax.css><link rel=stylesheet href=https://clux.dev/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class=container-fluid><div class=navbar-header><button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
 <span class=sr-only>Toggle navigation</span>
 <span class=icon-bar></span>
 <span class=icon-bar></span>
-<span class=icon-bar></span>
-</button>
-<a class=navbar-brand href=https://clux.dev/>probes</a>
-</div>
-<div class="collapse navbar-collapse" id=main-navbar>
-<ul class="nav navbar-nav navbar-right">
-<li>
-<a title=Blog href=https://clux.dev/>Blog</a>
-</li>
-<li>
-<a title=About href=https://clux.dev/page/about/>About</a>
-</li>
-<li>
-<a title=Tags href=https://clux.dev/tags>Tags</a>
-</li>
-</ul>
-</div>
-</div>
-</nav>
-<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
-<div class=pswp__bg></div>
-<div class=pswp__scroll-wrap>
-<div class=pswp__container>
-<div class=pswp__item></div>
-<div class=pswp__item></div>
-<div class=pswp__item></div>
-</div>
-<div class="pswp__ui pswp__ui--hidden">
-<div class=pswp__top-bar>
-<div class=pswp__counter></div>
-<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<span class=icon-bar></span></button>
+<a class=navbar-brand href=https://clux.dev/>probes</a></div><div class="collapse navbar-collapse" id=main-navbar><ul class="nav navbar-nav navbar-right"><li><a title=Blog href=https://clux.dev/>Blog</a></li><li><a title=About href=https://clux.dev/page/about/>About</a></li><li><a title=Tags href=https://clux.dev/tags>Tags</a></li></ul></div></div></nav><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
 <button class="pswp__button pswp__button--share" title=Share></button>
 <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-<div class=pswp__preloader>
-<div class=pswp__preloader__icn>
-<div class=pswp__preloader__cut>
-<div class=pswp__preloader__donut></div>
-</div>
-</div>
-</div>
-</div>
-<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-<div class=pswp__share-tooltip></div>
-</div>
-<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-</button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-</button>
-<div class=pswp__caption>
-<div class=pswp__caption__center></div>
-</div>
-</div>
-</div>
-</div>
-<header class=header-section>
-<div class="intro-header no-img">
-<div class=container>
-<div class=row>
-<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-<div class=post-heading>
-<h1>Trying out LXDE</h1>
-<h2 class=post-subheading>How useful is a power optimized WM these days?</h2>
-<span class=post-meta>
-<i class="fas fa-calendar"></i>&nbsp;Posted on July 28, 2019
-&nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux
-</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</header>
-<div class=container role=main>
-<div class=row>
-<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-<article role=main class=blog-post>
-<p>Despite having been a lazy Cinnamon customer since the Linux Mint days, recently some <a href=https://old.reddit.com/r/linux_gaming/comments/cii545/linux_input_lag_analysis_v26des_windows_10_1809/>interesting</a> benchmarks started <a href=https://www.reddit.com/r/linux_gaming/comments/c0ly6b/linux_input_lag_analysis7des_tested_windows/>surfacing</a> about input lag in various Window Mangagers, and this made me want to experiment a little.</p>
-<p>This is a log of stuff I needed to tweak to get <a href=https://wiki.archlinux.org/index.php/LXDE>LXDE</a> working well.</p>
-<h1 id=lxde>LXDE</h1>
-<blockquote>
-<p>LXDE is a free desktop environment with comparatively low resource requirements. This makes it especially suitable for use on older or resource-constrained personal computers such as netbooks or system on a chip computers.</p>
-</blockquote>
-<p>Alrighty. A <code>C</code> based WM using <code>GTK+ 2</code>. Not used this since Gnome 2, back in the 2012 days.</p>
-<h2 id=installation>Installation</h2>
-<p>Already had Arch Linux running <a href=https://wiki.archlinux.org/index.php/LightDM>LightDM</a> as my Display Manager, so only needed the base install:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>$ sudo pacman -S lxde
-Packages <span style=color:#ff79c6>(</span>24<span style=color:#ff79c6>)</span> libfm-1.3.1-1  libfm-extra-1.3.1-1  libfm-gtk2-1.3.1-1  libwnck-2.31.0-2 
-              lxmenu-data-0.1.5-2  menu-cache-1.1.0-1  xmms2-0.8DrO_o.949.gca15e830-18
-              gpicview-0.2.5-4 lxappearance-0.6.3-2  lxappearance-obconf-0.2.3-2
-              lxde-common-0.99.2-2  lxde-icon-theme-0.5.1-4  lxdm-0.5.3-6  lxhotkey-0.1.0-2
-              lxinput-0.3.5-2  lxlauncher-0.2.5-3 lxmusic-0.4.7-2  lxpanel-0.10.0-1
-              lxrandr-0.3.2-1 xsession-1:0.5.4-1  lxtask-0.1.9-1  lxterminal-0.3.2-1
-              openbox-3.6.1-4  pcmanfm-1.3.1-1
-</code></pre></div><p>Then, logged out of <code>cinnamon</code>, and switched WM from the login screen to <code>LXDE</code>. Easy.</p>
-<h2 id=input-lag>Input Lag</h2>
-<p>Tested this out immediately to see if it felt better. Funnily enough, I can only tell in certain games that require a bunch of precise inputs. Most of my other currently installed games felt the same. But they aren&rsquo;t really twitchy enough to tell.</p>
-<p>That said, <code>Necrodancer</code> definitely felt better. No longer any recogonizable input lag when playing <code>Bolt</code> or <code>Coda</code>, and had issues with those before on <code>cinnamon</code>.</p>
-<h2 id=quirks>Quirks</h2>
-<h3 id=keyboard-bindings>Keyboard bindings</h3>
-<p>To be able to use this at all, I need some keyboard shortcuts to move windows between monitors. I tend to use <code>Super+Left</code> and <code>Super+Right</code>.</p>
-<p>It was quite akward to set this up with <code>lxhotkey</code>. The magical incantation (which took almost an hour to figure out) was:</p>
-<ul>
-<li><code>"MoveResizeTo": "monitor:prev" : &lt;Super>Left</code></li>
-<li><code>"MoveResizeTo": "monitor:next" : &lt;Super>Right</code></li>
-</ul>
-<p>Interestingly, <code>lxhotkey</code> is a <a href=https://github.com/lxde/lxhotkey/blob/master/src/lxhotkey.c>700 line .c file</a> last touched 3 years ago.</p>
-<p>No way to bind <code>Super</code> to open the main menu AFAIKT, and man, that was hard to unlearn. Not that it matters, because there&rsquo;s no fuzzy start and type on the main menu anyway. Amazing how tied you get to that. Not sure I can deal with not having that now. Maybe there&rsquo;s some kind of <code>fzf</code> panel type thing I can install?</p>
-<h2 id=missing-out-of-the-box>Missing out of the box</h2>
-<h3 id=screen-locker>Screen locker</h3>
-<p>Screensaver button kept spinning, timing out. Turns out <code>xscreensaver</code> was not installed. Installing it fixed it, but it also pulled in like 15 perl packages, and looked absolutely awful.</p>
-<p>Ended up installing <code>slock</code> straight from pacman instead. No dependencies there, and <a href=https://git.suckless.org/slock/file/slock.c.html>it&rsquo;s one c file</a>. No user input. Just a tree color screen. Black when locked, blue while typing, red on wrong password.</p>
-<p>Didn&rsquo;t have to actually write <code>slock</code> anywhere. It just worked after installing it (<code>lxlock</code> apparently figures this out). I had taken out the broken <code>xscreensaver</code> ref in <code>~/.config/lxsession/LXDE/autostart</code> anyway though.</p>
-<h3 id=transparency>Transparency</h3>
-<p>This is kind of necessary for me for any terminals as I frequently overlay them on code with ~70% opacity. Installing <code>xcompmgr</code> straight from pacman and adding <code>xcompmgr &</code> to <code>~/.config/lxsession/LXDE/autostart</code> fixed it.</p>
-<h2 id=look-and-feel>Look and feel</h2>
-<h2 id=main-panel>Main panel</h2>
-<p>Needed about 15 minutes of configuration, and it ended up being stored in a 129 line file in <code>~/.config/lxpanel/LXDE/panels/panel</code> But ended up looking very nice. Transparency on the bar itself was a nice touch.</p>
-<p><img src=https://clux.dev/imgs/wms/lxde2-transparency.jpg alt></p>
-<p>Though you can see that it gets confused if you have set a different background on each monitor, which is something you can do for some reason.</p>
-<p><img src=https://clux.dev/imgs/wms/lxde2-dual-bg.jpg alt></p>
-<h2 id=file-manager>File manager</h2>
-<p>Fine, could make it look like <code>nemo</code> in 5 minutes. You can see it in the background above. Had it&rsquo;s config in a tiny: <code>~/.config/pcmanfm/LXDE/pcmanfm.conf</code>.</p>
-<h2 id=general-theme>General Theme</h2>
-<p>Default theme is quite ugly due to the overly glossy black panel, so you probably have to that transparent anyway. Everything kind of only fits the dark theme IMO. Went for the only decent one: <code>Adwaita-dark</code>, but put on <code>Mikachu</code> window borders. Nothing amazing, but completely fine.</p>
-<p>Tiny file in <code>~/.config/lxsession/LXDE/desktop.conf</code> controls this.</p>
-<p>Articles <a href=https://www.addictivetips.com/ubuntu-linux-tips/lxde-themes/>exist</a> online on how to install themes for it, but that&rsquo;s probably the gtk3 version. The few I tried didn&rsquo;t work.</p>
-<h1 id=verdict>Verdict</h1>
-<p>The most awkward thing is the lack of a launcher bar so far. Performance is great. Keybindings are mostly workeable. If some better tiling-like commands can be set up maybe you can make do with <code>alacritty</code>.</p>
-<p>Seems completely useable. Most configs <a href=https://github.com/clux/dotfiles/pull/31/files>stashed in this PR</a>.</p>
-<div class=blog-tags>
-<a href=https://clux.dev//tags/linux/>linux</a>&nbsp;
-</div>
-</article>
-<ul class="pager blog-pager">
-<li class=previous>
-<a href=https://clux.dev/post/2019-06-04-towards-a-generic-kube-client/ data-toggle=tooltip data-placement=top title="A generic kubernetes client">&larr; Previous Post</a>
-</li>
-<li class=next>
-<a href=https://clux.dev/post/2020-09-27-second-brain/ data-toggle=tooltip data-placement=top title="Foaming Campaign Brain">Next Post &rarr;</a>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<footer>
-<div class=container>
-<div class=row>
-<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-<ul class="list-inline text-center footer-links">
-<li>
-<a href=mailto:sszynrae@gmail.com title="Email me">
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-<li>
-<a href=https://github.com/clux title=GitHub>
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fab fa-github fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-<li>
-<a href=https://reddit.com/u/clux title=Reddit>
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fab fa-reddit-alien fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-<li>
-<a href=https://linkedin.com/in/%f0%9f%97%91-eirik-albrigtsen-b279863a title=LinkedIn>
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-<li>
-<a href=https://www.youtube.com/channel/UCLpykMxkxuPUR9CciheipZg title=Youtube>
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-<li>
-<a href=https://www.strava.com/athletes/49770219 title=strava>
-<span class="fa-stack fa-lg">
-<i class="fas fa-circle fa-stack-2x"></i>
-<i class="fab fa-strava fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</li>
-</ul>
-<p class="credits copyright text-muted">
-clux
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><header class=header-section><div class="intro-header no-img"><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class=post-heading><h1>Trying out LXDE</h1><h2 class=post-subheading>How useful is a power optimized WM these days?</h2><span class=post-meta><i class="fas fa-calendar"></i>&nbsp;Posted on July 28, 2019
+&nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;clux</span></div></div></div></div></div></header><div class=container role=main><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role=main class=blog-post><p>Despite having been a lazy Cinnamon customer since the Linux Mint days, recently some <a href=https://old.reddit.com/r/linux_gaming/comments/cii545/linux_input_lag_analysis_v26des_windows_10_1809/>interesting</a> benchmarks started <a href=https://www.reddit.com/r/linux_gaming/comments/c0ly6b/linux_input_lag_analysis7des_tested_windows/>surfacing</a> about input lag in various Window Mangagers, and this made me want to experiment a little.</p><p>This is a log of stuff I needed to tweak to get <a href=https://wiki.archlinux.org/index.php/LXDE>LXDE</a> working well.</p><h1 id=lxde>LXDE</h1><blockquote><p>LXDE is a free desktop environment with comparatively low resource requirements. This makes it especially suitable for use on older or resource-constrained personal computers such as netbooks or system on a chip computers.</p></blockquote><p>Alrighty. A <code>C</code> based WM using <code>GTK+ 2</code>. Not used this since Gnome 2, back in the 2012 days.</p><h2 id=installation>Installation</h2><p>Already had Arch Linux running <a href=https://wiki.archlinux.org/index.php/LightDM>LightDM</a> as my Display Manager, so only needed the base install:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>$ sudo pacman -S lxde
+</span></span><span style=display:flex><span>Packages <span style=color:#ff79c6>(</span>24<span style=color:#ff79c6>)</span> libfm-1.3.1-1  libfm-extra-1.3.1-1  libfm-gtk2-1.3.1-1  libwnck-2.31.0-2 
+</span></span><span style=display:flex><span>              lxmenu-data-0.1.5-2  menu-cache-1.1.0-1  xmms2-0.8DrO_o.949.gca15e830-18
+</span></span><span style=display:flex><span>              gpicview-0.2.5-4 lxappearance-0.6.3-2  lxappearance-obconf-0.2.3-2
+</span></span><span style=display:flex><span>              lxde-common-0.99.2-2  lxde-icon-theme-0.5.1-4  lxdm-0.5.3-6  lxhotkey-0.1.0-2
+</span></span><span style=display:flex><span>              lxinput-0.3.5-2  lxlauncher-0.2.5-3 lxmusic-0.4.7-2  lxpanel-0.10.0-1
+</span></span><span style=display:flex><span>              lxrandr-0.3.2-1 xsession-1:0.5.4-1  lxtask-0.1.9-1  lxterminal-0.3.2-1
+</span></span><span style=display:flex><span>              openbox-3.6.1-4  pcmanfm-1.3.1-1
+</span></span></code></pre></div><p>Then, logged out of <code>cinnamon</code>, and switched WM from the login screen to <code>LXDE</code>. Easy.</p><h2 id=input-lag>Input Lag</h2><p>Tested this out immediately to see if it felt better. Funnily enough, I can only tell in certain games that require a bunch of precise inputs. Most of my other currently installed games felt the same. But they aren&rsquo;t really twitchy enough to tell.</p><p>That said, <code>Necrodancer</code> definitely felt better. No longer any recogonizable input lag when playing <code>Bolt</code> or <code>Coda</code>, and had issues with those before on <code>cinnamon</code>.</p><h2 id=quirks>Quirks</h2><h3 id=keyboard-bindings>Keyboard bindings</h3><p>To be able to use this at all, I need some keyboard shortcuts to move windows between monitors. I tend to use <code>Super+Left</code> and <code>Super+Right</code>.</p><p>It was quite akward to set this up with <code>lxhotkey</code>. The magical incantation (which took almost an hour to figure out) was:</p><ul><li><code>"MoveResizeTo": "monitor:prev" : &lt;Super>Left</code></li><li><code>"MoveResizeTo": "monitor:next" : &lt;Super>Right</code></li></ul><p>Interestingly, <code>lxhotkey</code> is a <a href=https://github.com/lxde/lxhotkey/blob/master/src/lxhotkey.c>700 line .c file</a> last touched 3 years ago.</p><p>No way to bind <code>Super</code> to open the main menu AFAIKT, and man, that was hard to unlearn. Not that it matters, because there&rsquo;s no fuzzy start and type on the main menu anyway. Amazing how tied you get to that. Not sure I can deal with not having that now. Maybe there&rsquo;s some kind of <code>fzf</code> panel type thing I can install?</p><h2 id=missing-out-of-the-box>Missing out of the box</h2><h3 id=screen-locker>Screen locker</h3><p>Screensaver button kept spinning, timing out. Turns out <code>xscreensaver</code> was not installed. Installing it fixed it, but it also pulled in like 15 perl packages, and looked absolutely awful.</p><p>Ended up installing <code>slock</code> straight from pacman instead. No dependencies there, and <a href=https://git.suckless.org/slock/file/slock.c.html>it&rsquo;s one c file</a>. No user input. Just a tree color screen. Black when locked, blue while typing, red on wrong password.</p><p>Didn&rsquo;t have to actually write <code>slock</code> anywhere. It just worked after installing it (<code>lxlock</code> apparently figures this out). I had taken out the broken <code>xscreensaver</code> ref in <code>~/.config/lxsession/LXDE/autostart</code> anyway though.</p><h3 id=transparency>Transparency</h3><p>This is kind of necessary for me for any terminals as I frequently overlay them on code with ~70% opacity. Installing <code>xcompmgr</code> straight from pacman and adding <code>xcompmgr &</code> to <code>~/.config/lxsession/LXDE/autostart</code> fixed it.</p><h2 id=look-and-feel>Look and feel</h2><h2 id=main-panel>Main panel</h2><p>Needed about 15 minutes of configuration, and it ended up being stored in a 129 line file in <code>~/.config/lxpanel/LXDE/panels/panel</code> But ended up looking very nice. Transparency on the bar itself was a nice touch.</p><p><img src=https://clux.dev/imgs/wms/lxde2-transparency.jpg alt></p><p>Though you can see that it gets confused if you have set a different background on each monitor, which is something you can do for some reason.</p><p><img src=https://clux.dev/imgs/wms/lxde2-dual-bg.jpg alt></p><h2 id=file-manager>File manager</h2><p>Fine, could make it look like <code>nemo</code> in 5 minutes. You can see it in the background above. Had it&rsquo;s config in a tiny: <code>~/.config/pcmanfm/LXDE/pcmanfm.conf</code>.</p><h2 id=general-theme>General Theme</h2><p>Default theme is quite ugly due to the overly glossy black panel, so you probably have to that transparent anyway. Everything kind of only fits the dark theme IMO. Went for the only decent one: <code>Adwaita-dark</code>, but put on <code>Mikachu</code> window borders. Nothing amazing, but completely fine.</p><p>Tiny file in <code>~/.config/lxsession/LXDE/desktop.conf</code> controls this.</p><p>Articles <a href=https://www.addictivetips.com/ubuntu-linux-tips/lxde-themes/>exist</a> online on how to install themes for it, but that&rsquo;s probably the gtk3 version. The few I tried didn&rsquo;t work.</p><h1 id=verdict>Verdict</h1><p>The most awkward thing is the lack of a launcher bar so far. Performance is great. Keybindings are mostly workeable. If some better tiling-like commands can be set up maybe you can make do with <code>alacritty</code>.</p><p>Seems completely useable. Most configs <a href=https://github.com/clux/dotfiles/pull/31/files>stashed in this PR</a>.</p><div class=blog-tags><a href=https://clux.dev//tags/linux/>linux</a>&nbsp;</div></article><ul class="pager blog-pager"><li class=previous><a href=https://clux.dev/post/2019-06-04-towards-a-generic-kube-client/ data-toggle=tooltip data-placement=top title="A generic kubernetes client">&larr; Previous Post</a></li><li class=next><a href=https://clux.dev/post/2020-09-27-second-brain/ data-toggle=tooltip data-placement=top title="Foaming Campaign Brain">Next Post &rarr;</a></li></ul></div></div></div><footer><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a href=mailto:sszynrae@gmail.com title="Email me"><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fas fa-envelope fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://github.com/clux title=GitHub><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-github fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://reddit.com/u/clux title=Reddit><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-reddit-alien fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://linkedin.com/in/%f0%9f%97%91-eirik-albrigtsen-b279863a title=LinkedIn><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-linkedin fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://www.youtube.com/channel/UCLpykMxkxuPUR9CciheipZg title=Youtube><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-youtube fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://discord.gg/tokio title=Discord><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-discord fa-stack-1x fa-inverse"></i></span></a></li><li><a href=https://www.strava.com/athletes/49770219 title=Strava><span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i>
+<i class="fab fa-strava fa-stack-1x fa-inverse"></i></span></a></li></ul><p class="credits copyright text-muted">clux
 &nbsp;&bull;&nbsp;&copy;
 2022
 &nbsp;&bull;&nbsp;
-<a href=https://clux.dev/>probes</a>
-</p>
-<p class="credits theme-by text-muted">
-<a href=https://gohugo.io>Hugo v0.87.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
-&nbsp;&bull;&nbsp;[<a href=b2d9862b569b5bcfb9d74cc400a6c11e6a8d35a7>b2d9862b</a>]
-</p>
-</div>
-</div>
-</div>
-</footer><script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script>
+<a href=https://clux.dev/>probes</a></p><p class="credits theme-by text-muted"><a href=https://gohugo.io>Hugo v0.105.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
+&nbsp;&bull;&nbsp;[<a href=b2d9862b569b5bcfb9d74cc400a6c11e6a8d35a7>b2d9862b</a>]</p></div></div></div></footer><script src=https://code.jquery.com/jquery-3.5.1.slim.min.js integrity=sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj crossorigin=anonymous></script>
 <script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script>
 <script src=https://clux.dev/js/main.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://clux.dev/js/load-photoswipe.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script>
-<script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})</script>
-</body>
-</html>
+<script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})</script></body></html>
