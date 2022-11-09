@@ -18,7 +18,7 @@ Below contains a bit about me and a brief summary and status of various creative
 </details>
 
 ### Software
-For a living, I help automate software operations of modern businesses. Generally, this means integrating existing cloud technologies on kubernetes (`yaml` surgery), but occasionally someting new gets written. Last [six](https://github.com/cisco/lal-build-manager/commit/5247fb2755cf936a81ed9e82ff6b7bbc0af8a03a) years have featured a lot of [rust](https://www.rust-lang.org/) due to its safety guarantees and great ecosystem, but [also like to dabble](https://github.com/clux/magic-forest).
+For a living, I help automate software operations of modern businesses. Generally, this means integrating existing cloud technologies on kubernetes (`yaml` surgery), but occasionally something new gets written. Last [six](https://github.com/cisco/lal-build-manager/commit/5247fb2755cf936a81ed9e82ff6b7bbc0af8a03a) years have featured a lot of [rust](https://www.rust-lang.org/) due to its safety guarantees and great ecosystem, but [also like to dabble](https://github.com/clux/magic-forest).
 
 From my [github](https://github.com/clux?tab=repositories):
 
@@ -36,12 +36,12 @@ Past colleagues might remember me from these overly ambitious work projects:
 
 ### Roleplaying
 
-After having spent one christmas sick binging Critical Role, I ended up DMing a near 4 year D&D campaign after work. This [concluded](/post/2021-12-05-campaign-concluded/) in pandemic times, and was a large part of my sanity in that period. Am currently absolved from further dubious plot juggling and a campaign related [todos](https://github.com/clux/facemaulers/search?q=TODO), but plan on resuming [roleplaying](/categories/roleplaying/) shenanigans at some point.
+After having spent one yule sick binging Critical Role, I ended up DMing a near 4 year D&D campaign after work. This [concluded](/post/2021-12-05-campaign-concluded/) in pandemic times, and was a large part of my sanity in that period. Am currently absolved from further dubious plot juggling and a campaign related [todos](https://github.com/clux/facemaulers/search?q=TODO), but plan on resuming [roleplaying](/categories/roleplaying/) shenanigans at some point.
 
 ### Education
 There exists a dusty, but laminated piece of paper with `Master of Mathematics` on it. While no one has ever asked to look at it, it keeps being featured on my [resume](http://clux.github.io/vitae/).
 
-This esoteric + deteriorating knowledge is mostly used to overexcitedly tell people about group theory, and the importance of good abstractions, but I also solve basic arithmetic at work. All in all; a solid use of `4` years.
+This esoteric + deteriorating knowledge is mostly used to over-excitedly tell people about group theory, and the importance of good abstractions, but I also solve basic arithmetic at work. All in all; a solid use of `4` years.
 
 ### Music
 
@@ -61,7 +61,7 @@ Well designed game mechanics that require some type of dexterous mastery, or hit
 
 #### FPS
 
-- [`Borderlands 2`](https://store.steampowered.com/app/49520/Borderlands_2/): casual coop speedrunning and digistruct raids
+- [`Borderlands 2`](https://store.steampowered.com/app/49520/Borderlands_2/): coop speedrunning and digistruct raids
 - [`Team Fortress 2`](https://store.steampowered.com/app/440/Team_Fortress_2/): stress testing [weird weapons](https://www.youtube.com/watch?v=KVzOLtpO6fU&list=PL4gj5XjL6RRQecS059_tjxRQ4Lu6yUNqB) like the [bison](https://www.reddit.com/r/bisonmasterrace/) in ~2016
 - [`Quake 3`](http://www.orangesmoothie.org/tourneyQ3A/) / [`promode`](https://playmorepromode.com/) with `VSE` + `X-Pec` + `Team Norway`; made [highlights](https://www.youtube.com/watch?v=GD3aTJ_jzL8&list=PL4gj5XjL6RRRavXh2KGXQZnRuD-zhE4-k) ~2002
 
@@ -78,4 +78,4 @@ Well designed game mechanics that require some type of dexterous mastery, or hit
 - [`Minesweeper`](http://www.minesweeper.info/downloads/MinesweeperClone.html) [rank #3 Norway Time](https://minesweepergame.com/country-rankings.php?country=132): [`53s` expert](http://www.minesweeper.info/members/files/3552/EirikAlbrigtsen54,49-119-110607.mvf) in 2007
 
 #### Current
-These days it's generally tabletop, but some **cooperative** gaming and platformers remain fun. [Steam profile](https://steamcommunity.com/id/sszynrae). [Linux only](https://store.steampowered.com/linux) (with [Proton](https://github.com/ValveSoftware/Proton)) since 2017.
+These days it's generally tabletop, but some **cooperative** shooters or platformers remain fun. [Steam profile](https://steamcommunity.com/id/sszynrae). [Linux only](https://store.steampowered.com/linux) (with [Proton](https://github.com/ValveSoftware/Proton)) since 2017.
