@@ -19,11 +19,11 @@ In the process of going up to 70km weeks - something which became routine remark
 - [11:15 3k](https://www.strava.com/activities/7878906931/overview)
 - [1:29:34 HM](https://www.strava.com/activities/7934772777#21922284308)
 
-The Half Marathon was my first longer event and feel I ran it well:
+The Half Marathon was my first longer event and feel I ran it cleanly:
 
 ![almost straight line for heart rate and cadence](/imgs/running22/hr-cadence-hm.jpeg)
 
-The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60.
+The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max at 60. All in all, very pleased with the progress. Particularly getting 10k sub 40 and HM sub 90.
 
 ## Mileage
 
@@ -75,12 +75,20 @@ Ended up averaging `71k` weekly mileage during this block.
 | *11* | 79k     | 58     | 17k (21%) |
 | *12* | 57k     | 58     | 24k (42%) |
 
-My journal for these week:
+and calculated the following zonal paces:
+
+- 3:32/km -> 17km/h ~= Z6 for mile?
+- 3:45/km -> 16km/h ~= Z5 for 5k (18:45)
+- 4:00/km -> 15km/h ~= Z4 for 10k (40:00)
+- 4:16/km -> 14.1km/h ~= Z3 for HM (1:29:47)
+- 5:00/km -> 12km/h ~= Z2
+
+My journal for these weeks:
 
 - *1*; [`6x1k` at ~4:10/km moltemyr](https://www.strava.com/activities/7493451283), [24k long tromøy](https://www.strava.com/activities/7519890766), 60km
-- *2*; [`6x400m` at 3:32/km (aimed for 1:24)](https://www.strava.com/activities/7530520601) + [20min fast `lysløypa`](https://www.strava.com/activities/7541421546), [21k long](https://www.strava.com/activities/7558263435), 61km
-- *3*; [`4x1M` at 4:05/km greenwhich](https://www.strava.com/activities/7569275392) + [`1x5k` at 4:15 track](https://www.strava.com/activities/7583152332), [15k long](https://www.strava.com/activities/7597044380), 66km
-- *4*; [`4x1M` at 4:04/km](https://www.strava.com/activities/7607373914) + [`fartlek ~5k`](https://www.strava.com/activities/7618813323), (swapped out 10k race), [20k long with `3k`@4:15](https://www.strava.com/activities/7635075131), 67k
+- *2*; [`6x400m` at 3:32/km (aimed for 1:24)](https://www.strava.com/activities/7530520601), [20min fast `lysløypa`](https://www.strava.com/activities/7541421546), [21k long](https://www.strava.com/activities/7558263435), 61km
+- *3*; [`4x1M` at 4:05/km greenwhich](https://www.strava.com/activities/7569275392), [`1x5k` at 4:15 track](https://www.strava.com/activities/7583152332), [15k long](https://www.strava.com/activities/7597044380), 66km
+- *4*; [`4x1M` at 4:04/km](https://www.strava.com/activities/7607373914), [`fartlek ~5k`](https://www.strava.com/activities/7618813323), (swapped out 10k race), [20k long with `3k`@4:15](https://www.strava.com/activities/7635075131), 67k
 - *5*: [`5x1k` at 3:45/km](https://www.strava.com/activities/7646230166), [`5k` at 4:08](https://www.strava.com/activities/7658563450), [minor `hills`](https://www.strava.com/activities/7667675129), [20k long](https://www.strava.com/activities/7673723360), 74k
 - *6*: [`8x500m` at 3:42/km](https://www.strava.com/activities/7684661347), [`5k` at 4:35](https://www.strava.com/activities/7699165724), [21k long with `5k` at 4:08](https://www.strava.com/activities/7713200531), 77k
 - *7*: [`8x1k` at 4:09/km](https://www.strava.com/activities/7724007694) (stitch), [`6x1min` at 3:29](https://www.strava.com/activities/7735503391), [10k race at 3:57](https://www.strava.com/activities/7750969909), 69k
@@ -94,17 +102,7 @@ By many metrics (Garmin VO2max estimate, Strava fitness), I peaked nicely for th
 
 ![Strava fitness graph climbing from 15 to 34 in a year, peaking at 34 at the half marathon day](/imgs/running22/fitness-hm.png)
 
-and ended up feeling OK after the race. One blood-shot big toenail (which i could show off for a whole year - if such a thing was considered cool).
-
-#### Pace Zones
-
-Calculated the following zonal pace estimates for me based on the general fitness during this time:
-
-- 3:32/km -> 17km/h ~= Z6 for mile?
-- 3:45/km -> 16km/h ~= Z5 for 5k (18:45)
-- 4:00/km -> 15km/h ~= Z4 for 10k (40:00)
-- 4:16/km -> 14.1km/h ~= Z3 for HM (1:29:47)
-- 5:00/km -> 12km/h ~= Z2
+and ended up feeling OK after the race. Got one blood-shot big toenail to show off for a year, but will leave you with the mental image.
 
 #### Recovery
 
@@ -121,7 +119,7 @@ Second block. 8w. A bit of an impromptu registration, and a bit of fun that to t
 - *5*: [`4x1M` at 4:03/km](https://www.strava.com/activities/8155702793), [22k long](https://www.strava.com/activities/8173542205), 92k
 - *6*: 8K recovery week, [`8k` MAF test](https://www.strava.com/activities/8187100758), and covid 🪦, 38k
 
-Two weeks ahead of the race.. The r/advanced_running subreddit had [ample](https://old.reddit.com/r/AdvancedRunning/comments/xr60mg/an_athletes_guide_to_managing_covid_risks_by_matt/), [warnings](https://old.reddit.com/r/AdvancedRunning/comments/yn5ypp/tested_covid_positive_10_days_before_a_marathon/) about running hard post-covid.
+Got covid two weeks ahead of the race. First time, but there are [ample](https://old.reddit.com/r/AdvancedRunning/comments/xr60mg/an_athletes_guide_to_managing_covid_risks_by_matt/), [warnings](https://old.reddit.com/r/AdvancedRunning/comments/yn5ypp/tested_covid_positive_10_days_before_a_marathon/) about running hard post-covid.
 
 On the positive side, with an ungodly `4AM start` for this race and a `90%` average humidity (which tanked my running efficiency); having to cancel a difficult masochistic exercise you set purely for yourself is not universally a negative.
 
@@ -135,14 +133,14 @@ BMJ has a [Graduated Return To Play Guidance Protocol](https://blogs.bmj.com/bjs
 
 > complete all activities of daily living without excessive fatigue and/or breathlessness and be able to walk on the flat without getting breathless
 
-So, yeah. Use your masks while indoors people. [Each time you get reinfected, the risks increase](https://www.reuters.com/business/healthcare-pharmaceuticals/repeat-covid-is-riskier-than-first-infection-study-finds-2022-11-10/).
+So, yeah. Use your masks while indoors people. [Each time you get reinfected, the risks increase](https://www.reuters.com/business/healthcare-pharmaceuticals/repeat-covid-is-riskier-than-first-infection-study-finds-2022-11-10/). Hopefully, I can find a way back.
 
 ## Random Thoughts
 ### Next year
 
-Provided recovery allows; I hope to keep the volume, even though it's a bit much (and just doing a fraction of it will be enough stay healthy). I want to see how far I can stretch it for a bit longer given it's made me a lot healthier, sharper, and leaner.
+Provided recovery allows; I hope to keep the volume. It **is a bit much** - and just doing a fraction of it will for sure be enough to just stay healthy - but I kind of want to see how far I can stretch it for a bit longer. It's also made me feel sharper.
 
-Also kind of want to train specifically for shorter distances like 1M / 3000 / 5k, even though beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
+Might train specifically for shorter distances like 1M / 3000 / 5k, even though beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
 
 Not planning on higher distance events like marathons just because of how detrimental it seems to be to your overall [immune system](https://pubmed.ncbi.nlm.nih.gov/17465622/) and how much recovery you need. My current line of thinking is; why train for 4 months for an event that takes you out of the game for 2-4 weeks? Better find a smooth average that you can sustain.
 
@@ -154,4 +152,4 @@ Anyway, it's been another fun side-project that's not been software related. It'
 
 The silliest thing about this __accessible sport__ though; is the amount of shoes you burn through. If you run `100k` a week, and follow the [500-800k](https://www.runnersworld.com/gear/a33233314/how-many-miles-do-running-shoes-last/) recommendation for max shoe mileage, you'll blast through 5-10 pairs of running shoes a year, costing you somewhere from `£500-2000` per year for high end shoes. The `£60` I paid to run in Royal Parks was actually worth it just for the `15% off` coupon at a running shoe store.
 
-On the plus side, at least I'm not an elitist playing golf.
+On the plus side, this is temporary, and at least I'm not some elitist playing golf.
