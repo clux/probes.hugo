@@ -1,29 +1,29 @@
 ---
 title: Running 2022
 subtitle: a year of irl track any%
-date: 2021-12-31
+date: 2022-12-07
 tags: ["running"]
 categories: ["life"]
 ---
 
-In an attempt to torture my chair shaped husk of a body, I ran a lot this year. Trained for months and ran almost 2500km in total - to take part in a big Half Marathon in London. It become a routine to run around 70km per week, and beat pretty much all my earlier endurance records in the process as my VO2max estimate shot up. This post is just notes for myself about the year.
+In an attempt to torture my chair shaped husk of a body, I ran a lot this year. Racked up almost 2500km to see what would happen, and to take part in the Royal Parks Half Marathon in London.
 
 <!--more-->
 
 ## Milestones
 
-The good parts first; PBs:
+As much work as this was - to run a lot of 70+km weeks - it quickly became routine, and beat pretty much all my earlier endurance records in the process as my VO2max estimate shot up. My big PBs were:
 
 - ~~[41:51 on 10k on 08 Jun](https://www.strava.com/activities/7274508726)~~
 - [11:15 on 3k on 28 Sep](https://www.strava.com/activities/7878906931/overview)
 - [39:29 on 10k on 04 Sep](https://www.strava.com/activities/7750969909/overview)
 - [1:29:34 on HM on 09 Oct](https://www.strava.com/activities/7934772777#21922284308)
 
-The 3k PB is also a `3200m Cooper test` which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60. Something for next year to try out properly perhaps.
+The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60. Something for next year to try out properly perhaps.
 
 ## Stats for 2022
 
-https://connect.garmin.com/modern/report/17/all/last_year
+Via my [personal garmin report](https://connect.garmin.com/modern/report/17/all/last_year):
 
 | Month | Mileage | VO2max |
 | ----- | ------- | ------ |
@@ -36,7 +36,7 @@ https://connect.garmin.com/modern/report/17/all/last_year
 | Jul   | 266k    | 56     |
 | Aug   | 322k    | 57     |
 | Sep   | 333k    | 58     |
-| Oct   | 249k    | 57     |
+| Oct   | 249k    | 58     |
 | Nov   | 349k    | 58     |
 | Dec   | 10k     | covid  |
 
@@ -49,10 +49,12 @@ In London, when my foot muscles started catching up, and the remote work setup g
 
 Combined ideas from two generally available training plans:
 
-- [AgeUk's Sub 1:30 12w](https://www.ageuk.org.uk/contentassets/73784215f4ee46beb3d357eed3fdcc31/sub-1_30_half_marathon_training_schedules.pdf) with Mileage 56-75km, 1 speed sesh/w 
-- [NSPCC Sub 1:30 14w](https://www.nspcc.org.uk/globalassets/documents/support-us/training-gym/running-plans/half-marathon/20171301-pe-training-sheet-2018_half-marathon-sub-1.30-aw2.pdf) unclear mileage, 2 speed sesh/w
+- [AgeUk's Sub 1:30 12w](https://www.ageuk.org.uk/contentassets/73784215f4ee46beb3d357eed3fdcc31/sub-1_30_half_marathon_training_schedules.pdf) - for general setup, but taking out some of the races
+- [NSPCC Sub 1:30 14w](https://www.nspcc.org.uk/globalassets/documents/support-us/training-gym/running-plans/half-marathon/20171301-pe-training-sheet-2018_half-marathon-sub-1.30-aw2.pdf) - for negative split long runs and more thresholds
 
-and incorporated ~two sessions of muscle strength training a week (single leg dead lifts, weighted squats, hungarian squats, heel/soleus raises, plus misc core/oblique strength exercises). Ended up averaging `71k` weekly mileage during this block.
+also incorporated ~two sessions of muscle strength training a week (single leg dead lifts, weighted squats, hungarian squats, heel/soleus raises, plus misc core/oblique strength exercises).
+
+Ended up averaging `71k` weekly mileage during this block.
 
 | Week | Mileage | VO2max | Fast      |
 | ---- | ------- | ------ | --------- |
@@ -84,7 +86,7 @@ Specific notes for each week:
 - *9*: [`2x3k`+ `2x1500` at 4:04](https://www.strava.com/activities/7800292329), [21k long with 8k at 4:15](https://www.strava.com/activities/7826632615), 77k
 - *10*: [`2x3k`+`2x2k` at 4:07](https://www.strava.com/activities/7842666966), [2x2x400m at 3:30](https://www.strava.com/activities/7854021660), [21k long with 10k at 4:15](https://www.strava.com/activities/7863642045), 89k
 - *11*: [5k race attempt](https://www.strava.com/activities/7878906931), [4x1M at 4:01](https://www.strava.com/activities/7888706732), [18k long with 6k at 4:15](https://www.strava.com/activities/7900273246) (big headwind), 79k
-- *12* taper week (intensive, but short mileage 60%, muscle monday only, [2k speed](https://www.strava.com/activities/7908624435), [1k hills](https://www.strava.com/activities/7919221158)) + [HM](https://www.strava.com/activities/7934772777), 57k
+- *12* taper week (intensive, but short mileage 60%, muscle monday only, [2k speed](https://www.strava.com/activities/7908624435), [1k hills](https://www.strava.com/activities/7919221158)), then [HM](https://www.strava.com/activities/7934772777), 57k
 
 By many metrics (Garmin VO2max estimate, Strava fitness), I peaked nicely for the race:
 
@@ -108,39 +110,42 @@ Calculated the following zonal pace estimates for me based on the general fitnes
 
 ### Chiang Mai Half Training
 
-This training, while fun to translate across continents in week 3 to a new humid environment, did not end as positively.
+Second block. 8w. A bit of an impromptu registration, and a bit of fun that to test how my training translate across continents to a new humid environment. Unfortunately, this block got cancelled near the end.
 
 - *1*: [`6x1k` at 4:00/km](https://www.strava.com/activities/8016708080), [19k long](https://www.strava.com/activities/8042805169), 67k
-- *2*: [`7x1k` at 3:57/km](https://www.strava.com/activities/8052372984), [21k long](https://www.strava.com/activities/8071743943), 80k
-- *3*: [`3.5x1M` at 4:05/km](https://www.strava.com/activities/8084716741), [700m climb long](https://www.strava.com/activities/8109412998), 72k
+- *2*: [`7x1k` at 3:57/km](https://www.strava.com/activities/8052372984), [21k long](https://www.strava.com/activities/8071743943), 80k (last in London)
+- *3*: [`3.5x1M` at 4:05/km](https://www.strava.com/activities/8084716741), [700m climb long](https://www.strava.com/activities/8109412998), 72k (Chiang Mai)
 - *4*: [`4x1M at 4:05/km](https://www.strava.com/activities/8124189835), [20k long](https://www.strava.com/activities/8142151676), 85k
 - *5*: [`4x1M at 4:03/km](https://www.strava.com/activities/8155702793), [22k long](https://www.strava.com/activities/8173542205), 92k
 - *6*: 8K recovery week, [8k MAF test](https://www.strava.com/activities/8187100758), and covid 🪦, 38k
 
 So that kind of put a stop to the race on the scheduled a mere two weeks ahead. The r/advanced_running subreddit had [ample](https://old.reddit.com/r/AdvancedRunning/comments/xr60mg/an_athletes_guide_to_managing_covid_risks_by_matt/), [warnings](https://old.reddit.com/r/AdvancedRunning/comments/yn5ypp/tested_covid_positive_10_days_before_a_marathon/) about running hard post-covid.
 
-On the positive side, with a dreaded `4AM start` for this race and 90% average humidity (which tanked my running efficiency), having to cancel a difficult masochistic exercise you set purely for yourself, is not universally negative. It's also nice to get some extra recovery time for my legs.
+On the positive side, with a dreaded `4AM start` for this race and 90% average humidity (which tanked my running efficiency, VO2max estimate dropped by 2 in one week); having to cancel a difficult masochistic exercise you set purely for yourself is not universally a negative. It's also nice to get some extra recovery time for my legs.
 
 ### Covid
 
-Unfortunately, it had been one full year since my last (3rd) vaccination shot - and along with probably being hit with one of the `Q` variants in southeast asia - this disease was not fun. Just as the one symptom disappeared another came in to replace it. While my stress graph on the worst day was only comparable to a stomach bug, my partner's stress graph on Garmin was the worst I have ever seen (with 16 hours of high stress).
+Unfortunately, it had been one full year since my last (3rd) vaccination shot - and along with probably being hit with one of the `Q` variants in southeast asia - this disease was not fun. Just as the one symptom disappeared another came in to replace it. While **my** stress graph on the worst day looked pretty benign (mostly medium stress), my partner's stress graph on Garmin was the worst I have ever seen (with >10 hours of high stress in one day). Still, the fever was pretty bad for me, and am getting light headed doing easy things so it's definitely not "just a cold".
 
 BMJ has a [Graduated Return To Play Guidance Protocol](https://blogs.bmj.com/bjsm/2022/04/23/graduated-return-to-play-after-sars-cov-2-infection-what-have-we-learned-and-why-weve-updated-the-guidance/) and based on only having some "below-the-neck" systemic symptoms (fever), I am only planning on doing light jogging during the second half of December once it's possible to:
 
 > complete all activities of daily living without excessive fatigue and/or breathlessness and be able to walk on the flat without getting breathless
 
-Use your masks while indoors people. [Each time you get reinfected, the risks increase](https://www.reuters.com/business/healthcare-pharmaceuticals/repeat-covid-is-riskier-than-first-infection-study-finds-2022-11-10/).
+So, yeah. Use your masks while indoors people. [Each time you get reinfected, the risks increase](https://www.reuters.com/business/healthcare-pharmaceuticals/repeat-covid-is-riskier-than-first-infection-study-finds-2022-11-10/).
 
 ## Random Thoughts
+### Next year
+
+Provided recovery allows; not planning on dropping most of the volume yet, even though it's a bit much (and just doing a fraction of it will be enough stay healthy). I want to see how far I can stretch it for a bit longer given it's made me a lot healthier, sharper, and leaner. Also kind of want to train specifically for shorter distances like 1M / 3000 / 5k (do want to actually sub-19). However, beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
+
+Probably will not plan for anything higher distance like marathons (even though my volume should be sufficient for tackling one) just because of how detrimental it seems to be to your overall [immune system](https://pubmed.ncbi.nlm.nih.gov/17465622/) and how much recovery you need. My current line of thinking is; why train for 4 months for an event that takes you out of the game for 2-4 weeks? Better find a smooth average that you can sustain.
+
+> brain: he says this while planning on beating PBs; requiring the opposite of smooth averages.
+
+Anyway, it's been another fun side-project that's not been software related. It's been interested reading about [how professionals train](https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-022-00438-7), and seeing effects first hand.
 
 ### Shoes
 
-The silliest things about this "accessible sport" is the amount of shoes you burn through.. If you run 100k a week, and follow the 500-600k recommendation for max shoe mileage, you'll blast through 5-10 pairs of running shoes a year, costing you somewhere from 500-2000 pounds a year without discounts. The `£60` I paid to run in Royal Parks was actually worth it just for the `15% off` coupon at a running shoe store.
+The silliest thing though, about this __accessible sport__ is the amount of shoes you burn through. If you run `100k` a week, and follow the [500-800k](https://www.runnersworld.com/gear/a33233314/how-many-miles-do-running-shoes-last/) recommendation for max shoe mileage, you'll blast through 5-10 pairs of running shoes a year, costing you somewhere from `£500-2000` per year for high end shoes. The `£60` I paid to run in Royal Parks was actually worth it just for the `15% off` coupon at a running shoe store.
 
-### Next year
-
-Not planning on dropping most of the volume yet, even though it's a bit much (and just doing a fraction of it will be enough stay healthy). I want to see how far I can stretch it for a bit more - while my age allows - given it's made me a lot healthier, sharper, and leaner. Also kind of want to train specifically for shorter distances like 1M / 3000 / 5k (do want to actually sub-19). However, beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
-
-Probably will not plan for anything higher distance like marathons (even though my volume should be sufficient for tackling one) just because of how detrimental it seems to be to your overall [immune system](https://pubmed.ncbi.nlm.nih.gov/17465622/) and how much recovery you need. My current line of thinking is; why train for 4 months for an even that takes you out of the game for 2-4 weeks? Better find a smooth average that you can sustain (he says while planning on beating PBs; requiring the opposite of smooth averages).
-
-Anyway, it's been another fun side-project that's not been software related. It's been interested reading about [how professionals train](https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-022-00438-7), and hopefully will recover to run more in 2023.
+On the plus side, at least I'm not an elitist playing golf.
