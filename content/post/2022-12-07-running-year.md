@@ -19,6 +19,10 @@ As much work as this was - to run a lot of 70+km weeks - it quickly became routi
 - [39:29 on 10k on 04 Sep](https://www.strava.com/activities/7750969909/overview)
 - [1:29:34 on HM on 09 Oct](https://www.strava.com/activities/7934772777#21922284308)
 
+The Half Marathon weirdly went exactly according to the plan with a super clean line for both my cadence and heart rate:
+
+![](/imgs/running22/hr-cadence-hm.jpg)
+
 The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60. Something for next year to try out properly perhaps.
 
 ## Stats for 2022
