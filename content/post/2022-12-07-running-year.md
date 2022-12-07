@@ -140,13 +140,13 @@ So, yeah. Use your masks while indoors people. [Each time you get reinfected, th
 
 Provided recovery allows; I hope to keep the volume. It **is a bit much** - and just doing a fraction of it will for sure be enough to just stay healthy - but I kind of want to see how far I can stretch it for a bit longer. It's also made me feel sharper.
 
-Might train specifically for shorter distances like 1M / 3000 / 5k, even though beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
+Want to train specifically for shorter distances like 1M / 3000 / 5k, even though beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
 
 Not planning on higher distance events like marathons just because of how detrimental it seems to be to your overall [immune system](https://pubmed.ncbi.nlm.nih.gov/17465622/) and how much recovery you need. My current line of thinking is; why train for 4 months for an event that takes you out of the game for 2-4 weeks? Better find a smooth average that you can sustain.
 
 > brain: he says this while planning on beating PBs; requiring the opposite of smooth averages.
 
-Anyway, it's been another fun side-project that's not been software related. It's been interested reading about [how professionals train](https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-022-00438-7), and seeing effects first hand.
+Anyway, running has been a fun side-project that's not been software related. It's been interested reading about [how professionals train](https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-022-00438-7), and seeing effects first hand.
 
 ### Shoes
 
