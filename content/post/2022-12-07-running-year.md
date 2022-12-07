@@ -21,7 +21,7 @@ In the process of going up to 70km weeks - something which became routine remark
 
 The Half Marathon was my first longer event and feel I ran it well:
 
-![](/imgs/running22/hr-cadence-hm.jpeg)
+![almost straight line for heart rate and cadence](/imgs/running22/hr-cadence-hm.jpeg)
 
 The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60.
 
@@ -92,7 +92,7 @@ My journal for these week:
 
 By many metrics (Garmin VO2max estimate, Strava fitness), I peaked nicely for the race:
 
-![](/imgs/running22/fitness-hm.png)
+![Strava fitness graph climbing from 15 to 34 in a year, peaking at 34 at the half marathon day](/imgs/running22/fitness-hm.png)
 
 and ended up feeling OK after the race. One blood-shot big toenail (which i could show off for a whole year - if such a thing was considered cool).
 
