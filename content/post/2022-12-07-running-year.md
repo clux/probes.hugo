@@ -6,28 +6,28 @@ tags: ["running"]
 categories: ["life"]
 ---
 
-In an attempt to torture my chair shaped husk of a body, I racked up almost 2500km running in the park this year to see what would happen, and to then take part in the [Royal Parks Half Marathon in London](https://www.royalparkshalf.com/).
+In an attempt to torture my chair shaped husk of a body, I somehow ran almost 2500km this year. Mostly to see what would happen, but also to take part in the [Royal Parks Half Marathon in London](https://www.royalparkshalf.com/).
 
 <!--more-->
 
 ## Milestones
 
-As much work as this was - to run a lot of 70+km weeks - it quickly became routine, and beat pretty much all my earlier endurance records in the process as my VO2max estimate shot up. My big PBs were:
+In the process of going up to 70km weeks - something which became routine remarkably quickly - I ended up beating pretty much all of my endurance records:
 
-- ~~[41:51 on 10k on 08 Jun](https://www.strava.com/activities/7274508726)~~
-- [39:29 on 10k on 04 Sep](https://www.strava.com/activities/7750969909/overview)
-- [11:15 on 3k on 28 Sep](https://www.strava.com/activities/7878906931/overview)
-- [1:29:34 on HM on 09 Oct](https://www.strava.com/activities/7934772777#21922284308)
+- ~~[41:51 10k](https://www.strava.com/activities/7274508726)~~
+- [39:29 10k](https://www.strava.com/activities/7750969909/overview)
+- [11:15 3k](https://www.strava.com/activities/7878906931/overview)
+- [1:29:34 HM](https://www.strava.com/activities/7934772777#21922284308)
 
-The Half Marathon weirdly went exactly according to the plan with a super clean line for both my cadence and heart rate:
+The Half Marathon was my first longer event and feel I ran it well:
 
 ![](/imgs/running22/hr-cadence-hm.jpeg)
 
 The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60.
 
-## Stats for 2022
+## Mileage
 
-Via my [personal garmin report](https://connect.garmin.com/modern/report/17/all/last_year):
+Garmin [report](https://connect.garmin.com/modern/report/17/all/last_year) for the year:
 
 | Month | Mileage | VO2max |
 | ----- | ------- | ------ |
@@ -44,11 +44,9 @@ Via my [personal garmin report](https://connect.garmin.com/modern/report/17/all/
 | Nov   | 349k    | 58     |
 | Dec   | 10k     | covid  |
 
-where VO2max is the Garmin estimate.
-
 ## Q1/Q2
 
-The year started slow, but increased a little too fast initiailly without muscle training and ended up spending a lot more time on an elliptical in February.
+The year started slow, but increased a little too fast initially without muscle training and ended up spending a lot more time on an elliptical in February.
 Back in London, when my foot muscles started catching up, I was able to raise the mileage quite a bit come summer (with an average of 60k weekly in July). This gave me confidence to start a pretty ambitious training plan from the end of July.
 
 ### Q3; London Parks Half Training
@@ -62,7 +60,7 @@ also incorporated ~two sessions of muscle strength training a week (single leg d
 
 Ended up averaging `71k` weekly mileage during this block.
 
-| Week | Mileage | VO2max | Fast      |
+| Week | Mileage | VO2max | Fast %    |
 | ---- | ------- | ------ | --------- |
 | *1*  | 60k     | 56     | 6k (10%)  |
 | *2*  | 61k     | 56     | 7k (11%)  |
@@ -123,9 +121,9 @@ Second block. 8w. A bit of an impromptu registration, and a bit of fun that to t
 - *5*: [`4x1M` at 4:03/km](https://www.strava.com/activities/8155702793), [22k long](https://www.strava.com/activities/8173542205), 92k
 - *6*: 8K recovery week, [`8k` MAF test](https://www.strava.com/activities/8187100758), and covid 🪦, 38k
 
-So that kind of put a stop to the race on the scheduled a mere two weeks ahead. The r/advanced_running subreddit had [ample](https://old.reddit.com/r/AdvancedRunning/comments/xr60mg/an_athletes_guide_to_managing_covid_risks_by_matt/), [warnings](https://old.reddit.com/r/AdvancedRunning/comments/yn5ypp/tested_covid_positive_10_days_before_a_marathon/) about running hard post-covid.
+Two weeks ahead of the race.. The r/advanced_running subreddit had [ample](https://old.reddit.com/r/AdvancedRunning/comments/xr60mg/an_athletes_guide_to_managing_covid_risks_by_matt/), [warnings](https://old.reddit.com/r/AdvancedRunning/comments/yn5ypp/tested_covid_positive_10_days_before_a_marathon/) about running hard post-covid.
 
-On the positive side, with an ungodly `4AM start` for this race and a `90%` average humidity (which tanked my running efficiency, VO2max estimate dropped by 2 in one week); having to cancel a difficult masochistic exercise you set purely for yourself is not universally a negative.
+On the positive side, with an ungodly `4AM start` for this race and a `90%` average humidity (which tanked my running efficiency); having to cancel a difficult masochistic exercise you set purely for yourself is not universally a negative.
 
 ### Covid
 
@@ -133,7 +131,7 @@ Unfortunately, it had been one full year since my last (3rd) vaccination shot - 
 
 While **my** stress graph on the worst day looked pretty benign (mostly medium stress), my partner's stress graph on Garmin was the worst I have ever seen (with >10 hours of high stress in one day). Still, the fever was pretty bad for me, and am now getting light headed doing easy things 6 days on, so it's definitely not "just a cold".
 
-BMJ has a [Graduated Return To Play Guidance Protocol](https://blogs.bmj.com/bjsm/2022/04/23/graduated-return-to-play-after-sars-cov-2-infection-what-have-we-learned-and-why-weve-updated-the-guidance/) and based on only having some "below-the-neck" systemic symptoms (fever), I am only planning on doing light jogging during the second half of December once it's possible to:
+BMJ has a [Graduated Return To Play Guidance Protocol](https://blogs.bmj.com/bjsm/2022/04/23/graduated-return-to-play-after-sars-cov-2-infection-what-have-we-learned-and-why-weve-updated-the-guidance/) and based on only having some "below-the-neck" systemic symptoms (fever), I am only planning on doing light jogging during the second half of December if/once 🤞 it's possible to:
 
 > complete all activities of daily living without excessive fatigue and/or breathlessness and be able to walk on the flat without getting breathless
 
@@ -142,7 +140,7 @@ So, yeah. Use your masks while indoors people. [Each time you get reinfected, th
 ## Random Thoughts
 ### Next year
 
-Provided recovery allows; not planning on dropping most of the volume yet, even though it's a bit much (and just doing a fraction of it will be enough stay healthy). I want to see how far I can stretch it for a bit longer given it's made me a lot healthier, sharper, and leaner.
+Provided recovery allows; I hope to keep the volume, even though it's a bit much (and just doing a fraction of it will be enough stay healthy). I want to see how far I can stretch it for a bit longer given it's made me a lot healthier, sharper, and leaner.
 
 Also kind of want to train specifically for shorter distances like 1M / 3000 / 5k, even though beating PBs at this points does come with 8+ hours of mandatory training a week and injury risks so how much this is carried on next year is heavily conditional on nothing bad happening - a statement generally not served with good odds in the 2020s.
 
