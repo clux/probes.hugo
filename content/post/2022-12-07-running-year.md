@@ -21,7 +21,7 @@ As much work as this was - to run a lot of 70+km weeks - it quickly became routi
 
 The Half Marathon weirdly went exactly according to the plan with a super clean line for both my cadence and heart rate:
 
-![](/imgs/running22/hr-cadence-hm.jpg)
+![](/imgs/running22/hr-cadence-hm.jpeg)
 
 The 3k PB is also a `3200m` [Cooper test](https://en.wikipedia.org/wiki/Cooper_test) which, [heuristically](https://exrx.net/Calculators/MinuteRun), puts my VO2max above 60. Something for next year to try out properly perhaps.
 
