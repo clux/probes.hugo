@@ -35,7 +35,7 @@ comments: false
   <section class="intro">
     <a href="/categories/software/">
       <h3>software</h3>
-      <p>Rust, open source, cloud tech, kubernetes</p>
+      <p>rust, open source, cloud, kubernetes</p>
     </a>
     <a href="/categories/roleplaying/">
       <h3>roleplaying</h3>
@@ -43,18 +43,18 @@ comments: false
     </a>
     <a href="/categories/gaming/">
       <h3>gaming</h3>
-      <p>solutions, theorycrafting, minmaxing, speedrunning</p>
+      <p>theorycrafting, minmaxing, speedrunning</p>
     </a>
     <a href="/categories/music/">
       <h3>music</h3>
       <p>classical, piano, violin</p>
     </a>
     <a class="blah">
-      <h3>life</h3>
-      <p>tab accidentally left blank</p>
+      <h3>hopes and dreams</h3>
+      <p>tab left blank</p>
     </a>
-    <a href="/categories/misc/">
-      <h3>misc</h3>
-      <p>photography, harware, cooking, offtopic</p>
+    <a href="/categories/life">
+      <h3>life</h3>
+      <p>experiments, thoughts, running</p>
     </a>
   </section>
