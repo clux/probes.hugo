@@ -102,7 +102,7 @@ It made the outcome very attractive looking. In fact, it's so nice that it might
 
 ### Recap Writing
 
-Basically, a quick `Ctrl-Shift-P` in `code`, ask foam to create my [preferred note](https://github.com/clux/campaign/blob/main/.foam/templates/recap-template.md) (by [hijacking the daily note setup](https://github.com/clux/campaign/blob/main/.vscode/settings.json#L10) for this), and it fills in the basics.
+Basically, a quick `Ctrl-Shift-P` in `code`, ask foam to create my [preferred note](https://github.com/clux/campaign/blob/main/.foam/templates/recap-template.md) (by [hijacking the daily note setup](https://github.com/clux/facemaulers/blob/main/.foam/templates/recap-template.md) for this), and it fills in the basics.
 
 This file would serve as the "last we left off" at the start of each session, plus notes and TODOs for myself.
 
@@ -118,7 +118,7 @@ The most notable upgrade I noticed was the complete revamp of the graph view wit
 
 ![foam new graph view](/imgs/foam/foam-newgraph.png)
 
-However, one minor snag in this upgrade was that it's no longer possible to [hide the recaps from the graph view](https://github.com/foambubble/foam/issues/835).
+However, one minor snag in one upgrade was [hiding the recaps from the graph view](https://github.com/foambubble/foam/issues/835). **EDIT 2023** [workaround found](https://github.com/foambubble/foam/issues/835#issuecomment-1399437329).
 
 ## What Sucked
 
@@ -130,7 +130,7 @@ Foam ~~still~~ struggled with [doing file renames](https://github.com/foambubble
 
 ~~It's probably™ implementable on their side _"without too much work"©_ (because you can probably work around this with a script + `sed` if you are masochistic enough), but ultimately, **someone** has to actually do it - and who knows what complexity lurks within vs code plugins.~~
 
-**EDIT**: Have commented out this part in 2022 because this issue was resolved in foam.
+**EDIT**: Have commented out this part in 2023 because this issue was resolved in foam.
 
 ### Lexicographical Sort
 
@@ -154,7 +154,7 @@ I actually think that this type of brain would **almost work better for the play
 
 That said, I **would probably carry on** with this setup for **any similar ttrpg** setup. Most of the negatives listed above are a bit nitpicky, and are _generally not that problematic_. Plus, I now have a better idea of what structures work (pcs, npcs, factions, deities, recaps were perfect fits for their own folders), what information ought to go where, and how deep to go.
 
-However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development. **EDIT 2022:** This is resolved upstream, and I am using this for my main brain as well now.
+However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development. **EDIT 2023:** This is resolved upstream, and I am using this for my main brain as well now.
 
 Considering the standard open source software tradeoff is often between:
 
