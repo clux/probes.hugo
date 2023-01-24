@@ -132,17 +132,17 @@ Foam ~~still~~ struggled with [doing file renames](https://github.com/foambubble
 
 **EDIT**: Have commented out this part in 2023 because this issue was resolved in foam.
 
-### Lexicographical Sort
+### Sort Inconsistencies
 
 My [recaps folder](https://github.com/clux/campaign/tree/main/docs/recaps) has two digits prefixes on every note. This was fine in my file viewer + vs code, but not in `mkdocs-material` which sorted the entries lexicographically. Renaming would have to be done with `sed` or some other bulk search/replace tool.
 
 This meant we basically had to take the folder contents and [manually arrange them](https://github.com/clux/campaign/blob/main/mkdocs.yml#L221-L347). This wasn't too annoying, as we could just copy the output from [`fd .md .`](https://github.com/sharkdp/fd) in the docs folder, and it was nice to be able to customize sorting anyway.
 
-### Purging World Secrets
+### World Secrets
 
-If you want to release a brain of your campaing, you are more or less saying that this world is probably over. This was ok for us, it's been almost 4 years, and it's not particularly original (forgotten realms, and stolen content everywhere). If you wanted to do a [Mercer style](https://www.youtube.com/watch?v=i-p9lWIhcLQ&list=PL1tiwbzkOjQz7D0l_eLJGAISVtcL7oRu_) campaign procession where each season is set in the same world different area, then this process becomes difficult.
+If you want to release a DM brain (with all your plans and secrets) from your campaing, you are more or less saying that this world over. This was ok for us, it's been almost 4 years, and it's not particularly original (forgotten realms, and stolen content everywhere). If you wanted to do a [Mercer style](https://www.youtube.com/watch?v=i-p9lWIhcLQ&list=PL1tiwbzkOjQz7D0l_eLJGAISVtcL7oRu_) campaign procession where each season is set in the same world different area, then this process becomes difficult.
 
-But then again, if you have their level of viewers or players dedicated enough to basically write a wiki for your campaign, you are probably writing a book about it instead and have other problems.
+If you have a team of software people familiar with an editor you could have a **player brain** type thing that you could reference from the **DM brain** potentially. But if you have their level of viewers or players dedicated enough to basically write a [wiki for your campaign](https://criticalrole.fandom.com/wiki/Critical_Role_Wiki), maybe you have bigger problems.
 
 ### Graph View Not Exported
 
