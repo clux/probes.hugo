@@ -150,11 +150,11 @@ There maybe some way of exporting the graph into a json blob and importing it in
 
 ## Conclusion
 
-I actually think that this type of brain would **almost work better for the players** (if you have an engineer or two to manage it as notes) because they benefit much more from the website searchability, and you don't run into the last problem about world secrets.
+Foam worked really well for this type of scoped project. I actually think that this type of brain would also **work well for the players** (if you have an engineer or two to manage it as notes) because they benefit much more from the website searchability, and you don't run into the last problem about world secrets.
 
-That said, I **would probably carry on** with this setup for **any similar ttrpg** setup. Most of the negatives listed above are a bit nitpicky, and are _generally not that problematic_. Plus, I now have a better idea of what structures work (pcs, npcs, factions, deities, recaps were perfect fits for their own folders), what information ought to go where, and how deep to go.
+Lacking that, I **will probably carry on** with this setup for **any similar ttrpg** setup. Most of the negatives listed above are a bit nitpicky (**EDIT**: and resolved now), and are _generally not that problematic_. Plus, I now have a better idea of what structures work (pcs, npcs, factions, deities, recaps were perfect fits for their own folders), what information ought to go where, and how deep to go.
 
-However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development. **EDIT 2023:** This is resolved upstream, and I am using this for my main brain as well now.
+~~However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development.~~ **EDIT 2023:** The rename problem is resolved, and I am using this for my main brain as well now.
 
 Considering the standard open source software tradeoff is often between:
 
