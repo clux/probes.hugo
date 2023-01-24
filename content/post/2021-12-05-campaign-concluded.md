@@ -124,15 +124,17 @@ However, one minor snag in this upgrade was that it's no longer possible to [hid
 
 ### Renames
 
-Foam still struggles with [doing file renames](https://github.com/foambubble/foam/issues/809) (because backlinks are not updated). This could be worked around to some extent thanks to `mkdocs` telling me about the broken links (but this was after adding the web page element).
+Foam ~~still~~ struggled with [doing file renames](https://github.com/foambubble/foam/issues/809) (because backlinks were not updated). This was worked around to some extent thanks to `mkdocs` telling me about the broken links (but this was after adding the web page element).
 
-You are really dissuaded from renaming files either way (because of the work it leads to), and it basically precludes doing bigger refactors at the moment.
+~~You are really dissuaded from renaming files either way (because of the work it leads to), and it basically precludes doing bigger refactors at the moment.~~
 
-It's probably™ implementable on their side _"without too much work"©_ (because you can probably work around this with a script + `sed` if you are masochistic enough), but ultimately, **someone** has to actually do it - and who knows what complexity lurks within vs code plugins.
+~~It's probably™ implementable on their side _"without too much work"©_ (because you can probably work around this with a script + `sed` if you are masochistic enough), but ultimately, **someone** has to actually do it - and who knows what complexity lurks within vs code plugins.~~
+
+**EDIT**: Have commented out this part in 2022 because this issue was resolved in foam.
 
 ### Lexicographical Sort
 
-My [recaps folder](https://github.com/clux/campaign/tree/main/docs/recaps) has two digits prefixes on every note. This was fine in my file viewer, but not in `mkdocs-material` which sorted the entries lexicographically. Renaming would have to be done with `sed` or some other bulk search/replace tool.
+My [recaps folder](https://github.com/clux/campaign/tree/main/docs/recaps) has two digits prefixes on every note. This was fine in my file viewer + vs code, but not in `mkdocs-material` which sorted the entries lexicographically. Renaming would have to be done with `sed` or some other bulk search/replace tool.
 
 This meant we basically had to take the folder contents and [manually arrange them](https://github.com/clux/campaign/blob/main/mkdocs.yml#L221-L347). This wasn't too annoying, as we could just copy the output from [`fd .md .`](https://github.com/sharkdp/fd) in the docs folder, and it was nice to be able to customize sorting anyway.
 
@@ -152,7 +154,7 @@ I actually think that this type of brain would **almost work better for the play
 
 That said, I **would probably carry on** with this setup for **any similar ttrpg** setup. Most of the negatives listed above are a bit nitpicky, and are _generally not that problematic_. Plus, I now have a better idea of what structures work (pcs, npcs, factions, deities, recaps were perfect fits for their own folders), what information ought to go where, and how deep to go.
 
-However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development.
+However, this comes with a heavy caveat. This is currently best for small scale projects with a **sense of finality**. If this was my life brain, I would be a bit worried about the **renaming problem** ("would I never be able to refactor this?"). On the other hand, they [have an issue for it](https://github.com/foambubble/foam/issues/809) and have been doing promising development. **EDIT 2022:** This is resolved upstream, and I am using this for my main brain as well now.
 
 Considering the standard open source software tradeoff is often between:
 
