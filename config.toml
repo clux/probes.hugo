@@ -1,4 +1,4 @@
-baseURL = "https://clux.dev/"
+baseURL = "https://clux.github.io/probes.hugo"
 title = "probes"
 languageCode = "en-us"
 DefaultContentLanguage = "en"
